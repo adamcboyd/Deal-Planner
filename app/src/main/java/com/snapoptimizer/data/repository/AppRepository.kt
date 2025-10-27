@@ -28,6 +28,7 @@ class AppRepository(
     suspend fun getPantryByBestBy() = pantryDao.getByBestByDate()
     suspend fun searchPantry(term: String) = pantryDao.search(term)
     suspend fun decrementPantryQty(id: Long, amount: Double) = pantryDao.decrementQty(id, amount)
+    suspend fun deleteAllPantryItems() = pantryDao.deleteAll()
 
     // Deal operations
     val allDeals: Flow<List<DealItem>> = dealDao.getAllFlow()
@@ -41,6 +42,7 @@ class AppRepository(
     suspend fun getAllDeals() = dealDao.getAll()
     suspend fun getTopDeals(minScore: Double = 0.5) = dealDao.getTopDeals(minScore)
     suspend fun searchDeals(term: String) = dealDao.search(term)
+    suspend fun deleteAllDeals() = dealDao.deleteAll()
 
     // Receipt operations
     val allReceipts: Flow<List<ReceiptItem>> = receiptDao.getAllFlow()
@@ -63,6 +65,7 @@ class AppRepository(
     suspend fun getMealPlanByDate(date: LocalDate) = mealPlanDao.getByDate(date)
     suspend fun getNextWeekMealPlans() = mealPlanDao.getNextWeek()
     suspend fun deleteOldMealPlans(date: LocalDate) = mealPlanDao.deleteOlderThan(date)
+    suspend fun deleteAllMealPlans() = mealPlanDao.deleteAll()
 
     // Budget operations
     val budgetState: Flow<BudgetState?> = budgetDao.getFlow()

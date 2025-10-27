@@ -1,5 +1,6 @@
 package com.snapoptimizer.ocr
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import com.google.mlkit.vision.common.InputImage
@@ -32,9 +33,9 @@ class TextRecognitionHelper {
     /**
      * Process an image from URI and extract text.
      */
-    suspend fun processImageUri(uri: Uri, contentResolver: android.content.ContentResolver): String {
+    suspend fun processImageUri(context: Context, uri: Uri): String {
         return try {
-            val image = InputImage.fromFilePath(contentResolver.context, uri)
+            val image = InputImage.fromFilePath(context, uri)
             val result = recognizer.process(image).await()
             result.text
         } catch (e: Exception) {

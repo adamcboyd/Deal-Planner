@@ -64,8 +64,9 @@ class PantryPhraseParser {
             val token = tokens[i]
 
             // Check for numeric quantity
-            token.toDoubleOrNull()?.let {
-                qty = it
+            val numericQty = token.toDoubleOrNull()
+            if (numericQty != null) {
+                qty = numericQty
                 i++
                 // Check for fraction following number (e.g., "2 1/2")
                 if (i < tokens.size && tokens[i] in fractionMap) {

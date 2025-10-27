@@ -173,9 +173,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun loadDemoData() {
         viewModelScope.launch {
             // Clear existing data
-            repository.pantryDao.deleteAll()
-            repository.dealDao.deleteAll()
-            repository.mealPlanDao.deleteAll()
+            repository.deleteAllPantryItems()
+            repository.deleteAllDeals()
+            repository.deleteAllMealPlans()
 
             // Add pantry anchors
             val pantryAnchors = listOf(
