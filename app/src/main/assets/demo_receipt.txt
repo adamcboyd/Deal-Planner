@@ -1,0 +1,38 @@
+KROGER
+Store #1234
+123 Main Street
+Anytown, USA 12345
+
+Date: 10/27/2025
+Time: 14:32
+
+PORK SHOULDER    $12.95
+3.25 lb @ $3.99/lb
+
+CHICKEN BREAST   $8.97
+3.00 lb @ $2.99/lb
+
+BROCCOLI CROWNS  $3.98
+2.00 lb @ $1.99/lb
+
+MANDARIN ORANGES $3.99
+3 lb bag
+
+BLACK BEANS      $1.78
+2 @ $0.89
+
+KROGER PASTA     $3.00
+3 @ $1.00
+
+RICE 5 LB        $3.99
+
+CARROTS 2LB      $1.99
+
+                -------
+SUBTOTAL        $40.65
+TAX              $0.00
+TOTAL           $40.65
+
+SNAP/EBT        $40.65
+
+Thank you for shopping at Kroger!
