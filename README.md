@@ -1,8 +1,10 @@
-# Deal Planner Android App
+# Deal Planner
 
-A native Android wrapper for the Deal Planner meal planning application.
+An Android app for budget-conscious grocery shopping. Combines your pantry inventory, store deals, and dietary parameters to generate practical meal plans that maximize savings.
 
-**Backend is pre-configured** - AI features work automatically, no setup needed!
+**Core principle: Deals drive the meals.**
+
+`PARAMETERS + PANTRY + DEALS = PLAN`
 
 ---
 
