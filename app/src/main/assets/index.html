@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deal Planner v6.28</title>
+    <title>Deal Planner v6.29</title>
     
     <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
@@ -772,30 +772,6 @@
             { id: '108', name: 'Bread', category: 'ANCHOR', qty: 1, unit: 'loaf', expiry: '' },
         ];
 
-        const STARTER_PANTRY_ITEM_NAMES = [
-            'White Rice',
-            'Rolled Oats',
-            'Black Beans',
-            'Eggs',
-            'Milk',
-            'Bread',
-            'Chicken Breast',
-            'Frozen Broccoli',
-            'Bananas',
-            'Greek Yogurt',
-            'Olive Oil',
-            'Salt'
-        ];
-
-        function buildStarterPantry() {
-            return INITIAL_PANTRY
-                .filter(item => STARTER_PANTRY_ITEM_NAMES.includes(item.name))
-                .map((item, index) => ({
-                    ...item,
-                    id: `starter_${Date.now()}_${index}`
-                }));
-        }
-
         const INITIAL_DEALS = [
             { id: 'd1', item: 'Pork Loin', price: 1.99, unit: 'lb', store: 'Safeway', note: 'Whole', type: 'DIGITAL_COUPON', couponClipped: false },
             { id: 'd2', item: 'Chicken Thighs', price: 0.99, unit: 'lb', store: 'Safeway', note: 'Value Pack', type: 'MEMBER', couponClipped: false },
@@ -1129,252 +1105,236 @@
             );
         }
 
-        // GUIDED VOICE INPUT - Step by step (works with Android's single-shot speech)
+        // VOICE INPUT - Continuous mic with AI parsing
         function GuidedVoiceInput({ onComplete, onBack }) {
-            const [step, setStep] = useState('item'); // item -> quantity -> expiry
-            const [currentItem, setCurrentItem] = useState({ name: '', qty: '1', unit: '', expiry: '' });
-            const [addedItems, setAddedItems] = useState([]);
-            const [isListening, setIsListening] = useState(false);
-            const [lastHeard, setLastHeard] = useState('');
-            const [showCelebration, setShowCelebration] = useState(false);
+            const [isRecording, setIsRecording] = useState(false);
+            const [transcript, setTranscript] = useState('');
+            const [isParsing, setIsParsing] = useState(false);
+            const [parsedItems, setParsedItems] = useState([]);
+            const [error, setError] = useState('');
+            const shouldRestart = useRef(false);
             const audioCtx = useRef(null);
 
-            // Play celebration sound
-            const playCelebration = () => {
+            // Play a ding sound to confirm capture
+            const playDing = () => {
                 try {
                     if (!audioCtx.current) audioCtx.current = new (window.AudioContext || window.webkitAudioContext)();
                     const ctx = audioCtx.current;
-                    [523, 659, 784, 1047].forEach((freq, i) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
-                        osc.start(ctx.currentTime + i * 0.1);
-                        osc.stop(ctx.currentTime + i * 0.1 + 0.15);
-                    });
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = 880;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.15);
                 } catch (e) {}
             };
 
-            // Setup speech callbacks once
+            // Setup speech callbacks
             useEffect(() => {
                 window.guidedSpeechResult = (text) => {
-                    console.log('Guided speech result:', text);
-                    setLastHeard(text);
-                    setIsListening(false);
+                    console.log('Speech result:', text);
+                    if (text) {
+                        playDing(); // Ding to confirm we heard something
+                        setTranscript(prev => prev ? prev + ' ' + text : text);
+                    }
+                    // Auto-restart if still recording
+                    if (shouldRestart.current) {
+                        setTimeout(() => {
+                            if (shouldRestart.current && window.AndroidCamera) {
+                                try {
+                                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
+                                } catch(e) {
+                                    console.log('Restart failed:', e);
+                                }
+                            }
+                        }, 300);
+                    }
                 };
                 window.guidedSpeechError = (error) => {
-                    console.log('Guided speech error:', error);
-                    setIsListening(false);
+                    console.log('Speech error:', error);
+                    // Auto-restart on timeout/no-match if still recording
+                    if (shouldRestart.current && (error === 'no-match' || error === 'timeout' || error === 'error')) {
+                        setTimeout(() => {
+                            if (shouldRestart.current && window.AndroidCamera) {
+                                try {
+                                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
+                                } catch(e) {}
+                            }
+                        }, 300);
+                    } else if (error === 'network') {
+                        setError('Network error - check internet connection');
+                        setIsRecording(false);
+                        shouldRestart.current = false;
+                    }
                 };
                 return () => {
+                    shouldRestart.current = false;
                     if (window.AndroidCamera) {
                         try { window.AndroidCamera.stopSpeechRecognition(); } catch(e) {}
                     }
                 };
             }, []);
 
-            // Process lastHeard when it changes
-            useEffect(() => {
-                if (!lastHeard) return;
-                
-                const text = lastHeard;
-                const lower = text.toLowerCase().trim();
-                
-                if (step === 'item') {
-                    if (lower === 'done' || lower === 'stop' || lower === 'finish') {
-                        finishAll();
-                        return;
-                    }
-                    setCurrentItem(prev => ({ ...prev, name: text }));
-                    setStep('quantity');
-                } else if (step === 'quantity') {
-                    const parsed = parseQty(lower);
-                    setCurrentItem(prev => ({ ...prev, qty: parsed.qty, unit: parsed.unit }));
-                    setStep('expiry');
-                } else if (step === 'expiry') {
-                    let expiry = '';
-                    if (lower !== 'none' && lower !== 'skip' && lower !== 'no') {
-                        expiry = parseExp(text);
-                    }
-                    // Add the item
-                    addItem({ ...currentItem, expiry });
+            const startRecording = () => {
+                if (window.AndroidCamera && window.AndroidCamera.hasSpeechSupport && window.AndroidCamera.hasSpeechSupport()) {
+                    setError('');
+                    shouldRestart.current = true;
+                    setIsRecording(true);
+                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
+                } else {
+                    setError('Speech recognition not available');
                 }
-                
-                setLastHeard('');
-            }, [lastHeard]);
-
-            const parseQty = (text) => {
-                const words = { 'a': '1', 'an': '1', 'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6' };
-                let qty = '1', unit = '';
-                const m = text.match(/^(\w+)\s*(oz|lb|lbs|can|cans|bag|bags|box|boxes|jar|jars|gallon|loaf|loaves|bunch)?/i);
-                if (m) {
-                    let n = m[1];
-                    if (words[n]) n = words[n];
-                    if (/^\d+$/.test(n)) qty = n;
-                    if (m[2]) unit = m[2].toLowerCase().replace(/s$/, '');
-                }
-                return { qty, unit };
             };
 
-            const parseExp = (text) => {
-                const months = { january:'01', february:'02', march:'03', april:'04', may:'05', june:'06',
-                    july:'07', august:'08', september:'09', october:'10', november:'11', december:'12' };
-                for (const [name, num] of Object.entries(months)) {
-                    if (text.toLowerCase().includes(name)) {
-                        const yr = text.match(/20\d{2}/);
-                        return (yr ? yr[0] : new Date().getFullYear()) + '-' + num;
-                    }
+            const stopRecording = () => {
+                shouldRestart.current = false;
+                setIsRecording(false);
+                if (window.AndroidCamera) {
+                    try { window.AndroidCamera.stopSpeechRecognition(); } catch(e) {}
                 }
-                return '';
             };
 
-            const addItem = (item) => {
-                if (!item.name.trim()) {
-                    setStep('item');
+            // Send to AI for parsing
+            const parseWithAI = async () => {
+                if (!transcript.trim()) {
+                    setError('Nothing to parse - speak first!');
                     return;
                 }
-                const newItem = {
-                    id: Date.now().toString() + Math.random().toString(36).substr(2,9),
-                    name: item.name,
-                    qty: item.qty || '1',
-                    unit: item.unit || '',
-                    expiry: item.expiry || '',
-                    category: 'STAPLE'
-                };
-                setAddedItems(prev => [...prev, newItem]);
-                setShowCelebration(true);
-                playCelebration();
-                setTimeout(() => {
-                    setShowCelebration(false);
-                    setCurrentItem({ name: '', qty: '1', unit: '', expiry: '' });
-                    setStep('item');
-                }, 1200);
+                
+                setIsParsing(true);
+                setError('');
+                
+                try {
+                    const response = await fetch('https://flyer-scanner.dealsplanner.workers.dev/parse', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ transcript: transcript })
+                    });
+                    
+                    if (!response.ok) throw new Error('AI parsing failed');
+                    
+                    const data = await response.json();
+                    if (data.items && data.items.length > 0) {
+                        setParsedItems(data.items.map((item, idx) => ({
+                            ...item,
+                            id: Date.now().toString() + '_' + idx
+                        })));
+                    } else {
+                        setError('AI could not parse any items. Try again?');
+                    }
+                } catch (err) {
+                    console.error('Parse error:', err);
+                    setError('AI parsing failed: ' + err.message);
+                }
+                
+                setIsParsing(false);
             };
 
-            const startListening = () => {
-                if (window.AndroidCamera && window.AndroidCamera.hasSpeechSupport && window.AndroidCamera.hasSpeechSupport()) {
-                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
-                    setIsListening(true);
-                } else {
-                    alert('Speech not available');
+            const addToPantry = () => {
+                if (parsedItems.length > 0) {
+                    onComplete(parsedItems);
                 }
             };
 
-            const skipStep = () => {
-                if (step === 'quantity') {
-                    setCurrentItem(prev => ({ ...prev, qty: '1', unit: '' }));
-                    setStep('expiry');
-                } else if (step === 'expiry') {
-                    addItem({ ...currentItem, expiry: '' });
-                }
+            const clearAll = () => {
+                setTranscript('');
+                setParsedItems([]);
+                setError('');
             };
-
-            const finishAll = () => {
-                if (addedItems.length > 0) {
-                    onComplete(addedItems);
-                } else {
-                    onBack();
-                }
-            };
-
-            const prompts = {
-                item: { icon: '🛒', q: 'What item?', hint: 'Say item name like "peas" or "bread"' },
-                quantity: { icon: '📦', q: 'How much?', hint: 'Say "12 oz can" or "1 loaf" or tap Skip' },
-                expiry: { icon: '📅', q: 'Expiration?', hint: 'Say "March 2025" or "none"' }
-            };
-            const p = prompts[step] || prompts.item;
 
             return (
                 <div>
                     <button className="btn-back" onClick={onBack}>← Back</button>
                     <h2>🎤 Voice Input</h2>
-
-                    {showCelebration && (
-                        <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(76,175,80,0.95)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:1000}}>
-                            <div style={{fontSize:'4em'}}>🎉</div>
-                            <div style={{fontSize:'1.5em',color:'white',fontWeight:'bold',marginTop:'10px'}}>Added!</div>
-                        </div>
-                    )}
-
-                    <div className="card-light" style={{textAlign:'center',padding:'25px'}}>
-                        <div style={{fontSize:'2.5em',marginBottom:'10px'}}>{p.icon}</div>
-                        <div style={{fontSize:'1.4em',fontWeight:'bold',marginBottom:'5px'}}>{p.q}</div>
-                        <div style={{color:'#666',fontSize:'0.9em',marginBottom:'20px'}}>{p.hint}</div>
-
-                        <button onClick={startListening} disabled={isListening} style={{
-                            width:'90px',height:'90px',borderRadius:'50%',
-                            background: isListening ? '#f44336' : '#4caf50',
-                            color:'white',fontSize:'2em',border:'none',
-                            boxShadow: isListening ? '0 0 20px rgba(244,67,54,0.5)' : '0 4px 15px rgba(0,0,0,0.2)'
-                        }}>
-                            <i className={`fas fa-${isListening ? 'spinner fa-spin' : 'microphone'}`}></i>
+                    
+                    <div className="card-light" style={{textAlign:'center', padding:'20px'}}>
+                        <p style={{margin:'0 0 15px', color:'#666'}}>
+                            {isRecording ? '🔴 Listening... keep talking! Tap to stop.' : 'Tap mic and list your pantry items'}
+                        </p>
+                        
+                        <button 
+                            onClick={isRecording ? stopRecording : startRecording}
+                            style={{
+                                width:'100px', height:'100px', borderRadius:'50%',
+                                background: isRecording ? '#f44336' : '#4caf50',
+                                color:'white', fontSize:'2.5em', border:'none',
+                                boxShadow: isRecording ? '0 0 30px rgba(244,67,54,0.5)' : '0 4px 15px rgba(0,0,0,0.2)',
+                                animation: isRecording ? 'pulse 1s infinite' : 'none'
+                            }}
+                        >
+                            <i className={`fas fa-${isRecording ? 'stop' : 'microphone'}`}></i>
                         </button>
-
-                        {lastHeard && (
-                            <div style={{marginTop:'15px',padding:'10px',background:'#e3f2fd',borderRadius:'8px'}}>
-                                <small style={{color:'#666'}}>Heard:</small>
-                                <div style={{fontWeight:'bold',color:'#1976d2'}}>{lastHeard}</div>
-                            </div>
-                        )}
-
-                        {(step === 'quantity' || step === 'expiry') && (
-                            <button onClick={skipStep} style={{marginTop:'15px',padding:'12px 25px',background:'#ff9800',color:'white',fontSize:'1em'}}>
-                                ⏭ SKIP
+                        
+                        {transcript && (
+                            <button onClick={clearAll} style={{display:'block', margin:'15px auto 0', background:'none', color:'#f44336'}}>
+                                <i className="fas fa-trash"></i> Clear
                             </button>
                         )}
                     </div>
 
-                    {/* Progress */}
-                    <div style={{display:'flex',justifyContent:'center',gap:'8px',margin:'15px 0'}}>
-                        {['item','quantity','expiry'].map((s,i) => (
-                            <div key={s} style={{width:'50px',height:'6px',borderRadius:'3px',
-                                background: s === step ? '#4caf50' : (['item','quantity','expiry'].indexOf(step) > i ? '#81c784' : '#ddd')
-                            }}/>
-                        ))}
-                    </div>
-
-                    {/* Current item being built */}
-                    {currentItem.name && (
-                        <div className="card-light" style={{background:'#fff8e1',padding:'10px'}}>
-                            <strong>Building:</strong> {currentItem.qty} {currentItem.unit} {currentItem.name}
+                    {error && (
+                        <div style={{background:'#ffebee', color:'#c62828', padding:'10px', borderRadius:'8px', marginBottom:'10px'}}>
+                            {error}
                         </div>
                     )}
 
-                    {/* Added items */}
-                    {addedItems.length > 0 && (
+                    {/* Transcript display */}
+                    {transcript && (
                         <div className="card-light">
-                            <h4 style={{margin:'0 0 10px'}}>✓ Added ({addedItems.length})</h4>
-                            {addedItems.slice(-5).map(item => (
-                                <div key={item.id} style={{padding:'5px 0',borderBottom:'1px solid #eee',fontSize:'0.9em'}}>
-                                    {item.qty} {item.unit} {item.name}
+                            <h4 style={{margin:'0 0 10px'}}>📝 What I heard:</h4>
+                            <div style={{background:'#f5f5f5', padding:'12px', borderRadius:'8px', fontStyle:'italic', color:'#555', minHeight:'60px'}}>
+                                {transcript}
+                            </div>
+                            
+                            <button 
+                                onClick={parseWithAI}
+                                disabled={isParsing}
+                                style={{width:'100%', padding:'15px', marginTop:'15px', background: isParsing ? '#999' : '#2196f3', color:'white', fontSize:'1.1em'}}
+                            >
+                                {isParsing ? (
+                                    <><i className="fas fa-spinner fa-spin"></i> AI is parsing...</>
+                                ) : (
+                                    <><i className="fas fa-magic"></i> 🤖 Parse with AI</>
+                                )}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Parsed items */}
+                    {parsedItems.length > 0 && (
+                        <div className="card-light">
+                            <h4 style={{margin:'0 0 10px'}}>✓ Parsed Items ({parsedItems.length})</h4>
+                            {parsedItems.map(item => (
+                                <div key={item.id} style={{padding:'8px', borderBottom:'1px solid #eee', display:'flex', justifyContent:'space-between'}}>
+                                    <span><strong>{item.qty || 1} {item.unit}</strong> {item.name}</span>
+                                    {item.expiry && <span style={{color:'#888', fontSize:'0.85em'}}>exp: {item.expiry}</span>}
                                 </div>
                             ))}
+                            
+                            <button 
+                                onClick={addToPantry}
+                                style={{width:'100%', padding:'15px', marginTop:'15px', background:'#4caf50', color:'white', fontSize:'1.1em', fontWeight:'bold'}}
+                            >
+                                <i className="fas fa-check"></i> Add {parsedItems.length} Items to Pantry
+                            </button>
                         </div>
                     )}
-
-                    {/* Done button */}
-                    <button onClick={finishAll} style={{width:'100%',padding:'18px',marginTop:'15px',background:'#f44336',color:'white',fontSize:'1.1em',fontWeight:'bold'}}>
-                        ⏹ DONE - Add {addedItems.length} Item{addedItems.length !== 1 ? 's' : ''} to Pantry
-                    </button>
                 </div>
             );
         }
 
-        // VOICE INPUT SCREEN - Now defaults to guided mode
+        // VOICE INPUT SCREEN - Uses AI-powered continuous input
         function VoiceInputScreen({ onComplete, onBack, hideBackButton }) {
-            const [mode, setMode] = useState('guided'); // 'guided' or 'freeform'
-            
-            // Check if Android - if so, only offer guided mode
-            const isAndroid = window.AndroidCamera && window.AndroidCamera.hasSpeechSupport && window.AndroidCamera.hasSpeechSupport();
-            
-            if (mode === 'guided' || isAndroid) {
-                return <GuidedVoiceInput onComplete={onComplete} onBack={onBack} />;
-            }
-            
-            // Freeform mode (for browser only)
+            // Always use the AI-powered continuous mode
+            return <GuidedVoiceInput onComplete={onComplete} onBack={onBack} />;
+        }
+        
+        // Keep old freeform code for browser fallback
+        function FreeformVoiceInput({ onComplete, onBack, hideBackButton }) {
             const [isRecording, setIsRecording] = useState(false);
             const [transcript, setTranscript] = useState('');
             const [parsedItems, setParsedItems] = useState([]);
@@ -2164,16 +2124,6 @@
             const [searchTerm, setSearchTerm] = useState('');
             const [newItem, setNewItem] = useState({ name: '', category: 'STAPLE', qty: 1, unit: '', expiry: '' });
 
-            const addStarterPantry = () => {
-                const existing = new Set(pantry.map(item => item.name.toLowerCase()));
-                const starterItems = buildStarterPantry().filter(item => !existing.has(item.name.toLowerCase()));
-                if (starterItems.length === 0) {
-                    alert('Starter pantry items are already added.');
-                    return;
-                }
-                setPantry([...pantry, ...starterItems]);
-            };
-
             const addItem = () => {
                 if (!newItem.name) return;
                 setPantry([...pantry, { ...newItem, id: Date.now().toString() }]);
@@ -2268,13 +2218,6 @@
                         style={{width:'100%', padding:'20px', background:'linear-gradient(135deg, #9c27b0, #673ab7)', color:'white', fontSize:'1.2em', marginBottom:'15px', display:'flex', alignItems:'center', justifyContent:'center', gap:'10px'}}
                     >
                         <i className="fas fa-receipt"></i> Scan Receipt (After Shopping)
-                    </button>
-
-                    <button
-                        onClick={addStarterPantry}
-                        style={{width:'100%', padding:'16px', background:'linear-gradient(135deg, #ff9800, #ef6c00)', color:'white', fontSize:'1.05em', marginBottom:'15px'}}
-                    >
-                        <i className="fas fa-box-open"></i> Use Starter Pantry (Demo Data)
                     </button>
 
                     {/* Manual Input */}
@@ -4019,7 +3962,6 @@
             const [stats, setStats] = useState({ kept: 0, skipped: 0 });
             const [keptRecipes, setKeptRecipes] = useState([]);
             const [error, setError] = useState(null);
-            const [usedStarterIngredients, setUsedStarterIngredients] = useState(false);
 
             // Get available ingredients for checking what's missing
             const available = getAvailableIngredients(pantry);
@@ -4048,14 +3990,7 @@
                 // Build ingredient list from pantry + deals
                 const pantryItems = pantry.map(p => p.name).slice(0, 30);
                 const dealItems = deals.map(d => d.item).slice(0, 20);
-                let allIngredients = [...new Set([...pantryItems, ...dealItems])];
-
-                if (allIngredients.length === 0) {
-                    allIngredients = buildStarterPantry().map(item => item.name);
-                    setUsedStarterIngredients(true);
-                } else {
-                    setUsedStarterIngredients(false);
-                }
+                const allIngredients = [...new Set([...pantryItems, ...dealItems])];
 
                 try {
                     const response = await fetch(backendUrl.replace(/\/$/, '') + '/recipes', {
@@ -4159,14 +4094,8 @@
                                     style={{marginTop:'20px', padding:'10px 20px', background:'#333', color:'white'}}
                                 >
                                     Try Again
-                            </button>
-                        </div>
-
-                        {usedStarterIngredients && (
-                            <div style={{background:'#3a2a00', color:'#ffcc80', border:'1px solid #ff9800', padding:'12px', borderRadius:'10px', marginBottom:'15px', fontSize:'0.9em'}}>
-                                Your pantry is still empty, so recipe discovery is using starter demo ingredients for now.
+                                </button>
                             </div>
-                        )}
                         )}
 
                         {/* Finished */}
@@ -4314,7 +4243,7 @@
         // ============================================
         function App() {
             // VERSION MIGRATION: v6.19 requires fresh start (empty pantry/deals/recipes)
-            const APP_VERSION = '6.28';
+            const APP_VERSION = '6.29';
             const currentVersion = localStorage.getItem('app_version');
             if (currentVersion !== APP_VERSION) {
                 console.log(`Migrating from ${currentVersion || 'unknown'} to ${APP_VERSION} - clearing all data`);
@@ -4806,22 +4735,6 @@
                                                 <div style={{textAlign:'left'}}>
                                                     <strong>Scan Receipt</strong>
                                                     <div style={{fontSize:'0.8em', opacity:0.9}}>Photo your shopping receipt</div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => {
-                                                    const existing = new Set(pantry.map(item => item.name.toLowerCase()));
-                                                    const starterItems = buildStarterPantry().filter(item => !existing.has(item.name.toLowerCase()));
-                                                    setPantry(prev => [...prev, ...starterItems]);
-                                                    setOnboardingStep(2);
-                                                }}
-                                                style={{padding:'25px', background:'linear-gradient(135deg, #ff9800, #ef6c00)', color:'white', fontSize:'1.1em', display:'flex', alignItems:'center', justifyContent:'center', gap:'15px'}}
-                                            >
-                                                <i className="fas fa-box-open" style={{fontSize:'1.5em'}}></i>
-                                                <div style={{textAlign:'left'}}>
-                                                    <strong>Use Starter Pantry</strong>
-                                                    <div style={{fontSize:'0.8em', opacity:0.9}}>Add demo items so recipes work right away</div>
                                                 </div>
                                             </button>
                                             
