@@ -1114,6 +1114,8 @@
             const [error, setError] = useState('');
             const shouldRestart = useRef(false);
             const audioCtx = useRef(null);
+            const webRecognitionRef = useRef(null);
+            const useAndroidSpeech = useRef(false);
 
             // Play a ding sound to confirm capture
             const playDing = () => {
@@ -1135,66 +1137,101 @@
 
             // Setup speech callbacks
             useEffect(() => {
-                window.guidedSpeechResult = (text) => {
-                    console.log('Speech result:', text);
-                    if (text) {
-                        playDing(); // Ding to confirm we heard something
-                        setTranscript(prev => prev ? prev + ' ' + text : text);
-                    }
-                    // Auto-restart if still recording
-                    if (shouldRestart.current) {
-                        setTimeout(() => {
-                            if (shouldRestart.current && window.AndroidCamera) {
-                                try {
-                                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
-                                } catch(e) {
-                                    console.log('Restart failed:', e);
+                // Android native speech
+                if (window.AndroidCamera && typeof window.AndroidCamera.hasSpeechSupport === 'function' && window.AndroidCamera.hasSpeechSupport()) {
+                    useAndroidSpeech.current = true;
+                    window.guidedSpeechResult = (text) => {
+                        if (text) { playDing(); setTranscript(prev => prev ? prev + ' ' + text : text); }
+                        if (shouldRestart.current) {
+                            setTimeout(() => {
+                                if (shouldRestart.current && window.AndroidCamera) {
+                                    try { window.AndroidCamera.startSpeechRecognition('guidedSpeech'); } catch(e) {}
                                 }
-                            }
-                        }, 300);
-                    }
-                };
-                window.guidedSpeechError = (error) => {
-                    console.log('Speech error:', error);
-                    // Auto-restart on timeout/no-match if still recording
-                    if (shouldRestart.current && (error === 'no-match' || error === 'timeout' || error === 'error')) {
-                        setTimeout(() => {
-                            if (shouldRestart.current && window.AndroidCamera) {
-                                try {
-                                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
-                                } catch(e) {}
-                            }
-                        }, 300);
-                    } else if (error === 'network') {
-                        setError('Network error - check internet connection');
-                        setIsRecording(false);
-                        shouldRestart.current = false;
-                    }
-                };
+                            }, 300);
+                        }
+                    };
+                    window.guidedSpeechError = (err) => {
+                        if (shouldRestart.current && (err === 'no-match' || err === 'timeout' || err === 'error')) {
+                            setTimeout(() => {
+                                if (shouldRestart.current && window.AndroidCamera) {
+                                    try { window.AndroidCamera.startSpeechRecognition('guidedSpeech'); } catch(e) {}
+                                }
+                            }, 300);
+                        } else if (err === 'network') {
+                            setError('Network error - check internet connection');
+                            setIsRecording(false);
+                            shouldRestart.current = false;
+                        }
+                    };
+                }
+                // Fallback: Web Speech API (Chrome desktop + Android Chrome)
+                else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    webRecognitionRef.current = new SR();
+                    webRecognitionRef.current.continuous = true;
+                    webRecognitionRef.current.interimResults = false;
+                    webRecognitionRef.current.onresult = (event) => {
+                        const last = event.results[event.results.length - 1];
+                        if (last.isFinal) {
+                            const text = last[0].transcript.trim();
+                            if (text) { playDing(); setTranscript(prev => prev ? prev + ' ' + text : text); }
+                        }
+                    };
+                    webRecognitionRef.current.onerror = (event) => {
+                        if (event.error === 'not-allowed') {
+                            setError('Microphone access denied — check browser permissions.');
+                            setIsRecording(false);
+                            shouldRestart.current = false;
+                        } else if (event.error === 'network') {
+                            setError('Network error - check internet connection.');
+                            setIsRecording(false);
+                            shouldRestart.current = false;
+                        }
+                    };
+                    webRecognitionRef.current.onend = () => {
+                        // Auto-restart to keep listening until user stops
+                        if (shouldRestart.current) {
+                            try { webRecognitionRef.current.start(); } catch(e) {}
+                        } else {
+                            setIsRecording(false);
+                        }
+                    };
+                }
+
                 return () => {
                     shouldRestart.current = false;
-                    if (window.AndroidCamera) {
+                    if (useAndroidSpeech.current && window.AndroidCamera) {
                         try { window.AndroidCamera.stopSpeechRecognition(); } catch(e) {}
+                    }
+                    if (webRecognitionRef.current) {
+                        try { webRecognitionRef.current.stop(); } catch(e) {}
                     }
                 };
             }, []);
 
             const startRecording = () => {
-                if (window.AndroidCamera && window.AndroidCamera.hasSpeechSupport && window.AndroidCamera.hasSpeechSupport()) {
-                    setError('');
+                setError('');
+                if (useAndroidSpeech.current && window.AndroidCamera) {
                     shouldRestart.current = true;
                     setIsRecording(true);
-                    window.AndroidCamera.startSpeechRecognition('guidedSpeech');
+                    try { window.AndroidCamera.startSpeechRecognition('guidedSpeech'); } catch(e) { setError('Failed to start microphone.'); }
+                } else if (webRecognitionRef.current) {
+                    shouldRestart.current = true;
+                    setIsRecording(true);
+                    try { webRecognitionRef.current.start(); } catch(e) { setError('Failed to start microphone.'); }
                 } else {
-                    setError('Speech recognition not available');
+                    setError('Speech recognition not available — use Chrome or Edge.');
                 }
             };
 
             const stopRecording = () => {
                 shouldRestart.current = false;
                 setIsRecording(false);
-                if (window.AndroidCamera) {
+                if (useAndroidSpeech.current && window.AndroidCamera) {
                     try { window.AndroidCamera.stopSpeechRecognition(); } catch(e) {}
+                }
+                if (webRecognitionRef.current) {
+                    try { webRecognitionRef.current.stop(); } catch(e) {}
                 }
             };
 
