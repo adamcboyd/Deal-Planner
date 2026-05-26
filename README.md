@@ -1,4 +1,4 @@
-# SNAP Optimizer
+# Deal Planner
 
 A comprehensive Android app for optimizing SNAP (food assistance) benefits through intelligent meal planning, deal tracking, and budget management.
 
