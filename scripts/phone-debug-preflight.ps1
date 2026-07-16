@@ -522,6 +522,12 @@ if (Test-Path ".\scripts\phone-debug-logs.ps1") {
     Add-Check $results "Phone log helper" "WARN" "Log helper not found; phone failures may be harder to diagnose."
 }
 
+if (Test-Path ".\scripts\start-phone-test-run.ps1") {
+    Add-Check $results "Phone test starter" "OK" "scripts\start-phone-test-run.ps1 is present for required-phone setup orchestration."
+} else {
+    Add-Check $results "Phone test starter" "WARN" "Phone test starter not found; run preflight/install/sample/report helpers individually."
+}
+
 if (Test-Path ".\scripts\new-phone-test-report.ps1") {
     Add-Check $results "Phone test report helper" "OK" "scripts\new-phone-test-report.ps1 is present for timestamped pass/fail evidence capture."
 } else {

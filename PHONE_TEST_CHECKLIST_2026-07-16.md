@@ -15,12 +15,13 @@ Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-20'
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\scripts\start-phone-test-run.ps1
 .\scripts\phone-debug-preflight.ps1
 adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
+Use `start-phone-test-run.ps1` for the normal phone setup path. It runs required-phone preflight, generates/transfers deterministic sample files, installs/launches the app, and creates a report. If running helpers individually, expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
 Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:

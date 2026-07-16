@@ -1070,6 +1070,25 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest helper checkpoint after one-command phone-test starter work:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+.\scripts\start-phone-test-run.ps1
+```
+
+Result: help output printed successfully, all PowerShell helpers parsed successfully, generated phone-test reports include the starter checklist row, and the starter stops during required-phone preflight when no connected/authorized Android phone is available. With one authorized phone, it runs preflight, generates and transfers deterministic sample files, installs/launches the debug APK, and creates a phone-test report.
+
+Latest continuation gate after one-command phone-test starter work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Latest continuation gate after receipt PDF import work:
 
 ```powershell
@@ -1123,6 +1142,7 @@ Debug APK:
 Phone install helper:
 
 ```powershell
+.\scripts\start-phone-test-run.ps1
 .\scripts\phone-debug-preflight.ps1
 ```
 
@@ -1130,6 +1150,7 @@ Phone install helper:
 .\scripts\phone-debug-install.ps1
 ```
 
+Use `.\scripts\start-phone-test-run.ps1` for the normal connected-phone run. It checks required-phone preflight, creates/copies deterministic sample files, installs/launches the APK, and creates a timestamped report.
 Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and app source/resources/build config plus Gemini/local configuration have not changed.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-install.ps1 -Help` if the exact helper options are lost.
@@ -1149,6 +1170,7 @@ Verified by build/unit tests/code inspection:
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
 - Settings -> About Deal Planner displays the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
+- `scripts\start-phone-test-run.ps1` is available for required-phone setup orchestration: preflight, sample generation/transfer, APK install/launch, and report creation.
 - `scripts\phone-debug-install.ps1` can build, verify, print generated APK source/Gemini identity, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, generated debug `BuildConfig` source identity, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
@@ -1312,7 +1334,13 @@ gemini.model=gemini-3.5-flash
 
 4. Connect Android phone with USB debugging enabled.
 5. Confirm `adb devices` shows the phone as `device`.
-6. Install or run the debug app, or use:
+6. Start the guided phone run:
+
+```powershell
+.\scripts\start-phone-test-run.ps1
+```
+
+Or run the install helper directly:
 
 ```powershell
 .\scripts\phone-debug-install.ps1
@@ -1333,6 +1361,7 @@ Optional if anything fails on the phone:
 Optional before the phone test run:
 
 ```powershell
+.\scripts\start-phone-test-run.ps1
 .\scripts\new-phone-test-report.ps1
 .\scripts\new-phone-test-samples.ps1
 .\scripts\send-phone-test-samples.ps1

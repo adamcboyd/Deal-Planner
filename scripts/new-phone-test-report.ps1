@@ -275,6 +275,7 @@ $adbBlock
 
 ## Install And Launch
 
+- [ ] .\scripts\start-phone-test-run.ps1 completed, or the individual setup helpers below were run.
 - [ ] .\scripts\phone-debug-preflight.ps1 passed with 0 failures.
 - [ ] .\scripts\phone-debug-install.ps1 installed and launched Deal Planner.
 - Notes:
