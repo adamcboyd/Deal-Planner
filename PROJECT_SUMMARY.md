@@ -181,7 +181,7 @@ Deal_Planner/
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs and PPU
-- ✅ **MenuScreen**: 7-day plan with freezer directives
+- ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
 - ✅ Material 3 theming with dark/light support
@@ -409,6 +409,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Generates meal plans
 - ✅ Generates deterministic meal plans from the same pantry/deals/settings inputs
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
+- ✅ Shows meal-generation status and planner warnings
 - ✅ Tracks budget
 - ✅ Creates shopping lists
 - ✅ Keeps different shopping-list deal identities separate before and after Room assigns ids

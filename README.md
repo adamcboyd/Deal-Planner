@@ -292,6 +292,7 @@ Blank pasted receipt text shows `No receipt text found.` instead of failing sile
 ### Meal Planning
 
 Click "Generate" in the Menu tab to create a deterministic 7-day plan. The same pantry, deal, and settings inputs produce the same meal plan for repeatable phone testing. Re-generating replaces the active generated week instead of stacking duplicate plan rows.
+- The Menu tab shows a generation status with the plan/shopping-list summary and planner warnings such as missing protein deals or pantry starch anchors.
 - Breakfast uses pantry anchors (oats, cereal) if enabled
 - Lunch/Dinner pairs: Protein + Veg + Starch
 - Proteins from top-scored deals
@@ -382,6 +383,7 @@ As of the latest local pass:
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
+- Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - Pantry parser handles quantity, comma-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.

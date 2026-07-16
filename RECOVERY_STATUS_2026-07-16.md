@@ -478,6 +478,14 @@ Latest continuation gate after blank manual input status work:
 
 Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after meal-plan generation status work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -547,6 +555,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
+- Menu Generate shows visible meal-plan generation status and any rules-engine warnings, such as missing protein deals or pantry starch anchors.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
 - Shopping list estimated costs use planned quantities and normalized price-per-unit values instead of multiplying sticker price by planned quantity in the UI.
 - Budget engine has unit tests.

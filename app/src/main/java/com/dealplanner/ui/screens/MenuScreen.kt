@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MenuScreen(viewModel: AppViewModel) {
     val mealPlans by viewModel.mealPlans.collectAsState()
+    val mealPlanStatus by viewModel.mealPlanStatus.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header with generate button
@@ -47,6 +48,14 @@ fun MenuScreen(viewModel: AppViewModel) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Generate")
                 }
+            }
+            if (mealPlanStatus != null) {
+                Text(
+                    text = mealPlanStatus.orEmpty(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                )
             }
         }
 

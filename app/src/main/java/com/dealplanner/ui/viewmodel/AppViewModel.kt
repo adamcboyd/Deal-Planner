@@ -68,6 +68,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _shoppingList = MutableStateFlow<List<MealPlanningEngine.ShoppingListItem>>(emptyList())
     val shoppingList: StateFlow<List<MealPlanningEngine.ShoppingListItem>> = _shoppingList.asStateFlow()
 
+    private val _mealPlanStatus = MutableStateFlow<String?>(null)
+    val mealPlanStatus: StateFlow<String?> = _mealPlanStatus.asStateFlow()
+
     private val _pantryPhotoStatus = MutableStateFlow<String?>(null)
     val pantryPhotoStatus: StateFlow<String?> = _pantryPhotoStatus.asStateFlow()
 
@@ -363,6 +366,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Meal planning
     fun generateMealPlan() {
         viewModelScope.launch {
+            _mealPlanStatus.value = "Generating meal plan..."
             val currentParams = repository.getParams() ?: Params()
             val pantry = repository.getAllPantryItems()
             val currentDeals = repository.getAllDeals()
@@ -380,6 +384,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             repository.insertMealPlans(result.mealPlans)
 
             _shoppingList.value = result.shoppingList
+            _mealPlanStatus.value = mealPlanStatusMessage(result)
         }
     }
 
@@ -539,6 +544,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 qty = (pantryItem.qty + (receiptQty * direction)).coerceAtLeast(0.0)
             )
         )
+    }
+
+    private fun mealPlanStatusMessage(result: MealPlanningEngine.MealPlanResult): String {
+        val summary = "Generated ${result.mealPlans.size}-day meal plan with ${result.shoppingList.size} shopping item${if (result.shoppingList.size == 1) "" else "s"}."
+        return if (result.warnings.isEmpty()) {
+            summary
+        } else {
+            "$summary ${result.warnings.joinToString(" ")}"
+        }
     }
 
     // Params operations
