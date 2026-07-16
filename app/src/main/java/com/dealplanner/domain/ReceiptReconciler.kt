@@ -148,6 +148,8 @@ class ReceiptReconciler {
             return Triple(itemName, totalPrice, qty)
         }
 
+        if (isQuantityDetailLine(line)) return null
+
         pattern2.find(line)?.let { match ->
             val itemName = match.groupValues[1].trim()
             if (isSummaryOrTenderLine(itemName)) return null
@@ -214,11 +216,14 @@ class ReceiptReconciler {
         return normalized in exactMatches || prefixes.any { normalized.startsWith(it) }
     }
 
+    private fun isQuantityDetailLine(line: String): Boolean {
+        return splitQuantityPattern.matches(line.trim())
+    }
+
     private fun findSplitQuantity(lines: List<String>, startIndex: Int): Double? {
         if (startIndex >= lines.size) return null
 
-        val quantityOnlyPattern = Regex("""(\d+(?:\.\d+)?)\s*@\s*\$?\d+\.\d{2}""")
-        return quantityOnlyPattern.find(lines[startIndex])
+        return splitQuantityPattern.find(lines[startIndex].trim())
             ?.groupValues
             ?.get(1)
             ?.toDoubleOrNull()
@@ -286,5 +291,11 @@ class ReceiptReconciler {
 
     private fun roundCurrency(value: Double): Double {
         return kotlin.math.round(value * 100.0) / 100.0
+    }
+
+    private companion object {
+        private val splitQuantityPattern = Regex(
+            """(?i)^(\d+(?:\.\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
+        )
     }
 }

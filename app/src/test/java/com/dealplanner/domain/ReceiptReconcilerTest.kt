@@ -135,10 +135,42 @@ class ReceiptReconcilerTest {
 
         val result = reconciler.reconcileReceipt(ocrText, emptyList(), pantry, "Kroger")
 
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].rawLine).isEqualTo("BLACK BEANS       $1.78")
+        assertThat(result.receiptItems[0].qty).isEqualTo(2.0)
         assertThat(result.pantryUpdates).isNotEmpty()
         assertThat(result.pantryUpdates[0].qty).isEqualTo(4.0)
         assertThat(result.receiptItems[0].matchedType).isEqualTo("pantry")
         assertThat(result.receiptItems[0].matchedItemId).isEqualTo(7)
+    }
+
+    @Test
+    fun `split weighted quantity line attaches to previous deal and is not imported`() {
+        val ocrText = """
+            PORK SHOULDER    $12.95
+            3.25 lb @ $3.99/lb
+        """.trimIndent()
+        val deals = listOf(
+            DealItem(
+                id = 3,
+                name = "Pork Shoulder",
+                price = 3.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 3.99
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].rawLine).isEqualTo("PORK SHOULDER    $12.95")
+        assertThat(result.receiptItems[0].qty).isEqualTo(3.25)
+        assertThat(result.total).isEqualTo(12.95)
+        assertThat(result.dealMatches).hasSize(1)
+        assertThat(result.dealMatches[0].actualPPU).isWithin(0.01).of(3.99)
+        assertThat(result.warnings).isEmpty()
     }
 
     @Test

@@ -67,6 +67,7 @@ Verified by build/unit tests/code inspection:
 - Flyer deals can be edited/reviewed after photo, gallery, or PDF import.
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
+- Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.
 - Receipt totals are rounded to cents before budget updates.
 - Receipt edits and deletes adjust budget spending totals.
@@ -132,6 +133,7 @@ gemini.model=gemini-3.5-flash
    - Receipts photo.
    - Receipts gallery image.
    - Receipts pasted OCR text.
+   - Receipts split quantity lines do not import as separate items.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
    - Receipts edit/delete budget total adjustment.

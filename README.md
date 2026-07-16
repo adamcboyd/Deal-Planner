@@ -225,6 +225,7 @@ On the Receipts tab:
 6. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
 7. Receipt edits and deletes adjust pantry quantities and budget spending so Pantry and Budget stay in sync.
 8. Subtotal, tax, total, payment, and EBT/card lines are ignored so only grocery items affect spending.
+9. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 
 ### Meal Planning
 
@@ -316,7 +317,7 @@ As of the latest local pass:
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
-- Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
+- Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and payment/tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
