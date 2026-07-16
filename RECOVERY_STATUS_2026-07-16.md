@@ -716,6 +716,14 @@ Latest continuation gate after receipt weak-match rejection work:
 
 Result: `BUILD SUCCESSFUL`, with `133` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt inline decimal quantity parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `134` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell

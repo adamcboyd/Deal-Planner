@@ -146,7 +146,7 @@ class ReceiptReconciler {
             """(.+?)\s+(\d+(?:[.,]\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*@\s*\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+\$?(\d+[.,]\d{2})""",
             RegexOption.IGNORE_CASE
         )
-        val pattern1 = Regex("""(\d+)\s*@\s*\$?(\d+[.,]\d{2})\s+(.+?)\s+\$?(\d+[.,]\d{2})""")
+        val pattern1 = Regex("""(\d+(?:[.,]\d+)?)\s*@\s*\$?(\d+[.,]\d{2})\s+(.+?)\s+\$?(\d+[.,]\d{2})""")
         val pattern2 = Regex("""(.+?)\s+\$?(\d+[.,]\d{2})""")
 
         itemFirstWeightedPattern.find(line)?.let { match ->
@@ -158,7 +158,7 @@ class ReceiptReconciler {
         }
 
         pattern1.find(line)?.let { match ->
-            val qty = match.groupValues[1].toDoubleOrNull() ?: 1.0
+            val qty = match.groupValues[1].toPriceDoubleOrNull() ?: 1.0
             val itemName = match.groupValues[3].trim()
             if (isSummaryOrTenderLine(itemName)) return null
             val totalPrice = match.groupValues[4].toPriceDoubleOrNull() ?: 0.0

@@ -371,6 +371,28 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse inline decimal quantity receipt lines`() {
+        val ocrText = """
+            1.50 @ 0.69 BANANAS 1.04
+            1,25 @ 1,99 APPLES 2,49
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+
+        val bananas = result.receiptItems.first { it.rawLine.startsWith("1.50") }
+        assertThat(bananas.qty).isEqualTo(1.5)
+        assertThat(bananas.totalCost).isEqualTo(1.04)
+
+        val apples = result.receiptItems.first { it.rawLine.startsWith("1,25") }
+        assertThat(apples.qty).isEqualTo(1.25)
+        assertThat(apples.totalCost).isEqualTo(2.49)
+
+        assertThat(result.total).isEqualTo(3.53)
+    }
+
+    @Test
     fun `split weighted quantity line attaches to previous deal and is not imported`() {
         val ocrText = """
             PORK SHOULDER    $12.95
