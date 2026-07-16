@@ -170,6 +170,10 @@ Phone install helper:
 
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built.
 
+Phone test checklist:
+
+`C:\Users\adamc\AndroidStudioProjects\Deal_Planner\PHONE_TEST_CHECKLIST_2026-07-16.md`
+
 ## Current Feature Status
 
 Verified by build/unit tests/code inspection:
