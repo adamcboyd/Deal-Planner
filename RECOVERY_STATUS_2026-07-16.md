@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `b270f09 fix: add AI pantry review reason notes`
-- The branch may include later docs-only recovery commits, but `b270f09` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `1503c49 fix: parse common Gemini pantry label aliases`
+- The branch may include later docs-only recovery commits, but `1503c49` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -908,6 +908,22 @@ Latest continuation gate after AI pantry review-note clarity work:
 
 Result: `BUILD SUCCESSFUL`, with `146` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest focused Gemini pantry label-alias parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after Gemini pantry label-alias parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `147` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Additional check:
 
 ```powershell
@@ -1045,7 +1061,7 @@ Verified by build/unit tests/code inspection:
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/name aliases, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.

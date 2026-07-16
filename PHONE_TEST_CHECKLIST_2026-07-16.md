@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `b270f09 fix: add AI pantry review reason notes`
+- Current validated app-code checkpoint: `1503c49 fix: parse common Gemini pantry label aliases`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -217,10 +217,11 @@ In `Settings`:
 5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
 6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 7. With key configured, test pantry photo recognition against a real pantry item label.
-8. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
-9. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
-10. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
-11. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
+8. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
+9. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
+10. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
+11. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
+12. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
 
 ## Settings Save Check
 
