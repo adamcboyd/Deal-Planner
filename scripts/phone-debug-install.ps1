@@ -21,6 +21,44 @@ function Invoke-Checked {
     }
 }
 
+function Test-RealGeminiKey {
+    param([string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return $false
+    }
+
+    $trimmed = $Value.Trim()
+    return -not (
+        $trimmed.Equals("YOUR_GEMINI_API_KEY", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $trimmed.StartsWith("YOUR_", [System.StringComparison]::OrdinalIgnoreCase)
+    )
+}
+
+function Assert-ApkFreshForGeminiConfig {
+    param(
+        [string]$ApkPath,
+        [bool]$SkipBuildRequested
+    )
+
+    if (-not $SkipBuildRequested) {
+        return
+    }
+
+    $localPropertiesPath = Join-Path $repoRoot "local.properties"
+    if (Test-Path $localPropertiesPath) {
+        $apkInfo = Get-Item $ApkPath
+        $localPropertiesInfo = Get-Item $localPropertiesPath
+        if ($localPropertiesInfo.LastWriteTime -gt $apkInfo.LastWriteTime) {
+            throw "local.properties is newer than app-debug.apk. Run .\scripts\phone-debug-install.ps1 without -SkipBuild so Gemini key/model values are rebuilt into BuildConfig."
+        }
+    }
+
+    if ((Test-RealGeminiKey $env:GEMINI_API_KEY) -or -not [string]::IsNullOrWhiteSpace($env:GEMINI_MODEL)) {
+        Write-Warning "SkipBuild reuses the existing APK and cannot verify whether current GEMINI_* environment values are compiled into BuildConfig. Run without -SkipBuild after changing Gemini environment values."
+    }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -45,6 +83,8 @@ $apkPath = Join-Path $repoRoot "app\build\outputs\apk\debug\app-debug.apk"
 if (-not (Test-Path $apkPath)) {
     throw "Debug APK not found at $apkPath. Run without -SkipBuild first."
 }
+
+Assert-ApkFreshForGeminiConfig -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 
 $adbCommand = Get-Command adb -ErrorAction SilentlyContinue
 if ($null -eq $adbCommand) {

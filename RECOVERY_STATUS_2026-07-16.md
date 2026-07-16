@@ -412,7 +412,15 @@ Latest phone preflight helper check:
 .\scripts\phone-debug-preflight.ps1
 ```
 
-Result after committing the comma-decimal review/edit numeric parsing checkpoint: `0 failure(s), 2 warning(s)` for expected local conditions: no connected/authorized phone and no Gemini key configured. Git branch was clean and Open Food Facts barcode lookup endpoint was reachable.
+Result after committing the stale Gemini APK install guard checkpoint: `0 failure(s), 2 warning(s)` for expected local conditions: no connected/authorized phone and no Gemini key configured. Git branch was clean and Open Food Facts barcode lookup endpoint was reachable.
+
+Latest continuation gate after stale Gemini APK install guard work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `107` unit tests detected and `0 errors, 21 warnings`.
 
 Additional check:
 
@@ -445,7 +453,7 @@ Phone install helper:
 ```
 
 Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
-Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built.
+Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and Gemini/local configuration has not changed.
 
 Phone test checklist:
 
@@ -459,6 +467,7 @@ Verified by build/unit tests/code inspection:
 - Room database filename is now `deal_planner_db`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, APK, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` warns when `local.properties` is newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so Gemini key/model values must be rebuilt into `BuildConfig`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
@@ -554,7 +563,7 @@ Current AI configuration:
 - `GEMINI_API_KEY` environment variable was not set in this shell.
 - Therefore Gemini Vision is not live-configured yet; the app will use ML Kit OCR fallback.
 - Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI model page checked on 2026-07-16.
-- Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`.
+- Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`, and `-SkipBuild` is blocked if `local.properties` is newer than the APK.
 - Live Gemini connection testing is now available from Settings after adding a real key.
 
 ## Important Cautions

@@ -28,6 +28,8 @@ If the APK is already built:
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
 
+Do not use `-SkipBuild` after changing `local.properties` or Gemini environment values. The install helper blocks a stale APK when `local.properties` is newer than `app-debug.apk`.
+
 ## Optional Gemini Setup
 
 The app works without Gemini by using on-device ML Kit OCR fallback. To test Gemini pantry photo recognition, create `local.properties` locally:

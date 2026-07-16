@@ -100,6 +100,7 @@ gemini.model=gemini-3.5-flash
 
 Do not commit `local.properties`; it is ignored by Git.
 Rebuild the debug APK after changing `local.properties` so the key/model values are compiled into `BuildConfig`.
+The phone install helper blocks `-SkipBuild` when `local.properties` is newer than the existing APK, so a newly added Gemini key is not accidentally left out of the installed build.
 
 A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks.
@@ -154,6 +155,8 @@ If the debug APK is already built and you only want to reinstall/launch on a con
 ```powershell
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
+
+Use `-SkipBuild` only when you have not changed `local.properties` or Gemini environment values since the APK was built.
 
 Debug APK output:
 
@@ -372,6 +375,7 @@ As of the latest local pass:
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
+- `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than `local.properties`, preventing stale Gemini key/model values from reaching the phone.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.

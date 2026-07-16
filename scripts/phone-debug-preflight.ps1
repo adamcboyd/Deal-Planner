@@ -96,10 +96,11 @@ if (Test-Path $JavaHome) {
     Add-Check $results "Java" "WARN" "Configured JavaHome was not found. Build commands may still work if java is on PATH."
 }
 
+$apkInfo = $null
 $apkPath = Join-Path $repoRoot "app\build\outputs\apk\debug\app-debug.apk"
 if (Test-Path $apkPath) {
-    $apk = Get-Item $apkPath
-    Add-Check $results "Debug APK" "OK" ("{0} bytes, last written {1}" -f $apk.Length, $apk.LastWriteTime)
+    $apkInfo = Get-Item $apkPath
+    Add-Check $results "Debug APK" "OK" ("{0} bytes, last written {1}" -f $apkInfo.Length, $apkInfo.LastWriteTime)
 } else {
     Add-Check $results "Debug APK" "WARN" "Debug APK not found. Run .\gradlew.bat assembleDebug or .\scripts\phone-debug-install.ps1."
 }
@@ -150,6 +151,17 @@ if (Test-RealKey $localGeminiKey) {
 
 $model = if ($localGeminiModel) { $localGeminiModel } elseif ($envGeminiModel) { $envGeminiModel } else { "gemini-3.5-flash" }
 Add-Check $results "Gemini model" "OK" "Build model setting resolves to $($model.Trim())."
+
+if ($apkInfo -and (Test-Path $localPropertiesPath)) {
+    $localPropertiesInfo = Get-Item $localPropertiesPath
+    if ($localPropertiesInfo.LastWriteTime -gt $apkInfo.LastWriteTime) {
+        Add-Check $results "Gemini APK freshness" "WARN" "local.properties is newer than app-debug.apk. Rebuild before AI phone testing so BuildConfig has the current key/model."
+    } else {
+        Add-Check $results "Gemini APK freshness" "OK" "app-debug.apk is newer than local.properties."
+    }
+} elseif ($apkInfo -and ((Test-RealKey $envGeminiKey) -or -not [string]::IsNullOrWhiteSpace($envGeminiModel))) {
+    Add-Check $results "Gemini APK freshness" "WARN" "GEMINI_* environment values cannot be timestamp-checked against app-debug.apk. Rebuild before AI phone testing if they changed."
+}
 
 if ($SkipNetwork) {
     Add-Check $results "Open Food Facts" "WARN" "Network check skipped."
