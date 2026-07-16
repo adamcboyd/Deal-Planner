@@ -121,7 +121,7 @@ Deal_Planner/
 - ✅ URI support for image selection
 - ✅ Full-resolution app-cache camera capture
 - ✅ Pantry camera/gallery import
-- ✅ Flyer camera/gallery/PDF import
+- ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Settings screen AI configuration status and Gemini connection test
@@ -153,7 +153,7 @@ Deal_Planner/
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
 - ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
-- ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
+- ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, store-aware deal cards with scores, coupon flags
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
@@ -226,8 +226,9 @@ Deal_Planner/
 
 ### Viewing Deals
 1. Go to Deals tab
-2. Tap "Load Demo" to see sample deals
-3. View deal scores, PPU, coupon flags
+2. Enter a store name or leave it as Unknown
+3. Use Photo, Gallery, PDF, pasted OCR text, or tap "Load Demo" to see sample deals
+4. View deal scores, PPU, coupon flags
 
 ### Processing Receipts
 1. Go to Receipts tab
@@ -349,8 +350,8 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
-- ✅ Lets users correct flyer OCR/PDF deal output before using it in meal plans
-- ✅ Imports flyer deals from camera/gallery photos and PDFs
+- ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
+- ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items

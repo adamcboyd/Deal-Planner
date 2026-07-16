@@ -14,7 +14,7 @@ Parameters → Deals + Pantry → Meals
 
 - **Pantry Management**: Natural language input parser with duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
-- **Deal Tracking**: Camera, gallery image, and PDF flyer OCR with regex parsing
+- **Deal Tracking**: Camera, gallery image, PDF, and pasted flyer OCR with regex parsing
 - **Receipt Tracking**: Camera/gallery/manual receipt OCR reconciliation
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
@@ -153,7 +153,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
 2. **Explore Features**:
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz")
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
-   - **Deals**: Scan flyer photos, choose flyer images, or import flyer PDFs and view deal scores/details
+   - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
    - **Shopping**: See consolidated shopping list with PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
@@ -194,11 +194,12 @@ On the Pantry tab:
 
 ### Scanning Flyers
 
-On the Deals tab, use one of three input paths:
+On the Deals tab, enter the store name or leave it as `Unknown`, then use one of four input paths:
 
 1. **Take Flyer Photo** captures a full-resolution app-cache flyer image without saving it to the camera roll.
 2. **Choose Flyer Image** imports an existing screenshot or photo.
 3. **Choose Flyer PDF** renders PDF pages locally and OCRs them with ML Kit.
+4. Paste flyer OCR text and tap **Process Text**.
 
 ML Kit OCR extracts visible text, then the Deals parser looks for:
 
@@ -313,9 +314,9 @@ As of the latest local pass:
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry cards can be edited after manual, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
-- Deal cards can be edited after flyer photo/image/PDF import so low-confidence OCR results can be corrected during phone testing.
+- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
-- Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
+- Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and payment/tender lines.
@@ -341,8 +342,9 @@ As of the latest local pass:
 - [x] Single-item pantry review/edit flow after OCR or AI import
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
+- [x] Pasted flyer OCR text import
 - [x] Receipt photo/gallery/manual text import
-- [x] Deal review/edit flow after flyer OCR/PDF import
+- [x] Deal review/edit flow after flyer OCR/PDF/text import
 - [x] Receipt review/edit flow after OCR import
 - [ ] Barcode scanning for pantry seeding
 - [ ] Nutrition lookup by verified brand/product/size

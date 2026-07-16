@@ -197,8 +197,19 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Deals operations
     fun processDealsOCR(ocrText: String, store: String = "Unknown") {
         viewModelScope.launch {
-            val result = dealsParser.parse(ocrText, store)
-            repository.insertDeals(result.deals)
+            val cleanedText = ocrText.trim()
+            if (cleanedText.isBlank()) {
+                _dealsScanStatus.value = "No flyer text found."
+                return@launch
+            }
+
+            val result = dealsParser.parse(cleanedText, store.ifBlank { "Unknown" })
+            if (result.deals.isEmpty()) {
+                _dealsScanStatus.value = "No deals found. Try clearer flyer text."
+            } else {
+                repository.insertDeals(result.deals)
+                _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
+            }
         }
     }
 
@@ -238,7 +249,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
         try {
             val ocrText = textRecognitionHelper.processImage(bitmap)
-            val result = dealsParser.parse(ocrText, store)
+            val result = dealsParser.parse(ocrText, store.ifBlank { "Unknown" })
 
             if (result.deals.isEmpty()) {
                 _dealsScanStatus.value = "No deals found. Try a flatter, closer flyer photo."
@@ -259,7 +270,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 _dealsScanStatus.value = "Reading flyer PDF page ${index + 1}..."
                 textRecognitionHelper.processImage(bitmap)
             }
-            val result = dealsParser.parse(pageTexts.joinToString("\n\n"), store)
+            val result = dealsParser.parse(pageTexts.joinToString("\n\n"), store.ifBlank { "Unknown" })
 
             if (result.deals.isEmpty()) {
                 _dealsScanStatus.value = "No deals found in that PDF. Try flyer photos instead."

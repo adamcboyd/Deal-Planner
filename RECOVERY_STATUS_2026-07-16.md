@@ -63,8 +63,9 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery input exists.
 - Pantry items can be edited/reviewed after manual, OCR, or AI import.
-- Flyer photo/gallery/PDF input exists.
-- Flyer deals can be edited/reviewed after photo, gallery, or PDF import.
+- Flyer photo/gallery/PDF/manual text input exists.
+- Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
+- Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
@@ -86,6 +87,8 @@ Not yet verified on a real phone:
 - Full-resolution app-cache camera URI behavior on the physical phone.
 - Gallery import UX.
 - Flyer PDF picker UX.
+- Flyer pasted OCR text UX.
+- Store-aware flyer import UX.
 - Receipt photo/gallery/manual text UX.
 - ML Kit OCR quality on real pantry/flyer photos.
 - Gemini pantry photo API call.
@@ -129,6 +132,8 @@ gemini.model=gemini-3.5-flash
    - Deals flyer photo.
    - Deals gallery image.
    - Deals PDF.
+   - Deals pasted OCR text.
+   - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
    - Receipts photo.
    - Receipts gallery image.

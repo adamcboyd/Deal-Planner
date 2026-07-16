@@ -33,6 +33,8 @@ fun DealsScreen(viewModel: AppViewModel) {
     val context = LocalContext.current
     val deals by viewModel.deals.collectAsState()
     val dealsScanStatus by viewModel.dealsScanStatus.collectAsState()
+    var storeName by remember { mutableStateOf("Unknown") }
+    var flyerText by remember { mutableStateOf("") }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -41,7 +43,7 @@ fun DealsScreen(viewModel: AppViewModel) {
         val uri = pendingCameraUri
         pendingCameraUri = null
         if (saved && uri != null) {
-            viewModel.processDealsPhotoUri(uri)
+            viewModel.processDealsPhotoUri(uri, storeName)
         }
     }
 
@@ -49,7 +51,7 @@ fun DealsScreen(viewModel: AppViewModel) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            viewModel.processDealsPhotoUri(uri)
+            viewModel.processDealsPhotoUri(uri, storeName)
         }
     }
 
@@ -57,7 +59,7 @@ fun DealsScreen(viewModel: AppViewModel) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            viewModel.processDealsPdfUri(uri)
+            viewModel.processDealsPdfUri(uri, storeName)
         }
     }
 
@@ -92,6 +94,36 @@ fun DealsScreen(viewModel: AppViewModel) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = storeName,
+                    onValueChange = { storeName = it },
+                    label = { Text("Store") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = flyerText,
+                    onValueChange = { flyerText = it },
+                    label = { Text("Paste flyer OCR text") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(112.dp),
+                    minLines = 3
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        if (flyerText.isNotBlank()) {
+                            viewModel.processDealsOCR(flyerText, storeName)
+                            flyerText = ""
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Process Text")
+                }
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth(),
