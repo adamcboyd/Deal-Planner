@@ -42,7 +42,7 @@ class DealsParser {
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
-    private val packagePricePattern = Regex("""(?<![\d.,])\$?($DECIMAL_PRICE_PATTERN)(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
+    private val packagePricePattern = Regex("""(?<![\d.,])($PACKAGE_PRICE_TOKEN_PATTERN)(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
     private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
     private val priceTextPattern = Regex("""$UNIT_PRICE_PATTERN(?:\s*(?:/|per\s+)?\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
 
@@ -599,6 +599,7 @@ class DealsParser {
         private const val DECIMAL_PRICE_PATTERN = """(?:\d+)?[.,]\d{2}"""
         private const val UNIT_PRICE_PATTERN = """(?:\$?$DECIMAL_PRICE_PATTERN|\$\d+)"""
         private const val PACKAGE_PRICE_PATTERN = """(?:\d+(?:[.,]\d{2})?|[.,]\d{2})"""
+        private const val PACKAGE_PRICE_TOKEN_PATTERN = """(?:\$?$DECIMAL_PRICE_PATTERN|\$\d+)"""
         private val dealCountWords = mapOf(
             "one" to 1,
             "two" to 2,

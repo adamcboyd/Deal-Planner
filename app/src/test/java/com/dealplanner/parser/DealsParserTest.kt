@@ -361,6 +361,34 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse explicit whole dollar package flyer prices`() {
+        val text = """
+            Milk
+            ${'$'}3
+
+            Flour
+            5 lb bag ${'$'}4
+
+            Apples
+            3 lb bag
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(2)
+
+        val milk = result.deals.first { it.name == "Milk" }
+        assertThat(milk.price).isEqualTo(3.0)
+        assertThat(milk.unit).isEqualTo("ea")
+        assertThat(milk.dealType).isEqualTo("per_unit")
+
+        val flour = result.deals.first { it.name == "Flour" }
+        assertThat(flour.price).isEqualTo(4.0)
+        assertThat(flour.sizeText).isEqualTo("5 lb")
+        assertThat(flour.dealType).isEqualTo("per_unit")
+    }
+
+    @Test
     fun `parse flyer prices when OCR drops dollar signs`() {
         val text = """
             Chicken Breast

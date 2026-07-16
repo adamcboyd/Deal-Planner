@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after explicit whole-dollar flyer unit price parsing work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after explicit whole-dollar flyer package price parsing work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -144,8 +144,9 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 11. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
 12. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
 13. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
-14. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-15. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+14. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
+15. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+16. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
