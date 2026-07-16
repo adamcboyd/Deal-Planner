@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.ExperimentalStdlibApi::class)
+
 package com.snapoptimizer.parser
 
 import com.snapoptimizer.data.model.PantryItem
@@ -100,14 +102,19 @@ class PantryPhraseParser {
             }
         }
 
+        // Extract package/container unit immediately after quantity.
+        if (i < tokens.size && tokens[i] in unitKeywords) {
+            unit = normalizeUnit(tokens[i])
+        }
+
         // Extract unit and size
         val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
             size = sizeMatch.value
-            val sizeTokens = sizeMatch.value.split(Regex("""\s+"""))
-            if (sizeTokens.size >= 2) {
-                unit = normalizeUnit(sizeTokens[1])
+            val sizeUnit = normalizeUnit(sizeMatch.groupValues[2])
+            if (unit == null || unit in listOf("lb", "oz", "g", "kg", "ml", "l")) {
+                unit = sizeUnit
             }
         } else {
             // Look for standalone unit
@@ -158,6 +165,10 @@ class PantryPhraseParser {
         if (itemName.isBlank()) {
             confidence -= 0.5
             warnings.add("Could not identify item name")
+            needsVerify = true
+        } else if (looksUnclear(itemName)) {
+            confidence -= 0.4
+            warnings.add("Item name may need review")
             needsVerify = true
         }
         if (unit == null && qty > 1) {
@@ -222,7 +233,12 @@ class PantryPhraseParser {
         skipWords.addAll(unitKeywords)
         skipWords.addAll(locationKeywords)
         skipWords.addAll(formKeywords)
-        skipWords.addAll(listOf("of", "in", "the", "a", "an", "opened", "best", "by", "bestby", "expires"))
+        skipWords.addAll(
+            listOf(
+                "of", "in", "the", "a", "an", "opened", "best", "by", "bestby", "expires",
+                "today", "yesterday", "tomorrow", "days", "day", "ago"
+            )
+        )
 
         if (brand != null) {
             skipWords.addAll(brand.lowercase().split(" "))
@@ -241,10 +257,20 @@ class PantryPhraseParser {
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
             token.toDoubleOrNull() == null &&
-            !Regex("""\d+oz|\d+lb|\d+g""").matches(token)
+            !Regex("""\d+(?:\.\d+)?(?:oz|lb|lbs|g|kg|ml|l)""").matches(token) &&
+            !Regex("""\d{1,2}[/-]\d{1,2}[/-]\d{2,4}""").matches(token)
         }
 
         return itemTokens.joinToString(" ")
+    }
+
+    private fun looksUnclear(itemName: String): Boolean {
+        val normalized = itemName.lowercase().replace(Regex("""[^a-z]"""), "")
+        val commonShortItems = setOf("oil", "tea", "egg", "ham", "yam")
+
+        return normalized.length <= 3 &&
+            normalized !in commonShortItems &&
+            !normalized.any { it in "aeiou" }
     }
 
     private fun extractDate(input: String, vararg keywords: String): LocalDate? {

@@ -48,21 +48,35 @@ class DealsParser {
         val deals = mutableListOf<DealItem>()
         val warnings = mutableListOf<String>()
 
-        val lines = ocrText.lines().filter { it.trim().isNotEmpty() }
+        val lines = ocrText.lines().map { it.trim() }.filter { it.isNotEmpty() }
 
         var i = 0
         while (i < lines.size) {
-            val line = lines[i].trim()
-            val nextLine = if (i + 1 < lines.size) lines[i + 1].trim() else ""
+            val line = lines[i]
 
-            // Try to parse deal from current line (and potentially next line for item name)
-            val dealResult = parseDealLine(line, nextLine, store)
+            if (!containsDealSignal(line)) {
+                i++
+                continue
+            }
+
+            val modifierLines = mutableListOf<String>()
+            var j = i + 1
+            while (j < lines.size && isModifierLine(lines[j])) {
+                modifierLines.add(lines[j])
+                j++
+            }
+
+            val combinedLine = (listOf(line) + modifierLines).joinToString(" ")
+            val fallbackName = findPreviousName(lines, i)
+
+            // Try to parse deal from current line plus trailing flyer modifiers.
+            val dealResult = parseDealLine(combinedLine, fallbackName, store)
 
             if (dealResult != null) {
                 deals.add(dealResult)
             }
 
-            i++
+            i = if (modifierLines.isNotEmpty()) j else i + 1
         }
 
         // Calculate deal scores
@@ -92,6 +106,11 @@ class DealsParser {
         // Check for limit
         limitPattern.find(line)?.let {
             limit = it.groupValues[1].toIntOrNull()
+        }
+
+        // Percent-off lines may be standalone deals or modifiers for a base price.
+        percentOffPattern.find(line)?.let { match ->
+            discountPercent = match.groupValues[1].toDouble()
         }
 
         // Parse different deal types
@@ -186,10 +205,36 @@ class DealsParser {
         // Remove the deal text and clean up
         var name = line.replace(dealText, "")
         name = name.replace(Regex("""limit\s*\d+""", RegexOption.IGNORE_CASE), "")
+        name = name.replace(percentOffPattern, "")
         couponKeywords.forEach { keyword ->
             name = name.replace(keyword, "", ignoreCase = true)
         }
         return name.trim()
+    }
+
+    private fun containsDealSignal(line: String): Boolean {
+        return pricePerPoundPattern.containsMatchIn(line) ||
+            pricePerUnitPattern.containsMatchIn(line) ||
+            nForXPattern.containsMatchIn(line) ||
+            buyNGetMPattern.containsMatchIn(line) ||
+            percentOffPattern.containsMatchIn(line)
+    }
+
+    private fun isModifierLine(line: String): Boolean {
+        val lineLower = line.lowercase()
+        return limitPattern.matches(line) ||
+            percentOffPattern.matches(line) ||
+            couponKeywords.any { lineLower.contains(it) }
+    }
+
+    private fun findPreviousName(lines: List<String>, currentIndex: Int): String {
+        for (index in currentIndex - 1 downTo 0) {
+            val previous = lines[index]
+            if (!containsDealSignal(previous) && !isModifierLine(previous)) {
+                return previous
+            }
+        }
+        return ""
     }
 
     private fun createDealItem(

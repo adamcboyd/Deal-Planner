@@ -1,12 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
 }
 
+fun String.asBuildConfigString(): String {
+    return "\"" + replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
 android {
     namespace = "com.snapoptimizer"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.snapoptimizer"
@@ -19,6 +32,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val geminiApiKey = localProperties.getProperty("gemini.api.key")
+            ?: System.getenv("GEMINI_API_KEY")
+            ?: ""
+        val geminiModel = localProperties.getProperty("gemini.model")
+            ?: System.getenv("GEMINI_MODEL")
+            ?: "gemini-3.5-flash"
+
+        buildConfigField("String", "GEMINI_API_KEY", geminiApiKey.asBuildConfigString())
+        buildConfigField("String", "GEMINI_MODEL", geminiModel.asBuildConfigString())
     }
 
     buildTypes {
@@ -43,6 +66,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

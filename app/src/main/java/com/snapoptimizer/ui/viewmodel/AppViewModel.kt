@@ -1,17 +1,27 @@
 package com.snapoptimizer.ui.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.snapoptimizer.ai.GeminiPantryVisionClient
 import com.snapoptimizer.data.database.AppDatabase
 import com.snapoptimizer.data.model.*
 import com.snapoptimizer.data.repository.AppRepository
 import com.snapoptimizer.domain.*
+import com.snapoptimizer.ocr.TextRecognitionHelper
 import com.snapoptimizer.parser.DealsParser
 import com.snapoptimizer.parser.PantryPhraseParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -31,6 +41,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val mealPlanningEngine = MealPlanningEngine()
     private val budgetEngine = BudgetEngine()
     private val receiptReconciler = ReceiptReconciler()
+    private val textRecognitionHelper = TextRecognitionHelper()
+    private val pantryVisionClient = GeminiPantryVisionClient()
 
     // Flows
     val pantryItems = repository.allPantryItems.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
@@ -44,6 +56,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _shoppingList = MutableStateFlow<List<MealPlanningEngine.ShoppingListItem>>(emptyList())
     val shoppingList: StateFlow<List<MealPlanningEngine.ShoppingListItem>> = _shoppingList.asStateFlow()
+
+    private val _pantryPhotoStatus = MutableStateFlow<String?>(null)
+    val pantryPhotoStatus: StateFlow<String?> = _pantryPhotoStatus.asStateFlow()
+
+    private val _dealsScanStatus = MutableStateFlow<String?>(null)
+    val dealsScanStatus: StateFlow<String?> = _dealsScanStatus.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -72,6 +90,97 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun processPantryPhoto(bitmap: Bitmap) {
+        viewModelScope.launch {
+            importPantryPhoto(bitmap)
+        }
+    }
+
+    fun processPantryPhotoUri(uri: Uri) {
+        viewModelScope.launch {
+            val bitmap = loadBitmapFromUri(uri)
+            importPantryPhoto(bitmap)
+        }
+    }
+
+    private suspend fun importPantryPhoto(bitmap: Bitmap) {
+        _pantryPhotoStatus.value = "Reading pantry photo..."
+
+        val importedWithAi = if (pantryVisionClient.isConfigured()) {
+            try {
+                val result = pantryVisionClient.analyzePantryPhoto(bitmap)
+                val items = result.items.mapNotNull { it.toPantryItem(result.warnings) }
+
+                if (items.isNotEmpty()) {
+                    repository.insertPantryItems(items)
+                    _pantryPhotoStatus.value = buildString {
+                        append("Added ${items.size} photo item")
+                        if (items.size != 1) append("s")
+                        if (items.any { it.needsVerify }) append(" with VERIFY checks")
+                    }
+                    true
+                } else {
+                    _pantryPhotoStatus.value = "AI did not identify pantry items; trying label OCR..."
+                    false
+                }
+            } catch (e: Exception) {
+                _pantryPhotoStatus.value = "AI photo read failed; trying label OCR..."
+                false
+            }
+        } else {
+            false
+        }
+
+        if (!importedWithAi) {
+            try {
+                val ocrText = textRecognitionHelper.processImage(bitmap)
+                importPantryOcrText(ocrText)
+            } catch (e: Exception) {
+                _pantryPhotoStatus.value = "Could not read that photo. Try a closer label shot."
+            }
+        }
+    }
+
+    private suspend fun importPantryOcrText(ocrText: String) {
+        val phrase = ocrText.lines()
+            .map { it.trim() }
+            .filter { it.length >= 2 }
+            .filterNot { line ->
+                line.contains("nutrition", ignoreCase = true) ||
+                    line.contains("calories", ignoreCase = true) ||
+                    line.contains("serving", ignoreCase = true) ||
+                    line.matches(Regex("""\d+%"""))
+            }
+            .distinct()
+            .take(8)
+            .joinToString(" ")
+
+        if (phrase.isBlank()) {
+            _pantryPhotoStatus.value = "No readable label text found. Add manually or try another photo."
+            return
+        }
+
+        val result = pantryParser.parse(phrase)
+        val questions = mutableListOf<String>()
+        if (result.item.brand == null) questions.add("What is the brand? Use Generic if none.")
+        if (result.item.size == null && result.item.unit == null) questions.add("How much is there?")
+        if (result.item.bestBy == null) questions.add("What is the expiration or best-by date?")
+
+        repository.insertPantryItem(
+            result.item.copy(
+                brand = result.item.brand ?: "Generic",
+                needsVerify = true,
+                notes = mergeNotes(
+                    result.item.notes,
+                    "Photo OCR import",
+                    questions.joinToString(" ")
+                )
+            )
+        )
+
+        _pantryPhotoStatus.value = "Added photo item with VERIFY checks"
+    }
+
     // Deals operations
     fun processDealsOCR(ocrText: String, store: String = "Unknown") {
         viewModelScope.launch {
@@ -89,6 +198,37 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteDeal(deal: DealItem) {
         viewModelScope.launch {
             repository.deleteDeal(deal)
+        }
+    }
+
+    fun processDealsPhoto(bitmap: Bitmap, store: String = "Unknown") {
+        viewModelScope.launch {
+            importDealsPhoto(bitmap, store)
+        }
+    }
+
+    fun processDealsPhotoUri(uri: Uri, store: String = "Unknown") {
+        viewModelScope.launch {
+            val bitmap = loadBitmapFromUri(uri)
+            importDealsPhoto(bitmap, store)
+        }
+    }
+
+    private suspend fun importDealsPhoto(bitmap: Bitmap, store: String) {
+        _dealsScanStatus.value = "Reading flyer photo..."
+
+        try {
+            val ocrText = textRecognitionHelper.processImage(bitmap)
+            val result = dealsParser.parse(ocrText, store)
+
+            if (result.deals.isEmpty()) {
+                _dealsScanStatus.value = "No deals found. Try a flatter, closer flyer photo."
+            } else {
+                repository.insertDeals(result.deals)
+                _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
+            }
+        } catch (e: Exception) {
+            _dealsScanStatus.value = "Could not read that flyer photo. Try again with better lighting."
         }
     }
 
@@ -267,5 +407,55 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 )
             )
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private suspend fun loadBitmapFromUri(uri: Uri): Bitmap = withContext(Dispatchers.IO) {
+        val context = getApplication<Application>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        } else {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        }
+    }
+
+    private fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String>): PantryItem? {
+        val productName = product?.trim()?.ifBlank { null } ?: return null
+        val questionNotes = questions.joinToString(" ")
+        val warningNotes = warnings.joinToString(" ")
+        val missingBrand = brand.isNullOrBlank()
+        val missingAmount = quantity == null || unit.isNullOrBlank()
+        val missingDate = expirationDate.isNullOrBlank()
+
+        return PantryItem(
+            item = productName,
+            qty = quantity ?: 1.0,
+            unit = unit?.takeUnless { it == "unknown" },
+            size = size,
+            brand = brand?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "Generic",
+            location = location?.takeUnless { it == "unknown" } ?: "pantry",
+            opened = parseDateOrNull(openedDate),
+            bestBy = parseDateOrNull(expirationDate),
+            notes = mergeNotes("AI photo import", questionNotes, warningNotes),
+            needsVerify = confidence < 0.85 || questions.isNotEmpty() || missingBrand || missingAmount || missingDate
+        )
+    }
+
+    private fun parseDateOrNull(value: String?): LocalDate? {
+        if (value.isNullOrBlank()) return null
+        return try {
+            LocalDate.parse(value)
+        } catch (_: DateTimeParseException) {
+            null
+        }
+    }
+
+    private fun mergeNotes(vararg values: String?): String? {
+        return values
+            .mapNotNull { it?.trim()?.ifBlank { null } }
+            .distinct()
+            .joinToString("; ")
+            .ifBlank { null }
     }
 }

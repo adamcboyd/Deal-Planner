@@ -13,7 +13,8 @@ Parameters → Deals + Pantry → Meals
 ### ✅ Complete Implementation
 
 - **Pantry Management**: Natural language input parser with duplicate detection
-- **Deal Tracking**: OCR-powered flyer scanning with regex parsing
+- **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
+- **Deal Tracking**: Camera/gallery flyer OCR with regex parsing
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
@@ -45,6 +46,7 @@ Parameters → Deals + Pantry → Meals
 - **UI**: Jetpack Compose + Material 3
 - **Database**: Room (SQLite)
 - **OCR**: ML Kit Text Recognition (on-device)
+- **AI Vision**: Optional Gemini API pantry photo extraction
 - **Architecture**: MVVM with Repository pattern
 - **Testing**: JUnit + Truth
 
@@ -54,6 +56,7 @@ Parameters → Deals + Pantry → Meals
 app/
 ├── src/main/
 │   ├── java/com/snapoptimizer/
+│   │   ├── ai/                # Optional Gemini Vision pantry photo client
 │   │   ├── data/
 │   │   │   ├── model/          # Entities (PantryItem, DealItem, etc.)
 │   │   │   ├── dao/            # Room DAOs
@@ -81,14 +84,26 @@ app/
 
 - Android Studio Hedgehog (2023.1.1) or later
 - Android SDK 26+ (minimum)
-- Android SDK 34 (target)
-- JDK 17
+- Android SDK 34 installed for compileSdk
+- JDK 17 or newer
+
+### Optional Gemini Vision Setup
+
+The app works without a cloud key by falling back to ML Kit label OCR. To enable AI pantry photo identification, add this to `local.properties`:
+
+```properties
+gemini.api.key=YOUR_GEMINI_API_KEY
+gemini.model=gemini-3.5-flash
+```
+
+Do not commit `local.properties`; it is ignored by Git.
 
 ### Build & Run
 
 1. **Clone/Open Project**:
-   ```bash
-   # Open the SNAP_Optimizer directory in Android Studio
+   ```powershell
+   cd C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer
+   # Open this directory in Android Studio
    ```
 
 2. **Sync Gradle**:
@@ -107,6 +122,20 @@ app/
    - Connect device via USB
    - Click "Run" and select your device
 
+Command-line verification on this Windows machine:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug
+```
+
+Debug APK output:
+
+```text
+C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer\app\build\outputs\apk\debug\app-debug.apk
+```
+
 ### First Launch
 
 1. **Load Demo Data**:
@@ -119,7 +148,8 @@ app/
 
 2. **Explore Features**:
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz")
-   - **Deals**: View deal scores and details
+   - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
+   - **Deals**: Scan flyer photos and view deal scores/details
    - **Shopping**: See consolidated shopping list with PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
@@ -147,15 +177,27 @@ The parser handles:
 - Dates (opened, best by)
 - Forms (canned, frozen, fresh)
 
-### Scanning Flyers (Demo)
+### Adding Pantry Items From Photos
 
-The demo flyer demonstrates OCR parsing of:
+On the Pantry tab:
+
+1. Tap **Photo** to capture an item, or **Gallery** to choose an image.
+2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
+3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
+4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
+
+### Scanning Flyers
+
+On the Deals tab, tap **Photo** or **Gallery** to import any store flyer image. ML Kit OCR extracts visible text, then the Deals parser looks for:
+
 - `$3.99/lb` (per pound)
 - `2 for $10` (N for X)
 - `Buy 2 Get 1 Free` (buy N get M)
 - `25% off` (percent off)
 - `Member Price` (coupon flag)
 - `Limit 2` (purchase limits)
+
+The built-in demo flyer covers the same formats.
 
 ### Meal Planning
 
@@ -180,7 +222,7 @@ The Budget tab shows:
 Run unit tests:
 
 ```bash
-./gradlew test
+.\gradlew.bat testDebugUnitTest
 ```
 
 Tests cover:
@@ -224,19 +266,33 @@ VPP = packagePrice / (packageWeight / servingSize)
 For proteins (default 0.5 lb servings):
 - 2 lb package @ $6.00 = $6 / (2 / 0.5) = $1.50/serving
 
+## Verified Status
+
+As of the latest local pass:
+
+- Builds debug APK successfully.
+- Unit tests pass with `testDebugUnitTest`.
+- Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
+- Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deals screen imports flyer photos from camera/gallery through ML Kit OCR.
+- Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
+- Phone install was not verified because `adb devices` showed no connected/authorized device.
+
 ## Constraints & Design Decisions
 
-1. **No Cloud LLM**: All parsing uses regex + heuristics
-2. **Offline-First**: Room database, no network calls
-3. **On-Device OCR**: ML Kit Text Recognition
+1. **Offline-First Core**: Room database remains the source of truth for app data
+2. **Optional Cloud AI**: Gemini Vision is used only when a local API key is configured
+3. **On-Device OCR Fallback**: ML Kit Text Recognition keeps photo intake usable without a key
 4. **Rules-Based Meals**: No AI, pure algorithmic logic
 5. **GERD-Friendly**: Excludes acidic vegetables (tomatoes, peppers, onions)
 6. **Anchor Strategy**: Pantry staples (rice, pasta, oats) drive meal plans
 
 ## Future Enhancements
 
-- [ ] Camera integration for live OCR
+- [x] Camera/gallery pantry photo import
+- [ ] Full multi-item shelf review flow with edit-before-save
 - [ ] Barcode scanning for pantry seeding
+- [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF
 - [ ] Weekly budget reports
 - [ ] Custom dietary restrictions
@@ -278,5 +334,6 @@ For issues or questions, please open a GitHub issue.
 ---
 
 **Version**: 1.0.0
-**Target SDK**: 34 (Android 14)
+**Compile SDK**: 34 (Android 14)
+**Target SDK**: 33
 **Min SDK**: 26 (Android 8.0)

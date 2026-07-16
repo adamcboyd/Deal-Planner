@@ -42,11 +42,14 @@ class ReceiptReconciler {
 
         val lines = ocrText.lines().filter { it.trim().isNotEmpty() }
 
-        lines.forEach { line ->
+        var lineIndex = 0
+        while (lineIndex < lines.size) {
+            val line = lines[lineIndex]
             val parsedLine = parseReceiptLine(line)
 
             if (parsedLine != null) {
-                val (itemName, price, qty) = parsedLine
+                val (itemName, price, parsedQty) = parsedLine
+                val qty = parsedQty ?: findSplitQuantity(lines, lineIndex + 1)
 
                 // Try to match with deal items
                 val dealMatch = findBestMatch(itemName, dealItems.map { it.name })
@@ -112,6 +115,8 @@ class ReceiptReconciler {
                     }
                 }
             }
+
+            lineIndex++
         }
 
         return ReconciliationResult(
@@ -136,7 +141,6 @@ class ReceiptReconciler {
 
         pattern1.find(line)?.let { match ->
             val qty = match.groupValues[1].toDoubleOrNull() ?: 1.0
-            val unitPrice = match.groupValues[2].toDoubleOrNull() ?: 0.0
             val itemName = match.groupValues[3].trim()
             val totalPrice = match.groupValues[4].toDoubleOrNull() ?: 0.0
             return Triple(itemName, totalPrice, qty)
@@ -149,6 +153,16 @@ class ReceiptReconciler {
         }
 
         return null
+    }
+
+    private fun findSplitQuantity(lines: List<String>, startIndex: Int): Double? {
+        if (startIndex >= lines.size) return null
+
+        val quantityOnlyPattern = Regex("""(\d+(?:\.\d+)?)\s*@\s*\$?\d+\.\d{2}""")
+        return quantityOnlyPattern.find(lines[startIndex])
+            ?.groupValues
+            ?.get(1)
+            ?.toDoubleOrNull()
     }
 
     /**
@@ -180,7 +194,7 @@ class ReceiptReconciler {
     /**
      * Calculates Levenshtein distance between two strings.
      */
-    private fun levenshteinDistance(s1: String, s2: String): Int {
+    internal fun levenshteinDistance(s1: String, s2: String): Int {
         val m = s1.length
         val n = s2.length
         val dp = Array(m + 1) { IntArray(n + 1) }
