@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after phone sample manifest verification work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after report sample-manifest evidence work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -53,7 +53,7 @@ To create a timestamped report before or during the phone run:
 .\scripts\new-phone-test-report.ps1
 ```
 
-Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes both the repo commit and the compiled APK source branch/commit/dirty state.
+Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes the repo commit, compiled APK source branch/commit/dirty state, and the latest sample folder/manifest when available.
 
 To create deterministic sample files for pasted text, gallery image, and PDF picker checks:
 

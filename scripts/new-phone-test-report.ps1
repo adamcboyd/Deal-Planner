@@ -223,8 +223,15 @@ $latestSampleDir = if (Test-Path $sampleRoot) {
 }
 if ($latestSampleDir) {
     $sampleLine = "- Phone test samples: $($latestSampleDir.FullName)"
+    $sampleManifestPath = Join-Path $latestSampleDir.FullName "SAMPLE_MANIFEST.md"
+    if (Test-Path $sampleManifestPath) {
+        $sampleManifestLine = "- Phone test sample manifest: $sampleManifestPath"
+    } else {
+        $sampleManifestLine = "- Phone test sample manifest: missing. Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly"
+    }
 } else {
     $sampleLine = "- Phone test samples: not generated yet. Run .\scripts\new-phone-test-samples.ps1"
+    $sampleManifestLine = "- Phone test sample manifest: not generated yet."
 }
 
 if ([string]::IsNullOrWhiteSpace($adb.Devices)) {
@@ -252,6 +259,7 @@ $apkLine
 - APK Gemini configured: $apkGeminiConfigured
 - APK Gemini model: $($apkGeminiModel.Trim())
 $sampleLine
+$sampleManifestLine
 - Checklist: PHONE_TEST_CHECKLIST_2026-07-16.md
 
 ## Git Status
@@ -302,6 +310,7 @@ $adbBlock
 - [ ] Receipts pasted receipt text works, updates Budget, and supports edit/delete corrections.
 - [ ] Generated sample TXT files were available for pasted flyer/receipt checks, if used.
 - [ ] Generated sample folder was copied or otherwise available on the phone, if used.
+- [ ] Generated sample manifest was present or verified before transfer, if generated samples were used.
 - [ ] Sample transfer helper verified remote byte sizes and requested Android media scans, if used.
 - [ ] Generated sample PNG files were available for pantry/flyer/receipt gallery checks, if used.
 - [ ] Budget settings save valid comma/leading-decimal values and block invalid text.

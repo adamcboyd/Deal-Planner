@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone sample manifest verification work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: Gemini connection-test seam coverage.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after report sample-manifest evidence work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: phone sample manifest verification work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2031,6 +2031,33 @@ Targeted Gemini gate:
 ```
 
 Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after report sample-manifest evidence work:
+
+Helper checkpoint:
+
+- `scripts\new-phone-test-report.ps1` now includes the latest local sample folder and `SAMPLE_MANIFEST.md` path in the report Source Snapshot when available.
+- Generated reports now include a deterministic-text checklist row for verifying the sample manifest before transfer.
+- Generated ignored report `phone-test-results\20260716-152859\PHONE_TEST_REPORT.md` confirmed the Source Snapshot includes repo/APK identity, Gemini fields, latest sample folder, and sample manifest path.
+- Updated README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST to describe report sample-manifest evidence.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\new-phone-test-report.ps1')); 'new-phone-test-report.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1
+```
+
+Result: PowerShell parse check passed, help printed successfully, report generation succeeded, and the generated report includes `Phone test sample manifest: C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-samples\20260716-152321\SAMPLE_MANIFEST.md`.
 
 Full local gate:
 

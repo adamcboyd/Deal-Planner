@@ -190,7 +190,7 @@ Phone test report helper:
 .\scripts\new-phone-test-report.ps1
 ```
 
-Reports are saved under ignored `phone-test-results\` folders and capture the current commit, APK, Gemini configuration state, ADB/device snapshot when available, and pass/fail sections for the phone checklist, including AI review-safety checks such as zero or negative Gemini amount fallback.
+Reports are saved under ignored `phone-test-results\` folders and capture the current commit, APK, Gemini configuration state, latest sample folder/manifest when available, ADB/device snapshot when available, and pass/fail sections for the phone checklist, including AI review-safety checks such as zero or negative Gemini amount fallback.
 
 Phone test sample helper:
 
@@ -443,7 +443,7 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity and compiled Gemini key/model readiness that Settings should reflect on the phone.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
-- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, and device context.
+- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, latest sample folder/manifest, and device context.
 - `scripts\new-phone-test-samples.ps1` creates ignored timestamped `phone-test-samples\` folders with demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples for deterministic phone input checks. The pantry-label sample includes `16-ounce` and `12-count` rows for OCR fallback checks, and `SAMPLE_MANIFEST.md` records byte counts plus SHA-256 hashes. `-VerifyOnly` checks the latest bundle without needing a connected phone.
 - `scripts\send-phone-test-samples.ps1` copies the latest generated demo receipt/flyer/pantry/barcode TXT, PDF, and PNG files to an authorized Android phone's Downloads folder, verifies remote byte sizes, and requests Android media scans for deterministic picker checks.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
