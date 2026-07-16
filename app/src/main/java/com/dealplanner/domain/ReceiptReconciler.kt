@@ -146,10 +146,22 @@ class ReceiptReconciler {
             """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*@\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
             RegexOption.IGNORE_CASE
         )
+        val itemFirstInlineQuantityPattern = Regex(
+            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*@\s*$RECEIPT_PRICE_TOKEN_PATTERN\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
+            RegexOption.IGNORE_CASE
+        )
         val pattern1 = Regex("""($QUANTITY_AMOUNT_PATTERN)\s*@\s*($RECEIPT_PRICE_TOKEN_PATTERN)\s+(.+?)\s+($RECEIPT_PRICE_TOKEN_PATTERN)""")
         val pattern2 = Regex("""(.+?)\s+($RECEIPT_PRICE_TOKEN_PATTERN)""")
 
         itemFirstWeightedPattern.find(line)?.let { match ->
+            val itemName = match.groupValues[1].trim()
+            if (isSummaryOrTenderLine(itemName)) return null
+            val qty = match.groupValues[2].toPriceDoubleOrNull()
+            val totalPrice = match.groupValues[3].toPriceDoubleOrNull() ?: 0.0
+            return Triple(itemName, totalPrice, qty)
+        }
+
+        itemFirstInlineQuantityPattern.find(line)?.let { match ->
             val itemName = match.groupValues[1].trim()
             if (isSummaryOrTenderLine(itemName)) return null
             val qty = match.groupValues[2].toPriceDoubleOrNull()

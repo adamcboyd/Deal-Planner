@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (166 Test Cases)
+### 7. Unit Tests (167 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -411,7 +411,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses the bundled demo receipt used by the phone test checklist
 - ✅ Applies receipt header dates including year-first slash/dash OCR formats such as `Transaction Date: 2025/10/27`
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
-- ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
+- ✅ Parses receipt OCR item totals and inline quantity lines before or after the item name, with or without dollar signs and with comma decimals
 - ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields
 - ✅ Ignores receipt subtotal, tax, total, savings, saved-total, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 166 unit tests
+- ✅ 167 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

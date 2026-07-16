@@ -393,6 +393,25 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse item first inline quantity receipt lines`() {
+        val ocrText = """
+            BLACK BEANS 2 @ 0.89 1.78
+            KROGER PASTA 3 @ 1,00 3,00
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS 2 @ 0.89 1.78",
+            "KROGER PASTA 3 @ 1,00 3,00"
+        ).inOrder()
+        assertThat(result.receiptItems.map { it.qty }).containsExactly(2.0, 3.0).inOrder()
+        assertThat(result.receiptItems.map { it.totalCost }).containsExactly(1.78, 3.0).inOrder()
+        assertThat(result.total).isEqualTo(4.78)
+    }
+
+    @Test
     fun `parse inline decimal quantity receipt lines`() {
         val ocrText = """
             1.50 @ 0.69 BANANAS 1.04

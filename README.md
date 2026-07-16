@@ -222,7 +222,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz") or barcode/code intake
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
-   - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
+   - **Receipts**: Scan receipt photos, choose receipt images/PDFs, or paste OCR text to update spending
    - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU; after a plan exists, app relaunch repopulates it from current pantry/deals/settings
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
@@ -382,7 +382,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total line filtering)
+- Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields)
 - AI pantry review-note reasons for missing or uncertain brand, amount/unit, storage location, and best-by date details
 
@@ -472,9 +472,9 @@ As of the latest local pass:
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with trimmed, store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, PDFs, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names.
 - The bundled demo receipt used by the phone checklist is covered by unit tests.
-- Receipt reconciliation handles fuzzy matching and split or inline weighted receipt quantity lines, including price-per-pound produce lines.
+- Receipt reconciliation handles fuzzy matching and split or inline receipt quantity lines, including quantity-first rows, item-first rows, and price-per-pound produce rows.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available, including common `Date: 10/27/2025`, `Transaction Date: 2025/10/27`, and `Purchase Date: 2025-10-28` formats.
-- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, omits leading zeroes in prices such as `.89`, uses comma decimals, or returns explicit whole-dollar prices such as `$3`.
+- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, puts the quantity before or after the item name, omits leading zeroes in prices such as `.89`, uses comma decimals, or returns explicit whole-dollar prices such as `$3`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, saved-total, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, PDF, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
