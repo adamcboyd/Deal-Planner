@@ -19,7 +19,7 @@ Parameters → Deals + Pantry → Meals
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
-- **Shopping Lists**: Consolidated lists with planned-quantity estimated costs, PPU, deal scores, and coupon tracking
+- **Shopping Lists**: Consolidated lists with planned-quantity estimated costs, PPU, deal scores, coupon tracking, and startup restore from current pantry/deals/settings after a plan exists
 - **Offline-First**: All data stored locally in Room/SQLite
 
 ### 🎯 Core Algorithms
@@ -180,7 +180,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
-   - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU
+   - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU; after a plan exists, app relaunch repopulates it from current pantry/deals/settings
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
    - **Settings**: Configure dietary preferences and verify AI setup status

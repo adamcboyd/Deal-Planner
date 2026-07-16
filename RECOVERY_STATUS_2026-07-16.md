@@ -486,6 +486,14 @@ Latest continuation gate after meal-plan generation status work:
 
 Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after shopping-list startup restore work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -607,6 +615,7 @@ Verified by build/unit tests/code inspection:
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.
+- On app startup, if saved meal plans already exist, the Shopping list is rederived from current pantry/deals/settings so a relaunched app does not show an empty transient list after meal plans have already been generated.
 
 Not yet verified on a real phone:
 
@@ -624,6 +633,7 @@ Not yet verified on a real phone:
 - Gemini pantry photo API call.
 - Android permissions flow.
 - Camera permission denial/cancel and gallery/PDF picker cancel status on the physical phone.
+- Shopping list startup restore on the physical phone.
 - Kitchen pantry test.
 
 Current AI configuration:
@@ -662,6 +672,7 @@ gemini.model=gemini-3.5-flash
 
 7. Test in this order:
    - Launch app and tap Load Demo.
+   - Close/relaunch the app and confirm Shopping still has the generated list without tapping Generate again.
    - After receipt/budget tests, tap Load Demo again and confirm Budget returns to the `$292 / $45 spent` demo baseline.
    - Pantry typed entry.
    - Pantry typed/OCR text with comma-decimal quantity or size such as `1,5 lb ground beef` or `Kroger yogurt 5,3oz`.

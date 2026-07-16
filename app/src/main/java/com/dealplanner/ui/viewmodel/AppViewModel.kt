@@ -87,6 +87,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             initializeDefaults()
             updateBudgetAnalysis()
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -367,16 +368,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun generateMealPlan() {
         viewModelScope.launch {
             _mealPlanStatus.value = "Generating meal plan..."
-            val currentParams = repository.getParams() ?: Params()
-            val pantry = repository.getAllPantryItems()
-            val currentDeals = repository.getAllDeals()
-
-            val request = MealPlanningEngine.MealPlanRequest(
-                params = currentParams,
-                pantryItems = pantry,
-                deals = currentDeals
-            )
-
+            val request = buildMealPlanRequest()
             val result = mealPlanningEngine.generateMealPlan(request)
 
             // Replace generated plans so repeated taps do not duplicate the same week.
@@ -386,6 +378,33 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             _shoppingList.value = result.shoppingList
             _mealPlanStatus.value = mealPlanStatusMessage(result)
         }
+    }
+
+    private suspend fun refreshShoppingListFromCurrentInputs() {
+        if (repository.getAllMealPlans().isEmpty()) {
+            _shoppingList.value = emptyList()
+            return
+        }
+
+        val request = buildMealPlanRequest()
+        if (request.pantryItems.isEmpty() && request.deals.isEmpty()) {
+            _shoppingList.value = emptyList()
+            return
+        }
+
+        _shoppingList.value = mealPlanningEngine.generateMealPlan(request).shoppingList
+    }
+
+    private suspend fun buildMealPlanRequest(): MealPlanningEngine.MealPlanRequest {
+        val currentParams = repository.getParams() ?: Params()
+        val pantry = repository.getAllPantryItems()
+        val currentDeals = repository.getAllDeals()
+
+        return MealPlanningEngine.MealPlanRequest(
+            params = currentParams,
+            pantryItems = pantry,
+            deals = currentDeals
+        )
     }
 
     fun updateMealPlan(plan: MealPlan) {

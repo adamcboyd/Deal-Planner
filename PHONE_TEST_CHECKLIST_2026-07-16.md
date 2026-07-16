@@ -62,8 +62,11 @@ Do not commit `local.properties`.
 4. Confirm demo data appears:
    - Pantry has rice, pasta, oats, beans, oil.
    - Deals has pork, chicken, broccoli, mandarins.
+   - Shopping has a generated shopping list with estimated totals.
    - Budget shows the demo budget baseline.
    - Menu has a generated 7-day plan and visible generation status.
+5. Close and relaunch Deal Planner.
+6. Confirm the `Shopping` tab still has the generated list without tapping `Generate` again.
 
 ## Deterministic Text Tests
 
@@ -203,6 +206,6 @@ Verify these show visible status messages instead of silent failures:
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
 - Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, and replaces the active generated week instead of stacking duplicate meal-plan rows.
-- Shopping list generation works from current pantry/deals/settings, keeps different deals separate, and estimates totals from planned quantities and normalized price-per-unit values.
+- Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.

@@ -65,6 +65,7 @@ class AppRepository(
     suspend fun deleteMealPlan(plan: MealPlan) = mealPlanDao.delete(plan)
     suspend fun getMealPlan(id: Long) = mealPlanDao.getById(id)
     suspend fun getMealPlanByDate(date: LocalDate) = mealPlanDao.getByDate(date)
+    suspend fun getAllMealPlans() = mealPlanDao.getAll()
     suspend fun getNextWeekMealPlans() = mealPlanDao.getNextWeek()
     suspend fun deleteOldMealPlans(date: LocalDate) = mealPlanDao.deleteOlderThan(date)
     suspend fun deleteAllMealPlans() = mealPlanDao.deleteAll()

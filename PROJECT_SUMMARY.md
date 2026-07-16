@@ -154,7 +154,7 @@ Deal_Planner/
   - GERD-friendly filtering
   - Pantry anchor utilization
   - Freezer directive calculation
-  - Shopping list consolidation and planned-quantity estimated costs
+  - Shopping list consolidation, planned-quantity estimated costs, and startup restore from current inputs after a plan exists
   - Freshness reordering
 
 - ✅ **BudgetEngine**:
@@ -180,7 +180,7 @@ Deal_Planner/
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
-- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs and PPU
+- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
