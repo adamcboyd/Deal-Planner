@@ -38,7 +38,7 @@ class ReceiptReconciler {
         store: String
     ): ReconciliationResult {
         val receiptItems = mutableListOf<ReceiptItem>()
-        val pantryUpdates = mutableListOf<PantryItem>()
+        val pantryUpdates = linkedMapOf<String, PantryItem>()
         val dealMatches = mutableListOf<DealMatch>()
         val warnings = mutableListOf<String>()
         val normalizedStore = store.toStoreNameOrUnknown()
@@ -113,10 +113,10 @@ class ReceiptReconciler {
                 // If matched to pantry, create update to increment quantity
                 if (!useDealMatch) {
                     if (matchedPantryItem != null && qty != null) {
-                        pantryUpdates.add(
-                            matchedPantryItem.copy(
-                                qty = matchedPantryItem.qty + qty
-                            )
+                        val pantryUpdateKey = matchedPantryItem.updateKey()
+                        val currentUpdate = pantryUpdates[pantryUpdateKey] ?: matchedPantryItem
+                        pantryUpdates[pantryUpdateKey] = currentUpdate.copy(
+                            qty = currentUpdate.qty + qty
                         )
                     }
                 }
@@ -127,11 +127,19 @@ class ReceiptReconciler {
 
         return ReconciliationResult(
             receiptItems = receiptItems,
-            pantryUpdates = pantryUpdates,
+            pantryUpdates = pantryUpdates.values.toList(),
             dealMatches = dealMatches,
             total = roundCurrency(total),
             warnings = warnings
         )
+    }
+
+    private fun PantryItem.updateKey(): String {
+        return if (id != 0L) {
+            "id:$id"
+        } else {
+            "item:${item.lowercase()}"
+        }
     }
 
     /**

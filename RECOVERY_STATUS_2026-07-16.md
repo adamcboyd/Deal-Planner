@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-JSON Gemini pantry fallback work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after repeated pantry-matched receipt quantity accumulation work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1330,6 +1330,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `GeminiPantryVisionClientTest` passed locally, then the full Gradle gate passed with `168` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Gemini pantry parsing now returns an empty result with a warning for non-JSON model text, letting the existing pantry photo flow continue to OCR fallback instead of depending on an exception path.
 
+Latest focused receipt reconciler check after repeated pantry-match accumulation:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.domain.ReceiptReconcilerTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `ReceiptReconcilerTest` passed locally, then the full Gradle gate passed with `169` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Repeated pantry-matched receipt rows for the same pantry item now accumulate into one pantry update instead of allowing a later row to overwrite an earlier quantity increment.
+
 Additional check:
 
 ```powershell
@@ -1477,7 +1488,7 @@ Verified by build/unit tests/code inspection:
 - Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.
 - Budget screen current balance, monthly overview, and progress display use receipt-aware analysis values when available, so stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
-- Pantry-matched receipt edits and deletes adjust pantry quantities.
+- Pantry-matched receipt imports, edits, and deletes adjust pantry quantities, including repeated matched items on one receipt.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.

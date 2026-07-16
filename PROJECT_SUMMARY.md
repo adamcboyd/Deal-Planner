@@ -175,7 +175,7 @@ Deal_Planner/
   - PPU variance detection
   - VPP calculation for proteins
   - Confidence scoring
-  - Pantry quantity updates
+  - Cumulative pantry quantity updates for repeated pantry-matched receipt rows
   - Dollar/no-dollar/comma-decimal OCR price parsing
 
 ### 5. UI Layer (Jetpack Compose)
@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (168 Test Cases)
+### 7. Unit Tests (169 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 168 unit tests
+- ✅ 169 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

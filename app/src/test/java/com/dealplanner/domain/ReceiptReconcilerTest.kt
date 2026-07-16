@@ -337,6 +337,33 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `accumulate pantry quantity updates for repeated matched receipt items`() {
+        val ocrText = """
+            BLACK BEANS       ${'$'}1.78
+            2 @ ${'$'}0.89
+            BLACK BEANS       ${'$'}0.89
+            1 @ ${'$'}0.89
+        """.trimIndent()
+
+        val pantry = listOf(
+            PantryItem(
+                id = 7,
+                item = "Black Beans",
+                qty = 2.0,
+                unit = "can"
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), pantry, "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.qty }).containsExactly(2.0, 1.0).inOrder()
+        assertThat(result.pantryUpdates).hasSize(1)
+        assertThat(result.pantryUpdates.first().id).isEqualTo(7)
+        assertThat(result.pantryUpdates.first().qty).isEqualTo(5.0)
+    }
+
+    @Test
     fun `parse receipt lines when OCR drops dollar signs`() {
         val ocrText = """
             BLACK BEANS       1.78

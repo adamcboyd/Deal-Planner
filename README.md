@@ -322,7 +322,7 @@ On the Receipts tab:
 1. Enter the store name, or leave it as `Unknown`.
 2. Paste receipt OCR text and tap **Process Text**, or use **Photo**, **Gallery**, or **PDF**. Photo capture uses a full-resolution app-cache image for better OCR; PDF import renders pages locally before OCR.
 3. The app reconciles receipt lines against current deals and pantry items.
-4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
+4. Matched receipt items update the receipt list, pantry quantities, and budget spending; repeated pantry-matched rows on the same receipt accumulate into one pantry quantity update.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
 6. Low-confidence matches are marked with a review warning.
 7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot, comma, and leading-decimal text such as `1.78`, `1,78`, or `.89`.
@@ -481,7 +481,7 @@ As of the latest local pass:
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
-- Pantry-matched receipt edits and deletes adjust pantry quantities.
+- Pantry-matched receipt imports, edits, and deletes adjust pantry quantities, including repeated matched items on one receipt.
 - Settings can test the Gemini API key/model connection from the running app.
 - Phone helpers verify the generated debug `BuildConfig` Gemini key/model state without printing secrets, so stale APKs can be caught before live AI testing.
 - Settings accepts comma-decimal and leading-decimal protein-per-meal values such as `0,5` or `.5`.
