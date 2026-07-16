@@ -226,7 +226,7 @@ frozen broccoli 12oz
 ```
 
 The parser handles:
-- Quantities (numeric, comma-decimal OCR, fractions, words)
+- Quantities (numeric, comma-decimal OCR, leading-decimal OCR, fractions, words)
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
@@ -341,7 +341,7 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce labels, comma-decimal OCR quantities/sizes)
+- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce labels, comma-decimal and leading-decimal OCR quantities/sizes)
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal flyer OCR prices, slash/no-slash per-pound prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
@@ -407,7 +407,7 @@ As of the latest local pass:
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
-- Pantry parser handles quantity, comma-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
+- Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.

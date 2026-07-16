@@ -796,6 +796,22 @@ Latest continuation gate after flyer leading-decimal price parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `140` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused pantry leading-decimal quantity/size parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.parser.PantryPhraseParserTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after pantry leading-decimal quantity/size parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `141` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -857,6 +873,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses `opened on 2026-07-01` without leaving `on` in the item name.
 - Pantry manual text input parses hyphenated label cues such as `use-by 12/31/2026` and `best-by 2026-12-31` without leaving the cue in the item name.
 - Pantry manual/OCR text input accepts comma-decimal quantities and package sizes such as `1,5 lb ground beef` and `Kroger yogurt 5,3oz`.
+- Pantry manual/OCR text input accepts leading-decimal quantities and package sizes such as `.5 lb ground beef`, `.25 cups olive oil`, and `Kroger yogurt .75oz`.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.

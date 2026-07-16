@@ -100,6 +100,29 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse pantry quantities and sizes when OCR omits leading zero`() {
+        val weightedItem = parser.parse(".5 lb ground beef in freezer")
+        val labelItem = parser.parse("Kroger yogurt .75oz fridge")
+        val measuredItem = parser.parse(".25 cups olive oil pantry")
+
+        assertThat(weightedItem.item.item).isEqualTo("ground beef")
+        assertThat(weightedItem.item.qty).isEqualTo(0.5)
+        assertThat(weightedItem.item.unit).isEqualTo("lb")
+        assertThat(weightedItem.item.location).isEqualTo("freezer")
+
+        assertThat(labelItem.item.item).isEqualTo("yogurt")
+        assertThat(labelItem.item.brand).isEqualTo("Kroger")
+        assertThat(labelItem.item.size).isEqualTo("0.75oz")
+        assertThat(labelItem.item.unit).isEqualTo("oz")
+        assertThat(labelItem.item.location).isEqualTo("fridge")
+
+        assertThat(measuredItem.item.item).isEqualTo("olive oil")
+        assertThat(measuredItem.item.qty).isEqualTo(0.25)
+        assertThat(measuredItem.item.unit).isEqualTo("cup")
+        assertThat(measuredItem.item.location).isEqualTo("pantry")
+    }
+
+    @Test
     fun `parse common pantry container and count units`() {
         val oil = parser.parse("2 bottles olive oil 32 fl oz pantry")
         val milk = parser.parse("1 carton milk 64 fluid oz fridge")

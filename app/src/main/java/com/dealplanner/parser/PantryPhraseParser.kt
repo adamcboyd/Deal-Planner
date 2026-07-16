@@ -120,7 +120,7 @@ class PantryPhraseParser {
         }
 
         // Extract unit and size
-        val sizePattern = Regex("""(\d+(?:[.,]\d+)?)\s*((?:fl\.?\s*|fluid\s+)?oz|lb|lbs|g|kg|ml|l|ct|count)""")
+        val sizePattern = Regex("""($PANTRY_NUMBER_PATTERN)\s*((?:fl\.?\s*|fluid\s+)?oz|lb|lbs|g|kg|ml|l|ct|count)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
             val sizeUnitText = normalizeSizeUnitText(sizeMatch.groupValues[2])
@@ -214,7 +214,25 @@ class PantryPhraseParser {
     }
 
     private fun tokenize(input: String): List<String> {
-        return input.split(Regex("""\s+""")).map { it.trim(',', '.', '!', '?') }
+        return input.split(Regex("""\s+""")).map { it.cleanToken() }
+    }
+
+    private fun String.cleanToken(): String {
+        var token = trim('!', '?')
+        while (
+            token.length > 1 &&
+            token.first() in listOf(',', '.') &&
+            !token[1].isDigit()
+        ) {
+            token = token.drop(1)
+        }
+        while (
+            token.length > 1 &&
+            token.last() in listOf(',', '.')
+        ) {
+            token = token.dropLast(1)
+        }
+        return token
     }
 
     private fun normalizeUnit(unit: String): String {
@@ -299,7 +317,7 @@ class PantryPhraseParser {
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
             token.toPantryNumberOrNull() == null &&
-            !Regex("""\d+(?:[.,]\d+)?(?:oz|lb|lbs|g|kg|ml|l|ct|count)""").matches(token) &&
+            !Regex("""$PANTRY_NUMBER_PATTERN(?:oz|lb|lbs|g|kg|ml|l|ct|count)""").matches(token) &&
             !DATE_TOKEN_PATTERN.matches(token)
         }
 
@@ -536,7 +554,12 @@ class PantryPhraseParser {
     }
 
     private fun String.normalizePantryNumberText(): String {
-        return replace(',', '.')
+        val normalized = replace(',', '.')
+        return if (normalized.startsWith(".")) {
+            "0$normalized"
+        } else {
+            normalized
+        }
     }
 
     private data class PantryDuplicateKey(
@@ -552,6 +575,7 @@ class PantryPhraseParser {
     )
 
     private companion object {
+        private const val PANTRY_NUMBER_PATTERN = """(?:\d+)?[.,]?\d+"""
         private const val EXP_DATE_CUE = "exp"
         private val DATE_TOKEN_PATTERN = Regex("""(?:\d{4}[/-]\d{1,2}[/-]\d{1,2})|(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4})""")
         private val relativeDatePattern = Regex("""\b(today|yesterday|tomorrow)\b""")
