@@ -84,6 +84,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 4. Tap `Process Text`.
 5. Confirm multiple deals are added with store `Kroger`, prices, deal scores, and coupon/limit flags where applicable.
 6. Edit one deal and save it.
+7. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
 
 ### Receipts
 

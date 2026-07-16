@@ -246,6 +246,14 @@ Latest continuation gate after receipt card-tender filtering work:
 
 Result: `BUILD SUCCESSFUL`, with `84` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after cent-style flyer price parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `85` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -309,6 +317,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
+- Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.

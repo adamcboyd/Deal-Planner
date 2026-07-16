@@ -87,7 +87,7 @@ Deal_Planner/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 21 test cases
-            │   └── DealsParserTest.kt         ✅ 14 test cases
+            │   └── DealsParserTest.kt         ✅ 15 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
@@ -113,6 +113,7 @@ Deal_Planner/
 
 - ✅ **DealsParser**:
   - $X.XX/lb pattern
+  - Cent-style prices such as 99c/lb and 88c
   - Plain package prices such as 3 lb bag $2.99
   - Dollar/no-dollar flyer OCR price parsing
   - N for $X pattern
@@ -188,11 +189,11 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (84 Test Cases)
+### 7. Unit Tests (85 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (21 tests)
-- ✅ DealsParserTest (14 tests)
+- ✅ DealsParserTest (15 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (14 tests)
@@ -383,7 +384,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
-- ✅ Parses flyer prices with or without dollar signs
+- ✅ Parses flyer prices with or without dollar signs, including cent-style prices such as 99c/lb and 88c
 - ✅ Parses bundled demo flyer structures including package prices, multi-line names, limits, coupons, and BOGO modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
@@ -422,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 84 unit tests
+- ✅ 85 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

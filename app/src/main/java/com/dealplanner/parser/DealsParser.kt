@@ -22,6 +22,8 @@ class DealsParser {
 
     private val pricePerPoundPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
     private val pricePerUnitPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
+    private val centsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
+    private val centsPricePerUnitPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val buyNGetMPattern = Regex("""buy\s*(\d+)\s*get\s*(\d+)(?:\s*free)?""", RegexOption.IGNORE_CASE)
@@ -29,6 +31,7 @@ class DealsParser {
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
     private val packagePricePattern = Regex("""(?<![\d.])\$?(\d+\.\d{2})(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
+    private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
     private val priceTextPattern = Regex("""\$?\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
 
     private val couponKeywords = listOf("coupon", "digital coupon", "member price", "clip", "app only")
@@ -128,6 +131,18 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
+        centsPricePerPoundPattern.find(line)?.let { match ->
+            price = centsToDollars(match.groupValues[1])
+            unit = "lb"
+            dealType = "per_pound"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
         // 2. Price per unit: $2.99/ea
         pricePerUnitPattern.find(line)?.let { match ->
             price = match.groupValues[1].toDouble()
@@ -148,6 +163,18 @@ class DealsParser {
             price = totalPrice / n
             unit = "ea"
             dealType = "n_for_x"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
+        centsPricePerUnitPattern.find(line)?.let { match ->
+            price = centsToDollars(match.groupValues[1])
+            unit = match.groupValues[2].lowercase()
+            dealType = "per_unit"
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
@@ -226,6 +253,18 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
+        centsPackagePricePattern.find(line)?.let { match ->
+            price = centsToDollars(match.groupValues[1])
+            unit = "ea"
+            dealType = "per_unit"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
         return null
     }
 
@@ -245,11 +284,14 @@ class DealsParser {
     private fun containsDealSignal(line: String): Boolean {
         return pricePerPoundPattern.containsMatchIn(line) ||
             pricePerUnitPattern.containsMatchIn(line) ||
+            centsPricePerPoundPattern.containsMatchIn(line) ||
+            centsPricePerUnitPattern.containsMatchIn(line) ||
             nForXPattern.containsMatchIn(line) ||
             slashNForXPattern.containsMatchIn(line) ||
             buyNGetMPattern.containsMatchIn(line) ||
             percentOffPattern.containsMatchIn(line) ||
-            packagePricePattern.containsMatchIn(line)
+            packagePricePattern.containsMatchIn(line) ||
+            centsPackagePricePattern.containsMatchIn(line)
     }
 
     private fun isFlyerMetadataLine(line: String): Boolean {
@@ -422,6 +464,10 @@ class DealsParser {
 
     private fun findItemKeyword(name: String): String? {
         return baselinePrices.keys.firstOrNull { name.contains(it) }
+    }
+
+    private fun centsToDollars(value: String): Double {
+        return value.toInt() / 100.0
     }
 
     private companion object {

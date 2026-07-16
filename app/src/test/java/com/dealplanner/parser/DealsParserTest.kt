@@ -200,6 +200,31 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse cent style flyer prices`() {
+        val text = """
+            Roma Tomatoes
+            99¢/lb
+
+            Black Beans
+            88c
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(2)
+
+        val tomatoes = result.deals.first { it.name == "Roma Tomatoes" }
+        assertThat(tomatoes.price).isEqualTo(0.99)
+        assertThat(tomatoes.unit).isEqualTo("lb")
+        assertThat(tomatoes.dealType).isEqualTo("per_pound")
+
+        val beans = result.deals.first { it.name == "Black Beans" }
+        assertThat(beans.price).isEqualTo(0.88)
+        assertThat(beans.unit).isEqualTo("ea")
+        assertThat(beans.dealType).isEqualTo("per_unit")
+    }
+
+    @Test
     fun `parse demo flyer style multiline modifiers`() {
         val text = """
             Pork Shoulder Roast

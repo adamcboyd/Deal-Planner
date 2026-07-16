@@ -242,6 +242,7 @@ On the Deals tab, enter the store name or leave it as `Unknown`, then use one of
 ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 - `$3.99/lb` or `3.99/lb` (per pound)
+- `99c/lb` or `88c` (cent-style flyer/OCR prices)
 - `3 lb bag $2.99`, `3 lb bag 2.99`, or standalone package prices after an item name
 - `2 for $10`, `10 for 10`, `2/$5`, or `10 / $10` (N for X)
 - `Buy 2 Get 1 Free` (buy N get M)
@@ -370,7 +371,7 @@ As of the latest local pass:
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
-- Deals parser accepts flyer prices when OCR drops dollar signs.
+- Deals parser accepts flyer prices when OCR drops dollar signs, including cent-style prices such as `99c/lb` and `88c`.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
