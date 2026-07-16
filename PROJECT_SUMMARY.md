@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 38
+- **Total Kotlin Files**: 47
 - **Configuration Files**: 15
-- **Test Files**: 7 (comprehensive unit tests)
+- **Test Files**: 8 (comprehensive unit tests)
 - **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
@@ -52,6 +52,8 @@ Deal_Planner/
         │   │   │   ├── MealPlanningEngine.kt     ✅ Rules-based engine
         │   │   │   ├── BudgetEngine.kt           ✅ Budget tracking
         │   │   │   └── ReceiptReconciler.kt      ✅ Fuzzy matching
+        │   │   ├── util/
+        │   │   │   └── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
         │   │   └── ui/
         │   │       ├── camera/CapturePhotoUriFactory.kt ✅ Full-resolution capture URIs
         │   │       ├── viewmodel/AppViewModel.kt ✅ MVVM ViewModel
@@ -88,10 +90,12 @@ Deal_Planner/
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
             │   └── DealsParserTest.kt         ✅ 20 test cases
-            └── domain/
+            ├── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
                 └── ReceiptReconcilerTest.kt   ✅ 17 test cases
+            └── util/
+                └── FlexibleNumberParsingTest.kt ✅ 3 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -189,7 +193,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (104 Test Cases)
+### 7. Unit Tests (107 Test Cases)
 - ✅ GeminiPantryVisionClientTest (15 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
@@ -197,6 +201,7 @@ Deal_Planner/
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (17 tests)
+- ✅ FlexibleNumberParsingTest (3 tests)
 
 ## 🔧 Technology Stack
 
@@ -392,6 +397,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
+- ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields
 - ✅ Ignores receipt subtotal, tax, total, savings, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
@@ -425,7 +431,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 104 unit tests
+- ✅ 107 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

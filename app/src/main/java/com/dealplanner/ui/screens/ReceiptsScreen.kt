@@ -50,6 +50,7 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.ReceiptItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleDoubleOrNull
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -416,7 +417,7 @@ fun ReceiptItemEditDialog(
         confirmButton = {
             TextButton(
                 enabled = rawLine.isNotBlank() &&
-                    totalCost.toDoubleOrNull() != null &&
+                    totalCost.toFlexibleDoubleOrNull() != null &&
                     isDateValid,
                 onClick = {
                     onSave(
@@ -424,10 +425,10 @@ fun ReceiptItemEditDialog(
                             rawLine = rawLine.trim(),
                             matchedItemId = matchedItemId.toLongOrNull(),
                             matchedType = matchedType.trim().ifBlank { null },
-                            qty = qty.toDoubleOrNull(),
-                            totalCost = totalCost.toDoubleOrNull() ?: receipt.totalCost,
+                            qty = qty.toFlexibleDoubleOrNull(),
+                            totalCost = totalCost.toFlexibleDoubleOrNull() ?: receipt.totalCost,
                             date = parsedDate ?: receipt.date,
-                            confidence = confidence.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: receipt.confidence,
+                            confidence = confidence.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: receipt.confidence,
                             store = store.trim().ifBlank { null },
                             needsReview = needsReview
                         )

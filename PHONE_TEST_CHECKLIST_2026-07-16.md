@@ -73,9 +73,10 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 2. Tap `Add`.
 3. Confirm a pantry row appears or merges into an existing black beans row.
 4. Tap edit and confirm the item can be reviewed and saved.
-5. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
-6. Confirm opened date and best-by date stay separate on the pantry item.
-7. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
+5. In the edit dialog, enter quantity `1,5`, save, and confirm it is accepted as 1.5.
+6. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
+7. Confirm opened date and best-by date stay separate on the pantry item.
+8. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
 
 ### Deals
 
@@ -85,7 +86,8 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 4. Tap `Process Text`.
 5. Confirm multiple deals are added with store `Kroger`, prices, deal scores, and coupon/limit flags where applicable.
 6. Edit one deal and save it.
-7. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+7. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
+8. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
 
 ### Receipts
 
@@ -96,8 +98,9 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 5. Confirm receipt items are added.
 6. Confirm Budget spending/projection changes after receipt import.
 7. Edit one receipt line and confirm Budget updates.
-8. Delete one receipt line and confirm Budget updates again.
-9. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+8. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
+9. Delete one receipt line and confirm Budget updates again.
+10. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
 
 ## Phone Input Tests
 
@@ -192,6 +195,7 @@ Verify these show visible status messages instead of silent failures:
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget updates after receipt import/edit/delete.
+- Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings and keeps different deals separate.
 - Gemini no-key fallback is clear.

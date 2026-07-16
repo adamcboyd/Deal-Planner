@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.DealItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleDoubleOrNull
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -498,10 +499,10 @@ fun DealItemEditDialog(
             TextButton(
                 enabled = name.isNotBlank() &&
                     store.isNotBlank() &&
-                    price.toDoubleOrNull() != null &&
+                    price.toFlexibleDoubleOrNull() != null &&
                     isValidUntilValid,
                 onClick = {
-                    val parsedPrice = price.toDoubleOrNull() ?: deal.price
+                    val parsedPrice = price.toFlexibleDoubleOrNull() ?: deal.price
                     onSave(
                         deal.copy(
                             name = name.trim(),
@@ -513,10 +514,10 @@ fun DealItemEditDialog(
                             limit = limit.toIntOrNull(),
                             couponFlag = couponFlag,
                             store = store.trim(),
-                            confidence = confidence.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.confidence,
-                            dealScore = dealScore.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.dealScore,
-                            pricePerUnit = pricePerUnit.toDoubleOrNull() ?: parsedPrice,
-                            discountPercent = discountPercent.toDoubleOrNull() ?: deal.discountPercent,
+                            confidence = confidence.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.confidence,
+                            dealScore = dealScore.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.dealScore,
+                            pricePerUnit = pricePerUnit.toFlexibleDoubleOrNull() ?: parsedPrice,
+                            discountPercent = discountPercent.toFlexibleDoubleOrNull() ?: deal.discountPercent,
                             validUntil = parsedValidUntil
                         )
                     )

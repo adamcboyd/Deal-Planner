@@ -226,7 +226,7 @@ On the Pantry tab:
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
 4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
-5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status.
+5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot or comma decimals, such as `1.5` or `1,5`.
 
 ### Adding Pantry Items From Barcodes
 
@@ -264,7 +264,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 The built-in demo flyer covers the same formats.
 
-Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date.
+Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot or comma decimals.
 
 ### Processing Receipts
 
@@ -276,7 +276,7 @@ On the Receipts tab:
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
 6. Low-confidence matches are marked with a review warning.
-7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
+7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot or comma decimals.
 8. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
@@ -323,6 +323,7 @@ Tests cover:
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal flyer OCR prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
+- Flexible numeric edit parsing for comma-decimal manual corrections in pantry, deal, receipt, and settings fields
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
@@ -380,12 +381,12 @@ As of the latest local pass:
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, and rejects non-code text.
-- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
+- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal quantity corrections.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs or uses comma decimals, including cent-style prices such as `99c/lb` and `88c`.
-- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
+- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal price, PPU, discount, score, and confidence corrections.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.
@@ -398,10 +399,11 @@ As of the latest local pass:
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs or uses comma decimals.
 - Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
-- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
+- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal quantity, total, and confidence corrections.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
+- Settings accepts comma-decimal protein-per-meal values such as `0,5`.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, or `amount: "two cans"`, storage aliases, malformed string/list fields, and confidence clamping.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.

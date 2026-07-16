@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dealplanner.data.model.Params
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleDoubleOrNull
 
 @Composable
 fun ParamsScreen(viewModel: AppViewModel) {
@@ -146,7 +147,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         gerdFriendly = gerdFriendly,
                         avoidPeppers = avoidPeppers,
                         breakfastAnchor = breakfastAnchor,
-                        proteinPerMealLb = proteinPerMeal.toDoubleOrNull() ?: 0.5
+                        proteinPerMealLb = proteinPerMeal.toFlexibleDoubleOrNull() ?: 0.5
                     )
                     viewModel.updateParams(updatedParams)
                 },

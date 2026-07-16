@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.PantryItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleDoubleOrNull
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.time.LocalDate
@@ -473,7 +474,7 @@ fun PantryItemEditDialog(
                     onSave(
                         item.copy(
                             item = itemName.trim(),
-                            qty = quantity.toDoubleOrNull() ?: item.qty,
+                            qty = quantity.toFlexibleDoubleOrNull() ?: item.qty,
                             unit = unit.trim().ifBlank { null },
                             size = size.trim().ifBlank { null },
                             brand = brand.trim().ifBlank { null },

@@ -398,13 +398,21 @@ Latest continuation gate after labeled barcode normalization work:
 
 Result: `BUILD SUCCESSFUL`, with `104` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after comma-decimal review/edit numeric parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `107` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
 .\scripts\phone-debug-preflight.ps1
 ```
 
-Result: `0 failure(s), 3 warning(s)` for expected local conditions: uncommitted edits before commit, no connected/authorized phone, and no Gemini key configured. Open Food Facts barcode lookup endpoint was reachable.
+Result after committing the comma-decimal review/edit numeric parsing checkpoint: `0 failure(s), 2 warning(s)` for expected local conditions: no connected/authorized phone and no Gemini key configured. Git branch was clean and Open Food Facts barcode lookup endpoint was reachable.
 
 Additional check:
 
@@ -485,6 +493,7 @@ Verified by build/unit tests/code inspection:
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
+- Pantry edit/review quantity fields accept comma-decimal corrections such as `1,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
@@ -492,8 +501,10 @@ Verified by build/unit tests/code inspection:
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
+- Flyer deal edit/review numeric fields accept comma-decimal corrections for price, PPU, discount, score, and confidence.
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
+- Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence.
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation parses one-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` and comma-decimal variants such as `APPLES 1,25 lb @ 1,99/lb 2,49`.
@@ -511,6 +522,7 @@ Verified by build/unit tests/code inspection:
 - Optional Gemini pantry photo client exists.
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
+- Settings protein-per-meal numeric input accepts comma-decimal values such as `0,5`.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, or `amount: "two cans"`, comma-decimal confidence such as `"0,82"`, storage aliases, malformed string/list fields, and confidence clamping.
@@ -584,6 +596,7 @@ gemini.model=gemini-3.5-flash
    - Pantry duplicate check: add the same typed/photo item twice and confirm quantity merges.
    - Pantry barcode duplicate check: add the same UPC twice and confirm quantity merges, then add a different UPC and confirm it remains separate.
    - Pantry edit/review dialog for VERIFY items.
+   - Pantry edit/review dialog comma-decimal quantity correction such as `1,5`.
    - Deals flyer photo.
    - Deals camera-permission denial or canceled capture/gallery/PDF status.
    - Deals gallery image.
@@ -594,6 +607,7 @@ gemini.model=gemini-3.5-flash
    - Deals bundled demo flyer text via pasted OCR.
    - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
+   - Deals edit/review dialog comma-decimal numeric correction such as price `2,99`.
    - Receipts photo.
    - Receipts camera-permission denial or canceled capture/gallery status.
    - Receipts gallery image.
@@ -604,12 +618,14 @@ gemini.model=gemini-3.5-flash
    - Receipts one-line weighted produce rows parse item name, weight, and total.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
+   - Receipts edit/review dialog comma-decimal numeric correction such as total `1,78`.
    - Receipts edit/delete budget total adjustment.
    - Budget daily envelope changes after receipt import, receipt total edit, and receipt delete.
    - Budget projected spend reflects current-month receipt history.
    - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.
+   - Settings protein-per-meal comma-decimal value such as `0,5`.
    - Generate meal plan.
    - Review shopping list.
    - Review budget.
