@@ -340,7 +340,7 @@ Click "Generate" in the Menu tab to create a deterministic 7-day plan. The same 
 - Breakfast uses pantry anchors (oats, cereal) if enabled
 - Lunch/Dinner pairs: Protein + Veg + Starch
 - Proteins from top-scored deals
-- Vegetables filtered by dietary preferences
+- Vegetables filtered by dietary preferences and recognized meal-side grocery terms so household/non-food flyer deals do not enter meals or Shopping
 - Freezer directives for bulk purchases
 
 ### Budget Management
@@ -380,6 +380,7 @@ Tests cover:
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
+- Meal-side filtering so household/non-food flyer deals are ignored by generated meals and Shopping
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total line filtering)
@@ -444,6 +445,7 @@ As of the latest local pass:
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
+- Meal planning only uses recognized meal-side grocery deals for vegetable slots; household/non-food flyer deals such as detergent stay out of meals and Shopping totals.
 - Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, package `net wt` labels, common expiration label cues such as `expiration date`, `best by date`, `best if used by`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
 - Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.

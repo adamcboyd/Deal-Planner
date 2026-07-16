@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry missing-brand duplicate merge work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after meal-side filtering for household/non-food flyer deals; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -149,8 +149,9 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 14. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
 15. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
 16. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
-17. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-18. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+17. Optional household/non-food meal-side check: paste `Tide Laundry Detergent $9.99` as a deal, generate or refresh the meal plan, and confirm detergent does not appear in `Menu` meals or `Shopping` totals.
+18. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+19. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -320,7 +321,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections.
 - Pantry typed/OCR intake preserves gallon, quart, and pint package sizes.
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows into separate VERIFY rows.
-- Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, and replaces the active generated week instead of stacking duplicate meal-plan rows.
+- Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.

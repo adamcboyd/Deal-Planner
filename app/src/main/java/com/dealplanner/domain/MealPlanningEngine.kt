@@ -47,6 +47,18 @@ class MealPlanningEngine {
         "tomato", "pepper", "onion", "garlic"
     )
 
+    private val additionalMealSideKeywords = setOf(
+        "bean", "peas", "corn", "cabbage", "celery", "asparagus", "brussels",
+        "mushroom", "eggplant", "avocado", "salad", "slaw", "greens", "collard",
+        "chard"
+    )
+
+    private val nonFoodDealKeywords = setOf(
+        "detergent", "soap", "paper towel", "toilet paper", "cleaner", "shampoo",
+        "conditioner", "deodorant", "diaper", "trash bag", "foil", "laundry",
+        "dishwasher", "pet food", "cat food", "dog food"
+    )
+
     private val breakfastAnchors = setOf(
         "oats", "oatmeal", "cereal", "eggs", "bread", "bagel"
     )
@@ -89,7 +101,8 @@ class MealPlanningEngine {
         val vegDeals = suitableDeals
             .filter { deal ->
                 !proteinKeywords.any { deal.name.lowercase().contains(it) } &&
-                !starchAnchors.any { deal.name.lowercase().contains(it) }
+                !starchAnchors.any { deal.name.lowercase().contains(it) } &&
+                isMealSideDeal(deal)
             }
             .sortedByDescending { it.dealScore }
             .take(4)
@@ -216,6 +229,17 @@ class MealPlanningEngine {
 
             true
         }
+    }
+
+    private fun isMealSideDeal(deal: DealItem): Boolean {
+        val name = deal.name.lowercase()
+
+        if (nonFoodDealKeywords.any { name.contains(it) }) {
+            return false
+        }
+
+        return (gerdFriendlyVegetables + acidicVegetables + additionalMealSideKeywords)
+            .any { keyword -> name.contains(keyword) }
     }
 
     private fun calculateFreezerDirective(deal: DealItem, portionSize: Double, days: Int): String? {

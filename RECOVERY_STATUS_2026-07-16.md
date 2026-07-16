@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry missing-brand duplicate merge work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after meal-side filtering for household/non-food flyer deals; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1352,6 +1352,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `PantryPhraseParserTest` passed locally, then the full Gradle gate passed with `170` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Missing, Generic, or unknown brands are now compatible with a known brand for duplicate detection when item, size, and location match, while different known brands remain separate.
 
+Latest focused meal-side check after household/non-food flyer filtering:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.domain.MealPlanningEngineTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `MealPlanningEngineTest` passed locally, then the full Gradle gate passed with `171` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Meal planning now requires recognized meal-side grocery terms for generated vegetable slots and ignores household/non-food flyer deals such as detergent so they do not enter meals or Shopping totals.
+
 Additional check:
 
 ```powershell
@@ -1444,6 +1455,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`, with exact unit coverage for the phone checklist `Roma Tomatoes` / `99c/lb` pasted-text test.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
+- Meal-side filtering has unit coverage so household/non-food flyer deals do not become generated meal vegetables or Shopping items.
 - Menu Generate shows visible meal-plan generation status and any rules-engine warnings, such as missing protein deals or pantry starch anchors.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
 - Shopping list estimated costs use planned quantities and normalized price-per-unit values instead of multiplying sticker price by planned quantity in the UI.
@@ -1520,6 +1532,7 @@ Verified by build/unit tests/code inspection:
 - AI pantry photo VERIFY notes include explicit review reasons for missing brand, amount/unit, storage location, and best-by date details, so the phone review flow tells the user what needs correction.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
+- Meal planning ignores household/non-food flyer deals when choosing generated meal sides and Shopping items.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.
 - On app startup, if saved meal plans already exist, the Shopping list is rederived from current pantry/deals/settings so a relaunched app does not show an empty transient list after meal plans have already been generated.
 

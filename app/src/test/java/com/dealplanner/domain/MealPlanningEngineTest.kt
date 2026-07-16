@@ -349,4 +349,41 @@ class MealPlanningEngineTest {
         assertThat(chickenItem.estimatedCost).isWithin(0.001).of(2.5)
         assertThat(result.shoppingList.sumOf { it.estimatedCost }).isWithin(0.001).of(2.5)
     }
+
+    @Test
+    fun `meal plan does not use household deals as vegetables`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.8,
+                    pricePerUnit = 2.99
+                ),
+                DealItem(
+                    name = "Tide Laundry Detergent",
+                    price = 9.99,
+                    unit = "bottle",
+                    dealType = "per_unit",
+                    store = "Kroger",
+                    dealScore = 0.99,
+                    pricePerUnit = 9.99
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 1
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        val usedVegetables = result.mealPlans.flatMap { it.slots }.mapNotNull { it.veg }
+        assertThat(usedVegetables).contains("mixed vegetables")
+        assertThat(usedVegetables).doesNotContain("Tide Laundry Detergent")
+        assertThat(result.shoppingList.map { it.dealItem.name }).doesNotContain("Tide Laundry Detergent")
+    }
 }
