@@ -200,6 +200,14 @@ In `Settings`:
 6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 7. With key configured, test pantry photo recognition against a real pantry item label.
 
+## Build Identity Check
+
+In `Settings` -> `About Deal Planner`, confirm:
+
+- Version shows the Gradle build version, currently `1.0 (1)`.
+- Package shows `com.dealplanner`.
+- Build shows `Debug` for the command-line debug APK.
+
 ## Cancel and Permission Tests
 
 Verify these show visible status messages instead of silent failures:

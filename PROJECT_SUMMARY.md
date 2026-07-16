@@ -434,6 +434,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt reconciliation engine
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
+- ✅ Settings build identity display sourced from `BuildConfig`
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with APK identity/permission checks and stale source/Gemini APK warnings
