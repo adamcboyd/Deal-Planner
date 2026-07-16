@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after repeated pantry-matched receipt quantity accumulation work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry missing-brand duplicate merge work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1341,6 +1341,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `ReceiptReconcilerTest` passed locally, then the full Gradle gate passed with `169` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Repeated pantry-matched receipt rows for the same pantry item now accumulate into one pantry update instead of allowing a later row to overwrite an earlier quantity increment.
 
+Latest focused pantry duplicate check after missing-brand merge compatibility:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.PantryPhraseParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `PantryPhraseParserTest` passed locally, then the full Gradle gate passed with `170` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Missing, Generic, or unknown brands are now compatible with a known brand for duplicate detection when item, size, and location match, while different known brands remain separate.
+
 Additional check:
 
 ```powershell
@@ -1449,7 +1460,7 @@ Verified by build/unit tests/code inspection:
 - Manual barcode/code text stays available for correction when no UPC/EAN/GTIN is found, and clears only after a successful barcode import.
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
-- Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
+- Pantry duplicate detection normalizes package size and missing/Generic/unknown brand values, allows unbranded typed/OCR rows to merge with a known-brand row when item, size, and location match, keeps different known brands or locations separate, and only merges barcode items when the barcode value matches.
 - Pantry typed date parsing accepts two-digit dash label dates such as `milk use by 12-31-26`.
 - Pantry edit/review quantity fields accept comma-decimal and leading-decimal corrections such as `1,5`, `.5`, and `,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.

@@ -469,7 +469,12 @@ class PantryPhraseParser {
             return item1Barcode != null && item1Barcode == item2Barcode
         }
 
-        return duplicateKey(item1) == duplicateKey(item2)
+        val key1 = duplicateKey(item1)
+        val key2 = duplicateKey(item2)
+        return key1.item == key2.item &&
+            key1.size == key2.size &&
+            key1.location == key2.location &&
+            brandsAreCompatible(key1.brand, key2.brand)
     }
 
     fun mergeDuplicateItems(existing: PantryItem, incoming: PantryItem): PantryItem {
@@ -498,19 +503,18 @@ class PantryPhraseParser {
      * Merges duplicate pantry items by summing quantities.
      */
     fun mergeDuplicates(items: List<PantryItem>): List<PantryItem> {
-        val grouped = items.groupBy { mergeKey(it) }
+        val mergedItems = mutableListOf<PantryItem>()
 
-        return grouped.map { (_, group) ->
-            group.drop(1).fold(group.first()) { merged, item ->
-                mergeDuplicateItems(merged, item)
+        items.forEach { item ->
+            val existingIndex = mergedItems.indexOfFirst { existing -> areDuplicates(existing, item) }
+            if (existingIndex >= 0) {
+                mergedItems[existingIndex] = mergeDuplicateItems(mergedItems[existingIndex], item)
+            } else {
+                mergedItems.add(item)
             }
         }
-    }
 
-    private fun mergeKey(item: PantryItem): PantryMergeKey {
-        return extractBarcode(item.notes)?.let { barcode ->
-            PantryMergeKey(barcode = barcode, duplicateKey = null)
-        } ?: PantryMergeKey(barcode = null, duplicateKey = duplicateKey(item))
+        return mergedItems
     }
 
     private fun duplicateKey(item: PantryItem): PantryDuplicateKey {
@@ -532,6 +536,10 @@ class PantryPhraseParser {
     private fun normalizeBrand(value: String?): String? {
         val normalized = normalizeKeyText(value)
         return if (normalized == "generic" || normalized == "unknown") null else normalized
+    }
+
+    private fun brandsAreCompatible(brand1: String?, brand2: String?): Boolean {
+        return brand1 == null || brand2 == null || brand1 == brand2
     }
 
     private fun extractBarcode(notes: String?): String? {
@@ -576,11 +584,6 @@ class PantryPhraseParser {
         val size: String?,
         val brand: String?,
         val location: String?
-    )
-
-    private data class PantryMergeKey(
-        val barcode: String?,
-        val duplicateKey: PantryDuplicateKey?
     )
 
     private companion object {

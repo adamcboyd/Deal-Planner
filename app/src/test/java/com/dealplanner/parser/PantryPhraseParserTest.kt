@@ -351,6 +351,22 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `duplicate detection merges missing brand with known brand but keeps different brands separate`() {
+        val typedItem = parser.parse("black beans 15oz pantry").item
+        val greatValueItem = parser.parse("Great Value black beans 15 oz pantry").item
+        val krogerItem = parser.parse("Kroger black beans 15 oz pantry").item
+
+        assertThat(parser.areDuplicates(typedItem, greatValueItem)).isTrue()
+        assertThat(parser.areDuplicates(greatValueItem, krogerItem)).isFalse()
+
+        val merged = parser.mergeDuplicates(listOf(typedItem, greatValueItem, krogerItem))
+
+        assertThat(merged).hasSize(2)
+        assertThat(merged.first { it.brand == "Great Value" }.qty).isEqualTo(2.0)
+        assertThat(merged.first { it.brand == "Kroger" }.qty).isEqualTo(1.0)
+    }
+
+    @Test
     fun `duplicate detection keeps different locations separate`() {
         val pantryItem = parser.parse("1 lb ground beef in fridge").item
         val freezerItem = parser.parse("1 lb ground beef in freezer").item

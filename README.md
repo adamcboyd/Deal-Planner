@@ -374,7 +374,7 @@ Run unit tests:
 Tests cover:
 - Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce and gallon/quart/pint labels, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products
-- Pantry duplicate detection/merging, including barcode-specific matching
+- Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields
@@ -448,7 +448,7 @@ As of the latest local pass:
 - Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
-- Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
+- Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows; missing, Generic, or unknown brands can merge into a known-brand row when item, size, and location match, while different known brands stay separate.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, accepts valid bare product codes near label dates, and rejects non-code date, item, lot, SKU, or plain text.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections.

@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after repeated pantry-matched receipt quantity accumulation work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry missing-brand duplicate merge work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -128,7 +128,8 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 9. Confirm opened date and best-by date stay separate on the pantry item.
 10. Optional year-first pantry date check: enter `Kroger yogurt opened 2026-7-1 best by 2026-12-31`, then confirm the opened date is July 1, 2026.
 11. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, `milk use by 12-31-26`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
-12. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
+12. Optional missing-brand duplicate check: add `black beans 15oz pantry`, then add or OCR/import `Great Value black beans 15 oz pantry`; confirm the existing row updates instead of creating an unbranded duplicate. Add `Kroger black beans 15 oz pantry` and confirm it remains separate from the Great Value row.
+13. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 

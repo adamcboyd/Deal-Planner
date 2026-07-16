@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (169 Test Cases)
+### 7. Unit Tests (170 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -387,7 +387,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
-- ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
+- ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 169 unit tests
+- ✅ 170 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
