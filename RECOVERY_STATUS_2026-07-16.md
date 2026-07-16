@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `ef84a20 fix: handle camera picker launch failures`
-- The branch may include later docs-only recovery commits, but `ef84a20` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `0a7548c fix: handle camera permission request failures`
+- The branch may include later docs-only recovery commits, but `0a7548c` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -978,6 +978,16 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`. The first attempt without overriding `JAVA_HOME` did not reach Gradle because this shell still pointed to the removed `C:\Program Files\Android\Android Studio\jre` path.
 
+Latest continuation gate after camera permission-request failure status work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Additional check:
 
 ```powershell
@@ -1075,6 +1085,7 @@ Verified by build/unit tests/code inspection:
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Pantry edit/review quantity fields accept comma-decimal and leading-decimal corrections such as `1,5`, `.5`, and `,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
+- Camera permission request launch failures now show visible recovery messages that point to Android Settings or an alternate input path.
 - Camera, gallery, PDF picker, and barcode scanner launch failures now show visible recovery messages instead of crashing the app if Android cannot open the external flow.
 - Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
@@ -1148,6 +1159,7 @@ Not yet verified on a real phone:
 - Gemini pantry photo API call.
 - Android permissions flow.
 - Camera permission denial/cancel and gallery/PDF picker cancel status on the physical phone.
+- Camera permission request-failure status on the physical phone.
 - External camera/picker/scanner launch-failure status on the physical phone.
 - Shopping list startup restore on the physical phone.
 - Kitchen pantry test.

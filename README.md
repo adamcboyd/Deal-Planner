@@ -436,6 +436,7 @@ As of the latest local pass:
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Gallery and PDF imports use picker-scoped URI grants instead of broad storage/media permissions.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
+- Camera permission request launch failures show on-screen recovery messages with settings/manual/picker alternatives.
 - Camera, gallery, PDF picker, and barcode scanner launch failures show on-screen recovery messages instead of closing the app.
 - Blank pantry, barcode, flyer text, and receipt text actions show on-screen status messages instead of silently doing nothing.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.

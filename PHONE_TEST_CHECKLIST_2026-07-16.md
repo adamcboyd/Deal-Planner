@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `ef84a20 fix: handle camera picker launch failures`
+- Current validated app-code checkpoint: `0a7548c fix: handle camera permission request failures`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -268,6 +268,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Deny camera permission on receipt photo.
 - Cancel receipt gallery picker.
 - If a phone cannot open the camera app, gallery picker, PDF picker, or barcode scanner, Deal Planner should stay open and show a visible recovery message with another input option.
+- If Android cannot open the system camera-permission prompt, Deal Planner should stay open and show a visible recovery message pointing to Android Settings or another input option.
 
 ## Pass Criteria
 
@@ -276,7 +277,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Demo data loads repeatably.
 - Manual pantry, deals, and receipt text paths work and show visible status for blank input.
 - Failed pasted flyer/receipt parses keep the pasted text visible for correction.
-- Camera/gallery/PDF/barcode paths either import data or show visible recovery status, including launch failures when Android cannot open the external camera, picker, or scanner flow.
+- Camera/gallery/PDF/barcode paths either import data or show visible recovery status, including permission-request failures and launch failures when Android cannot open the external camera, picker, or scanner flow.
 - Gallery/PDF picker paths work without the APK requesting broad storage/media-library permissions.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
