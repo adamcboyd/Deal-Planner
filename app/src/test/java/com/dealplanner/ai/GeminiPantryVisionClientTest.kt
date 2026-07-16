@@ -213,6 +213,51 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with alternate review question and warning aliases`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "milk",
+                  "quantity": 1,
+                  "unit": "gallon",
+                  "clarifying_questions": [
+                    {"prompt": "Confirm the printed use-by date."},
+                    "Confirm the brand."
+                  ]
+                },
+                {
+                  "product": "rice",
+                  "quantity": 1,
+                  "unit": "bag",
+                  "followUpQuestions": {"message": "Confirm package size."}
+                }
+              ],
+              "review_notes": [
+                {"note": "Some label text was obscured."},
+                "Brand may be missing."
+              ]
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+        assertThat(result.items.first { it.product == "milk" }.questions).containsExactly(
+            "Confirm the printed use-by date.",
+            "Confirm the brand."
+        )
+        assertThat(result.items.first { it.product == "rice" }.questions).containsExactly(
+            "Confirm package size."
+        )
+        assertThat(result.warnings).containsExactly(
+            "Some label text was obscured.",
+            "Brand may be missing."
+        )
+    }
+
+    @Test
     fun `parse pantry vision response with snake case date fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

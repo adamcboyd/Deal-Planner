@@ -224,8 +224,19 @@ class GeminiPantryVisionClient(
         val warnings = root
             .takeIf { it.isJsonObject }
             ?.asJsonObject
-            ?.get("warnings")
-            ?.toStringList()
+            ?.firstStringListOrEmpty(
+                "warnings",
+                "warning",
+                "reviewWarnings",
+                "review_warnings",
+                "overallWarnings",
+                "overall_warnings",
+                "issues",
+                "notes",
+                "reviewNotes",
+                "review_notes",
+                "messages"
+            )
             .orEmpty()
         val items = root.toPantryVisionItemArray()
             ?.mapNotNull { element -> element.takeIf { it.isJsonObject }?.asJsonObject?.toPantryVisionItem() }
@@ -404,7 +415,19 @@ class GeminiPantryVisionClient(
                 "open_date_text"
             ),
             confidence = (get("confidence")?.asFlexibleDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
-            questions = get("questions")?.toStringList().orEmpty()
+            questions = firstStringListOrEmpty(
+                "questions",
+                "question",
+                "clarifyingQuestions",
+                "clarifying_questions",
+                "clarificationQuestions",
+                "clarification_questions",
+                "followUpQuestions",
+                "follow_up_questions",
+                "reviewQuestions",
+                "review_questions",
+                "prompts"
+            )
         )
     }
 
@@ -480,6 +503,14 @@ class GeminiPantryVisionClient(
 
     private fun JsonObject.firstStringOrNull(vararg names: String): String? {
         return names.firstNotNullOfOrNull { name -> getFlexibleStringOrNull(name) }
+    }
+
+    private fun JsonObject.firstStringListOrEmpty(vararg names: String): List<String> {
+        return names.firstNotNullOfOrNull { name ->
+            get(name)
+                ?.toStringList()
+                ?.takeIf { it.isNotEmpty() }
+        }.orEmpty()
     }
 
     private fun JsonObject.firstQuantityParts(vararg names: String): QuantityParts {
