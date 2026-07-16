@@ -1,6 +1,6 @@
-# SNAP Optimizer
+# Deal Planner
 
-A comprehensive Android app for optimizing SNAP (food assistance) benefits through intelligent meal planning, deal tracking, and budget management.
+A comprehensive Android app for stretching food budgets through intelligent meal planning, deal tracking, pantry awareness, and budget management.
 
 ## Core Principle
 
@@ -14,7 +14,7 @@ Parameters → Deals + Pantry → Meals
 
 - **Pantry Management**: Natural language input parser with duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
-- **Deal Tracking**: Camera/gallery flyer OCR with regex parsing
+- **Deal Tracking**: Camera, gallery image, and PDF flyer OCR with regex parsing
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
@@ -55,7 +55,7 @@ Parameters → Deals + Pantry → Meals
 ```
 app/
 ├── src/main/
-│   ├── java/com/snapoptimizer/
+│   ├── java/com/dealplanner/
 │   │   ├── ai/                # Optional Gemini Vision pantry photo client
 │   │   ├── data/
 │   │   │   ├── model/          # Entities (PantryItem, DealItem, etc.)
@@ -102,7 +102,7 @@ Do not commit `local.properties`; it is ignored by Git.
 
 1. **Clone/Open Project**:
    ```powershell
-   cd C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer
+   cd C:\Users\adamc\AndroidStudioProjects\Deal_Planner
    # Open this directory in Android Studio
    ```
 
@@ -133,7 +133,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 Debug APK output:
 
 ```text
-C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer\app\build\outputs\apk\debug\app-debug.apk
+C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk
 ```
 
 ### First Launch
@@ -143,13 +143,13 @@ C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer\app\build\outputs\apk\debug\
    - This seeds:
      - 5 pantry anchors (rice, pasta, oats, beans, oil)
      - 4 sample deals (pork, broccoli, mandarins, chicken)
-     - Default budget ($292 SNAP, $45 spent)
+     - Default budget ($292 food budget, $45 spent)
      - 7-day meal plan
 
 2. **Explore Features**:
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz")
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
-   - **Deals**: Scan flyer photos and view deal scores/details
+   - **Deals**: Scan flyer photos, choose flyer images, or import flyer PDFs and view deal scores/details
    - **Shopping**: See consolidated shopping list with PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
@@ -188,7 +188,13 @@ On the Pantry tab:
 
 ### Scanning Flyers
 
-On the Deals tab, tap **Photo** or **Gallery** to import any store flyer image. ML Kit OCR extracts visible text, then the Deals parser looks for:
+On the Deals tab, use one of three input paths:
+
+1. **Take Flyer Photo** captures a flyer image without saving it to the camera roll.
+2. **Choose Flyer Image** imports an existing screenshot or photo.
+3. **Choose Flyer PDF** renders PDF pages locally and OCRs them with ML Kit.
+
+ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 - `$3.99/lb` (per pound)
 - `2 for $10` (N for X)
@@ -274,7 +280,7 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
-- Deals screen imports flyer photos from camera/gallery through ML Kit OCR.
+- Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
@@ -291,6 +297,7 @@ As of the latest local pass:
 
 - [x] Camera/gallery pantry photo import
 - [ ] Full multi-item shelf review flow with edit-before-save
+- [x] Flyer PDF import through local page rendering and OCR
 - [ ] Barcode scanning for pantry seeding
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF

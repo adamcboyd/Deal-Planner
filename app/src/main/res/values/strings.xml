@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SNAP Optimizer</string>
+    <string name="app_name">Deal Planner</string>
     <string name="pantry">Pantry</string>
     <string name="deals">Deals</string>
     <string name="shopping_list">Shopping List</string>

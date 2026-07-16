@@ -1,4 +1,4 @@
-# SNAP Optimizer - Complete Project Summary
+# Deal Planner - Complete Project Summary
 
 ## ✅ Project Status: COMPLETE & RUNNABLE
 
@@ -14,7 +14,7 @@ This is a **fully functional**, production-ready MVP Android application that co
 ## 📁 Complete File Structure
 
 ```
-SNAP_Optimizer/
+Deal_Planner/
 ├── README.md                          ✅ Complete setup guide
 ├── PROJECT_SUMMARY.md                 ✅ This file
 ├── .gitignore                         ✅ Git configuration
@@ -32,7 +32,7 @@ SNAP_Optimizer/
     └── src/
         ├── main/
         │   ├── AndroidManifest.xml    ✅ App manifest with permissions
-        │   ├── java/com/snapoptimizer/
+        │   ├── java/com/dealplanner/
         │   │   ├── MainActivity.kt    ✅ Main entry point
         │   │   ├── ai/
         │   │   │   └── GeminiPantryVisionClient.kt ✅ Optional AI pantry photo extraction
@@ -74,7 +74,7 @@ SNAP_Optimizer/
         │       └── mipmap-anydpi-v26/
         │           ├── ic_launcher.xml             ✅ Adaptive icon
         │           └── ic_launcher_round.xml       ✅ Round icon
-        └── test/java/com/snapoptimizer/
+        └── test/java/com/dealplanner/
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 11 test cases
             │   └── DealsParserTest.kt         ✅ 8 test cases
@@ -114,7 +114,7 @@ SNAP_Optimizer/
 - ✅ Bitmap processing
 - ✅ URI support for image selection
 - ✅ Pantry camera/gallery import
-- ✅ Flyer camera/gallery import
+- ✅ Flyer camera/gallery/PDF import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ ML Kit OCR fallback when Gemini is not configured
 
@@ -143,7 +143,7 @@ SNAP_Optimizer/
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
-- ✅ **DealsScreen**: Flyer photo/gallery import, deal cards with scores, coupon flags
+- ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
@@ -154,7 +154,7 @@ SNAP_Optimizer/
 - ✅ Seed function with:
   - 5 pantry anchors (rice, pasta, oats, beans, oil)
   - 4 sample deals (pork, chicken, broccoli, mandarins)
-  - Budget state ($292 SNAP)
+  - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
 ### 7. Unit Tests (40 Test Cases)
@@ -185,7 +185,7 @@ SNAP_Optimizer/
 
 1. **Open in Android Studio**:
    ```bash
-   cd SNAP_Optimizer
+   cd Deal_Planner
    # Open in Android Studio Hedgehog or later
    ```
 
@@ -237,7 +237,7 @@ SNAP_Optimizer/
 
 Run all tests:
 ```bash
-cd SNAP_Optimizer
+cd Deal_Planner
 ./gradlew test
 ```
 
@@ -245,7 +245,7 @@ Expected output: **40/40 tests passing**
 
 ## 🎨 Design Principles
 
-1. **Offline-First**: All data local, no network dependency
+1. **Offline-First Core**: Data storage, meal planning, flyer OCR, and parser flows run locally
 2. **Optional LLM**: Gemini Vision is used only for pantry photo extraction when configured
 3. **Rules-Based Meals**: Meal planning remains deterministic
 4. **User Control**: All actions explicit, no surprises

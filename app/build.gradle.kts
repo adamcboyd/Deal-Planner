@@ -18,11 +18,11 @@ val localProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.snapoptimizer"
+    namespace = "com.dealplanner"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.snapoptimizer"
+        applicationId = "com.dealplanner"
         minSdk = 26
         targetSdk = 33
         versionCode = 1

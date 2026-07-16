@@ -33,6 +33,6 @@ SUBTOTAL        $40.65
 TAX              $0.00
 TOTAL           $40.65
 
-SNAP/EBT        $40.65
+EBT/CARD        $40.65
 
 Thank you for shopping at Kroger!

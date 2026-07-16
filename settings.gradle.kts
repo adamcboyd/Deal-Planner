@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SNAP Optimizer"
+rootProject.name = "Deal Planner"
 include(":app")
