@@ -62,7 +62,7 @@ To create deterministic sample files for pasted text, gallery image, and PDF pic
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, and requests Android media scans so picker apps can see the files sooner. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples.
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, and requests Android media scans so picker apps can see the files sooner. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples. The pantry-label sample includes hyphenated `16-ounce` and `12-count` rows for OCR fallback checks.
 
 ## Optional Gemini Setup
 
@@ -218,7 +218,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 5. Pantry gallery:
    - Tap `Gallery`.
    - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` from a generated `phone-test-samples\<timestamp>\` folder.
-   - Expected: same as pantry photo, including common label-date handling.
+   - Expected: same as pantry photo, including common label-date handling and separate rows for the generated `16-ounce` peanut butter and `12-count` eggs labels when OCR can read them.
 6. Optional multi-item OCR fallback:
    - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`, or hyphenated label rows such as `Great Value Peanut Butter 16-ounce` and `Kroger Eggs 12-count`.
    - Expected without Gemini or after AI fallback: the clear item lines import as separate VERIFY pantry rows instead of one combined row.

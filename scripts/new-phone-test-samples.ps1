@@ -364,6 +364,8 @@ Copy-Item -LiteralPath $flyerAsset -Destination $flyerText -Force
 $pantryLines = @(
     "Great Value Black Beans 15 oz pantry best by 2026-12-31",
     "Kroger Pasta 16 oz pantry best by 2026-11-15",
+    "Great Value Peanut Butter 16-ounce pantry best by 2027-03-04",
+    "Kroger Eggs 12-count fridge best by 2026-07-31",
     "Private Selection Salsa 16 oz fridge opened 2026-07-01 best by 2026-08-15"
 )
 Set-Content -LiteralPath $pantryText -Value $pantryLines -Encoding UTF8
@@ -392,14 +394,14 @@ Copy this folder to the Android phone or upload it to a location the phone can o
 - deal-planner-demo-flyer.txt: paste into Deals -> Paste flyer OCR text.
 - deal-planner-demo-flyer.pdf: choose from Deals -> Choose Flyer PDF.
 - deal-planner-demo-flyer.png: choose from Deals -> Choose Flyer Image.
-- deal-planner-demo-pantry-label.txt: reference text for pantry label OCR.
-- deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery.
+- deal-planner-demo-pantry-label.txt: reference text for pantry label OCR, including hyphenated 16-ounce and 12-count rows.
+- deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery for multi-item pantry OCR, including hyphenated package-size rows.
 - deal-planner-demo-upc-a.txt: paste or type into Pantry -> Barcode / UPC.
 - deal-planner-demo-upc-a.png: display on another screen or print, then scan from Pantry -> Scan.
 
 Expected receipt result: the bundled demo receipt imports grocery line items, ignores total/tender lines, and updates Budget.
 Expected flyer result: the bundled demo flyer imports multiple Kroger deals with prices, limits, coupons, and deal scores.
-Expected pantry result: the label image imports separate VERIFY pantry rows, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
+Expected pantry result: the label image imports separate VERIFY pantry rows, including the 16-ounce peanut butter and 12-count eggs rows, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
 Expected barcode result: the UPC imports a VERIFY barcode item, using Open Food Facts details when available or fallback barcode details otherwise.
 "@
 
