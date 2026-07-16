@@ -87,7 +87,7 @@ Deal_Planner/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 25 test cases
-            │   └── DealsParserTest.kt         ✅ 17 test cases
+            │   └── DealsParserTest.kt         ✅ 18 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
@@ -117,7 +117,7 @@ Deal_Planner/
   - Plain package prices such as 3 lb bag $2.99
   - Dollar/no-dollar flyer OCR price parsing
   - N for $X pattern
-  - Buy N Get M and BOGO/B1G1/BOGO-percent shorthand patterns
+  - Buy N Get M with numeric or word numbers, plus BOGO/B1G1/BOGO-percent shorthand patterns
   - Percent off pattern
   - Coupon/limit detection
   - Multi-line flyer names and modifiers from bundled demo flyer text
@@ -189,11 +189,11 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (96 Test Cases)
+### 7. Unit Tests (97 Test Cases)
 - ✅ GeminiPantryVisionClientTest (14 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (25 tests)
-- ✅ DealsParserTest (17 tests)
+- ✅ DealsParserTest (18 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (15 tests)
@@ -385,7 +385,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
 - ✅ Parses flyer prices with or without dollar signs, including cent-style prices such as 99c/lb and 88c
-- ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, BOGO, B1G1, and BOGO-percent modifiers
+- ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
@@ -423,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 96 unit tests
+- ✅ 97 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -342,6 +342,14 @@ Latest continuation gate after hyphenated pantry date-label parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `96` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after word-number buy-get flyer promo parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `97` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -407,6 +415,7 @@ Verified by build/unit tests/code inspection:
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
+- Deals parser handles word-number buy-get flyer promos such as `Buy One Get One Free` and `Buy Two Get One Free`.
 - Deals parser handles BOGO flyer shorthand such as `BOGO Free` and `B1G1` without merging the next flyer item or treating `B1G1` as a package size.
 - Deals parser handles BOGO second-item percent discounts such as `BOGO 50% off` as a 25% effective overall discount.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.

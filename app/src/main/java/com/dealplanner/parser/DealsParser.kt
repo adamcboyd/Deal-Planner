@@ -26,7 +26,10 @@ class DealsParser {
     private val centsPricePerUnitPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
-    private val buyNGetMPattern = Regex("""buy\s*(\d+)\s*get\s*(\d+)(?:\s*free)?""", RegexOption.IGNORE_CASE)
+    private val buyNGetMPattern = Regex(
+        """buy\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*get\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*free)?""",
+        RegexOption.IGNORE_CASE
+    )
     private val bogoPercentPattern = Regex("""\bbogo\s*(\d+)%\s*off\b""", RegexOption.IGNORE_CASE)
     private val bogoPattern = Regex("""\b(?:bogo(?:\s*free)?|b1g1(?:\s*free)?)\b""", RegexOption.IGNORE_CASE)
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
@@ -202,8 +205,8 @@ class DealsParser {
 
         // 5. Buy N Get M: Buy 2 Get 1
         buyNGetMPattern.find(line)?.let { match ->
-            val buyN = match.groupValues[1].toInt()
-            val getM = match.groupValues[2].toInt()
+            val buyN = match.groupValues[1].toDealCount() ?: return null
+            val getM = match.groupValues[2].toDealCount() ?: return null
             dealType = "buy_n_get_m"
             unit = "ea"
 
@@ -522,7 +525,23 @@ class DealsParser {
         return value.toInt() / 100.0
     }
 
+    private fun String.toDealCount(): Int? {
+        return toIntOrNull() ?: dealCountWords[lowercase()]
+    }
+
     private companion object {
+        private val dealCountWords = mapOf(
+            "one" to 1,
+            "two" to 2,
+            "three" to 3,
+            "four" to 4,
+            "five" to 5,
+            "six" to 6,
+            "seven" to 7,
+            "eight" to 8,
+            "nine" to 9,
+            "ten" to 10
+        )
         private val flyerDatePattern = Regex("""\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b""")
         private val flyerMetadataPrefixes = listOf(
             "valid ",

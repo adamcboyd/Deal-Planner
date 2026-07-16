@@ -89,6 +89,29 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse buy get deals with word numbers`() {
+        val text = """
+            Bagels
+            Buy One Get One Free
+
+            Sparkling Water
+            Buy Two Get One Free
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(2)
+
+        val bagels = result.deals.first { it.name == "Bagels" }
+        assertThat(bagels.dealType).isEqualTo("buy_n_get_m")
+        assertThat(bagels.discountPercent).isEqualTo(50.0)
+
+        val sparklingWater = result.deals.first { it.name == "Sparkling Water" }
+        assertThat(sparklingWater.dealType).isEqualTo("buy_n_get_m")
+        assertThat(sparklingWater.discountPercent).isWithin(0.1).of(33.3)
+    }
+
+    @Test
     fun `parse BOGO flyer shorthand deals`() {
         val text = """
             Greek Yogurt
