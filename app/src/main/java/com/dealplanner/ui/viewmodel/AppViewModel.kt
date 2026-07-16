@@ -264,6 +264,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 return@launch
             }
 
+            _dealsScanStatus.value = "Processing flyer text..."
             val result = dealsParser.parse(cleanedText, store.ifBlank { "Unknown" })
             if (result.deals.isEmpty()) {
                 _dealsScanStatus.value = "No deals found. Try clearer flyer text."
@@ -503,6 +504,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
+        _receiptScanStatus.value = "Processing receipt text..."
         try {
             val currentDeals = repository.getAllDeals()
             val pantry = repository.getAllPantryItems()

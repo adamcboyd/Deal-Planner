@@ -36,6 +36,7 @@ fun DealsScreen(viewModel: AppViewModel) {
     val dealsScanStatus by viewModel.dealsScanStatus.collectAsState()
     var storeName by remember { mutableStateOf("Unknown") }
     var flyerText by remember { mutableStateOf("") }
+    var clearFlyerTextOnSuccess by remember { mutableStateOf(false) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -82,6 +83,21 @@ fun DealsScreen(viewModel: AppViewModel) {
         }
     }
 
+    LaunchedEffect(dealsScanStatus) {
+        val status = dealsScanStatus.orEmpty()
+        if (!clearFlyerTextOnSuccess) return@LaunchedEffect
+
+        when {
+            status.startsWith("Added ") && status.contains("flyer deal") -> {
+                flyerText = ""
+                clearFlyerTextOnSuccess = false
+            }
+            status.startsWith("No ") || status.startsWith("Could not") -> {
+                clearFlyerTextOnSuccess = false
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         // Header with add button
         Card(
@@ -124,10 +140,8 @@ fun DealsScreen(viewModel: AppViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
+                        clearFlyerTextOnSuccess = flyerText.isNotBlank()
                         viewModel.processDealsOCR(flyerText, storeName)
-                        if (flyerText.isNotBlank()) {
-                            flyerText = ""
-                        }
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {

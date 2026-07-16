@@ -37,6 +37,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +63,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
     val receiptScanStatus by viewModel.receiptScanStatus.collectAsState()
     var storeName by remember { mutableStateOf("Unknown") }
     var receiptText by remember { mutableStateOf("") }
+    var clearReceiptTextOnSuccess by remember { mutableStateOf(false) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -95,6 +97,21 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
             cameraLauncher.launch(uri)
         } else {
             viewModel.reportReceiptCameraPermissionDenied()
+        }
+    }
+
+    LaunchedEffect(receiptScanStatus) {
+        val status = receiptScanStatus.orEmpty()
+        if (!clearReceiptTextOnSuccess) return@LaunchedEffect
+
+        when {
+            status.startsWith("Added ") && status.contains("receipt item") -> {
+                receiptText = ""
+                clearReceiptTextOnSuccess = false
+            }
+            status.startsWith("No ") || status.startsWith("Could not") -> {
+                clearReceiptTextOnSuccess = false
+            }
         }
     }
 
@@ -132,10 +149,8 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
+                        clearReceiptTextOnSuccess = receiptText.isNotBlank()
                         viewModel.processReceiptOCR(receiptText, storeName)
-                        if (receiptText.isNotBlank()) {
-                            receiptText = ""
-                        }
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {

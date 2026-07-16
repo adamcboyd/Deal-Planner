@@ -535,6 +535,22 @@ Latest continuation gate after exact phone-checklist parser coverage:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused manual OCR field-retention check:
+
+```powershell
+.\gradlew.bat compileDebugKotlin testDebugUnitTest --tests "com.dealplanner.parser.DealsParserTest" --tests "com.dealplanner.domain.ReceiptReconcilerTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after manual OCR field-retention work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -625,11 +641,13 @@ Verified by build/unit tests/code inspection:
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
 - Flyer photo/gallery/PDF/manual text input exists.
+- Flyer pasted-text import shows processing status, keeps pasted text available when parsing finds no deals, and clears it only after successful deal import.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Flyer deal edit/review numeric fields accept comma-decimal corrections for price, PPU, discount, score, and confidence.
 - Receipt photo/gallery/manual text input exists.
+- Receipt pasted-text import shows processing status, keeps pasted text available when parsing finds no receipt line items, and clears it only after successful receipt import.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence.
 - Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.

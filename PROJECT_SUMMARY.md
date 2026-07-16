@@ -177,9 +177,9 @@ Deal_Planner/
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, barcode/manual code intake, photo/gallery import, VERIFY badges
 - ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
-- ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, store-aware deal cards with scores, coupon flags
+- ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, processing status, failed-parse text retention, store-aware deal cards with scores, coupon flags
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
-- ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
+- ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, processing status, failed-parse text retention, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings

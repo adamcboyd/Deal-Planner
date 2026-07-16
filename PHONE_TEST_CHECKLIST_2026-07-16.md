@@ -105,10 +105,12 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Set store to `Kroger`.
 4. Tap `Process Text`.
 5. Confirm multiple deals are added with store `Kroger`, prices, deal scores, and coupon/limit flags where applicable.
-6. Edit one deal and save it.
-7. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
-8. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
-9. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+6. Confirm the pasted flyer field clears after successful import.
+7. Edit one deal and save it.
+8. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
+9. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+10. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+11. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -117,12 +119,14 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Set store to `Kroger`.
 4. Tap `Process Text`.
 5. Confirm receipt items are added.
-6. Confirm Budget spending/projection changes after receipt import.
-7. Edit one receipt line and confirm Budget updates.
-8. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
-9. Delete one receipt line and confirm Budget updates again.
-10. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-11. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+6. Confirm the pasted receipt field clears after successful import.
+7. Confirm Budget spending/projection changes after receipt import.
+8. Edit one receipt line and confirm Budget updates.
+9. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
+10. Delete one receipt line and confirm Budget updates again.
+11. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+12. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+13. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ## Phone Input Tests
 
@@ -216,6 +220,7 @@ Verify these show visible status messages instead of silent failures:
 - No crash during tab navigation.
 - Demo data loads repeatably.
 - Manual pantry, deals, and receipt text paths work and show visible status for blank input.
+- Failed pasted flyer/receipt parses keep the pasted text visible for correction.
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
