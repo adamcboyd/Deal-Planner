@@ -237,7 +237,7 @@ On the Receipts tab:
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Low-confidence matches are marked with a review warning.
 6. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
-7. Receipt edits and deletes adjust pantry quantities and budget spending so Pantry and Budget stay in sync.
+7. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 8. Subtotal, tax, total, payment, and EBT/card lines are ignored so only grocery items affect spending.
 9. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 
@@ -254,8 +254,8 @@ Click "Generate" in the Menu tab to create a 7-day plan:
 
 The Budget tab shows:
 - Current balance
-- Daily envelope (auto-calculated)
-- Projected spend
+- Daily envelope (auto-calculated from remaining budget and receipt spending)
+- Projected spend from current-month receipt/budget history
 - Surplus/deficit warnings
 - Smart suggestions (stock up, pull from freezer, etc.)
 
@@ -281,7 +281,7 @@ Tests cover:
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Deal regex patterns (all deal types)
 - Meal planning (GERD-filtering, anchors)
-- Budget calculations (surplus, deficit)
+- Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP)
 - Gemini configuration guardrails
 
@@ -340,7 +340,7 @@ As of the latest local pass:
 - Receipt reconciliation ignores subtotal, tax, total, savings, and payment/tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
-- Receipt edits and deletes adjust budget spending totals.
+- Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.

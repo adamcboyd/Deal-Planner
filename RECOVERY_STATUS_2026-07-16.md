@@ -38,6 +38,14 @@ Latest continuation gate after pantry duplicate upsert work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after receipt-aware budget analysis work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -83,7 +91,8 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.
 - Receipt totals are rounded to cents before budget updates.
-- Receipt edits and deletes adjust budget spending totals.
+- Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
+- Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
@@ -161,6 +170,8 @@ gemini.model=gemini-3.5-flash
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
    - Receipts edit/delete budget total adjustment.
+   - Budget daily envelope changes after receipt import, receipt total edit, and receipt delete.
+   - Budget projected spend reflects current-month receipt history.
    - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.

@@ -86,7 +86,7 @@ Deal_Planner/
             │   └── DealsParserTest.kt         ✅ 11 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
-                ├── BudgetEngineTest.kt        ✅ 8 test cases
+                ├── BudgetEngineTest.kt        ✅ 10 test cases
                 └── ReceiptReconcilerTest.kt   ✅ 10 test cases
 ```
 
@@ -142,7 +142,8 @@ Deal_Planner/
 - ✅ **BudgetEngine**:
   - Daily envelope calculation
   - Surplus/deficit analysis
-  - Projected spend tracking
+  - Receipt-aware projected spend tracking
+  - Daily envelope recalculation after receipt edits/deletes
   - Smart suggestions
 
 - ✅ **ReceiptReconciler**:
@@ -173,12 +174,12 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (58 Test Cases)
+### 7. Unit Tests (60 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (11 tests)
 - ✅ MealPlanningEngineTest (5 tests)
-- ✅ BudgetEngineTest (8 tests)
+- ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (10 tests)
 
 ## 🔧 Technology Stack
@@ -365,6 +366,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Ignores receipt subtotal, tax, total, savings, and tender/payment lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
+- ✅ Recalculates budget daily envelope and projected spend from current-month receipt history
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Tracks budget
@@ -389,7 +391,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 58 unit tests
+- ✅ 60 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -357,7 +357,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun updateBudgetAnalysis() {
         val budget = repository.getBudget() ?: return
-        val receipts = emptyList<ReceiptItem>() // Would load actual receipts
+        val receipts = repository.getAllReceipts()
         val analysis = budgetEngine.analyzeBudget(budget, receipts)
         _budgetAnalysis.value = analysis
     }

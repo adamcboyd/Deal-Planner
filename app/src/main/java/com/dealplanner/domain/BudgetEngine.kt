@@ -28,14 +28,18 @@ class BudgetEngine {
         budgetState: BudgetState,
         receipts: List<ReceiptItem>
     ): BudgetAnalysis {
-        val currentBalance = budgetState.startingBudget - budgetState.spentToDate
         val monthStart = budgetState.monthStart
         val monthEnd = monthStart.plusMonths(1)
-        val daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), monthEnd).toInt()
+        val currentMonthReceiptSpend = receipts
+            .filter { receipt -> !receipt.date.isBefore(monthStart) && receipt.date.isBefore(monthEnd) }
+            .sumOf { it.totalCost }
+        val spendToDate = maxOf(budgetState.spentToDate, currentMonthReceiptSpend)
+        val currentBalance = budgetState.startingBudget - spendToDate
+        val daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), monthEnd).toInt().coerceAtLeast(0)
 
         // Calculate projected spend based on current rate
         val daysElapsed = ChronoUnit.DAYS.between(monthStart, LocalDate.now()).toInt().coerceAtLeast(1)
-        val avgDailySpend = budgetState.spentToDate / daysElapsed
+        val avgDailySpend = spendToDate / daysElapsed
         val projectedSpend = avgDailySpend * daysRemaining
 
         // Calculate surplus/deficit
@@ -64,7 +68,7 @@ class BudgetEngine {
 
         return BudgetAnalysis(
             currentBalance = currentBalance,
-            dailyBudget = budgetState.dailyEnvelope,
+            dailyBudget = currentBalance / daysRemaining.coerceAtLeast(1),
             projectedSpend = projectedSpend,
             surplus = surplus,
             daysRemaining = daysRemaining,
@@ -102,9 +106,12 @@ class BudgetEngine {
         budgetState: BudgetState,
         receiptDelta: Double
     ): BudgetState {
-        return budgetState.copy(
+        val adjustedBudget = budgetState.copy(
             spentToDate = (budgetState.spentToDate + receiptDelta).coerceAtLeast(0.0),
             projectedSpend = (budgetState.projectedSpend + receiptDelta).coerceAtLeast(0.0)
+        )
+        return adjustedBudget.copy(
+            dailyEnvelope = calculateDailyEnvelope(adjustedBudget)
         )
     }
 }

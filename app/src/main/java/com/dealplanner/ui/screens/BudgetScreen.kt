@@ -14,6 +14,7 @@ import com.dealplanner.ui.viewmodel.AppViewModel
 fun BudgetScreen(viewModel: AppViewModel) {
     val budgetState by viewModel.budgetState.collectAsState()
     val budgetAnalysis by viewModel.budgetAnalysis.collectAsState()
+    val displayDailyEnvelope = budgetAnalysis?.dailyBudget ?: budgetState?.dailyEnvelope ?: 0.0
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -64,7 +65,7 @@ fun BudgetScreen(viewModel: AppViewModel) {
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            "${"$%.2f".format(budgetState?.dailyEnvelope ?: 0.0)}",
+                            "${"$%.2f".format(displayDailyEnvelope)}",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.secondary
                         )
