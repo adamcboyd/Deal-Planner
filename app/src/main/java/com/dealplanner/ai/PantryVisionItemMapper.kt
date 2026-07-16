@@ -15,6 +15,12 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     val missingAmount = quantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
     val missingLocation = location.isMissingLocation()
     val missingDate = parsedBestBy == null
+    val reviewNotes = buildReviewNotes(
+        missingBrand = missingBrand,
+        missingAmount = missingAmount,
+        missingLocation = missingLocation,
+        missingDate = missingDate
+    )
 
     return PantryItem(
         item = productName,
@@ -25,7 +31,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
         location = location?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "pantry",
         opened = parsedOpened,
         bestBy = parsedBestBy,
-        notes = mergeNotes("AI photo import", questionNotes, warningNotes, unparsedOpenedNote, unparsedBestByNote),
+        notes = mergeNotes("AI photo import", reviewNotes, questionNotes, warningNotes, unparsedOpenedNote, unparsedBestByNote),
         needsVerify = confidence < 0.85 ||
             questions.isNotEmpty() ||
             missingBrand ||
@@ -47,6 +53,22 @@ private fun String?.isMissingBrand(): Boolean {
 private fun String?.isMissingLocation(): Boolean {
     val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
     return normalized == "unknown"
+}
+
+private fun buildReviewNotes(
+    missingBrand: Boolean,
+    missingAmount: Boolean,
+    missingLocation: Boolean,
+    missingDate: Boolean
+): String? {
+    return listOfNotNull(
+        "Review brand.".takeIf { missingBrand },
+        "Review amount/unit.".takeIf { missingAmount },
+        "Review pantry/fridge/freezer location.".takeIf { missingLocation },
+        "Review expiration or best-by date.".takeIf { missingDate }
+    )
+        .joinToString(" ")
+        .ifBlank { null }
 }
 
 private fun String?.toUnparsedDateNote(label: String, parsed: Boolean): String? {

@@ -80,6 +80,10 @@ class PantryVisionItemMapperTest {
         assertThat(pantryItem.qty).isEqualTo(1.0)
         assertThat(pantryItem.location).isEqualTo("pantry")
         assertThat(pantryItem.needsVerify).isTrue()
+        assertThat(pantryItem.notes).contains("Review brand.")
+        assertThat(pantryItem.notes).contains("Review amount/unit.")
+        assertThat(pantryItem.notes).contains("Review pantry/fridge/freezer location.")
+        assertThat(pantryItem.notes).contains("Review expiration or best-by date.")
     }
 
     @Test
@@ -102,6 +106,7 @@ class PantryVisionItemMapperTest {
         assertThat(pantryItem).isNotNull()
         assertThat(pantryItem!!.unit).isNull()
         assertThat(pantryItem.needsVerify).isTrue()
+        assertThat(pantryItem.notes).contains("Review amount/unit.")
     }
 
     @Test
@@ -115,10 +120,12 @@ class PantryVisionItemMapperTest {
         assertThat(genericPantryItem).isNotNull()
         assertThat(genericPantryItem!!.brand).isEqualTo("Generic")
         assertThat(genericPantryItem.needsVerify).isTrue()
+        assertThat(genericPantryItem.notes).contains("Review brand.")
 
         assertThat(unknownPantryItem).isNotNull()
         assertThat(unknownPantryItem!!.brand).isEqualTo("Generic")
         assertThat(unknownPantryItem.needsVerify).isTrue()
+        assertThat(unknownPantryItem.notes).contains("Review brand.")
     }
 
     @Test
@@ -132,10 +139,12 @@ class PantryVisionItemMapperTest {
         assertThat(missingLocationPantryItem).isNotNull()
         assertThat(missingLocationPantryItem!!.location).isEqualTo("pantry")
         assertThat(missingLocationPantryItem.needsVerify).isTrue()
+        assertThat(missingLocationPantryItem.notes).contains("Review pantry/fridge/freezer location.")
 
         assertThat(unknownLocationPantryItem).isNotNull()
         assertThat(unknownLocationPantryItem!!.location).isEqualTo("pantry")
         assertThat(unknownLocationPantryItem.needsVerify).isTrue()
+        assertThat(unknownLocationPantryItem.notes).contains("Review pantry/fridge/freezer location.")
     }
 
     private fun completeVisionItem() = GeminiPantryVisionClient.PantryVisionItem(
