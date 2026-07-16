@@ -80,7 +80,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 7 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 9 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 12 test cases
@@ -132,6 +132,7 @@ Deal_Planner/
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
+- ✅ Gemini pantry response parsing for fenced JSON and minor model-output variations
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -182,8 +183,8 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (65 Test Cases)
-- ✅ GeminiPantryVisionClientTest (7 tests)
+### 7. Unit Tests (67 Test Cases)
+- ✅ GeminiPantryVisionClientTest (9 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -365,6 +366,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
+- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, and clamped confidence
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
@@ -408,7 +410,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
-- ✅ 65 unit tests
+- ✅ 67 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

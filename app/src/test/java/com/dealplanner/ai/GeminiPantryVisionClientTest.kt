@@ -57,4 +57,75 @@ class GeminiPantryVisionClientTest {
         assertThat(result.success).isFalse()
         assertThat(result.message).contains("not configured")
     }
+
+    @Test
+    fun `parse pantry vision response from fenced json`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            ```JSON
+            {
+              "items": [
+                {
+                  "brand": "Great Value",
+                  "product": "black beans",
+                  "quantity": 2,
+                  "unit": "can",
+                  "size": "15 oz",
+                  "location": "pantry",
+                  "expirationDate": "2026-12-31",
+                  "openedDate": null,
+                  "confidence": 0.91,
+                  "questions": []
+                }
+              ],
+              "warnings": ["label partially visible"]
+            }
+            ```
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.brand).isEqualTo("Great Value")
+        assertThat(item.product).isEqualTo("black beans")
+        assertThat(item.quantity).isEqualTo(2.0)
+        assertThat(item.unit).isEqualTo("can")
+        assertThat(item.size).isEqualTo("15 oz")
+        assertThat(item.location).isEqualTo("pantry")
+        assertThat(item.expirationDate).isEqualTo("2026-12-31")
+        assertThat(item.confidence).isEqualTo(0.91)
+        assertThat(result.warnings).containsExactly("label partially visible")
+    }
+
+    @Test
+    fun `parse pantry vision response with commentary and scalar fields`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            Here is the JSON:
+            {
+              "items": [
+                {
+                  "item": "rolled oats",
+                  "quantity": "1.5",
+                  "unit": "container",
+                  "confidence": 1.4,
+                  "questions": "What is the expiration date?"
+                },
+                "not an object"
+              ],
+              "warnings": "amount estimated"
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.product).isEqualTo("rolled oats")
+        assertThat(item.quantity).isEqualTo(1.5)
+        assertThat(item.confidence).isEqualTo(1.0)
+        assertThat(item.questions).containsExactly("What is the expiration date?")
+        assertThat(result.warnings).containsExactly("amount estimated")
+    }
 }

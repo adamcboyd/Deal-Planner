@@ -287,7 +287,7 @@ Tests cover:
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
-- Gemini configuration guardrails (placeholder keys, model fallback, whitespace/prefix normalization)
+- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions)
 
 ## Key Algorithms
 
@@ -355,6 +355,7 @@ As of the latest local pass:
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
+- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, and confidence clamping.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

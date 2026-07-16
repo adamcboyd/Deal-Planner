@@ -200,18 +200,15 @@ class GeminiPantryVisionClient(
             .joinToString("\n")
     }
 
-    private fun parseVisionResult(rawText: String): PantryVisionResult {
-        val cleaned = rawText
-            .trim()
-            .removePrefix("```json")
-            .removePrefix("```")
-            .removeSuffix("```")
-            .trim()
+    internal fun parseVisionResult(rawText: String): PantryVisionResult {
+        val cleaned = rawText.extractJsonObjectText()
 
         val root = JsonParser.parseString(cleaned).asJsonObject
-        val warnings = root.getAsJsonArray("warnings")?.toStringList().orEmpty()
-        val items = root.getAsJsonArray("items")
-            ?.mapNotNull { element -> element.asJsonObject.toPantryVisionItem() }
+        val warnings = root.get("warnings")?.toStringList().orEmpty()
+        val items = root.get("items")
+            ?.takeIf { it.isJsonArray }
+            ?.asJsonArray
+            ?.mapNotNull { element -> element.takeIf { it.isJsonObject }?.asJsonObject?.toPantryVisionItem() }
             .orEmpty()
 
         return PantryVisionResult(
@@ -234,9 +231,31 @@ class GeminiPantryVisionClient(
             location = getStringOrNull("location"),
             expirationDate = getStringOrNull("expirationDate"),
             openedDate = getStringOrNull("openedDate"),
-            confidence = get("confidence")?.asDoubleOrNull() ?: 0.5,
-            questions = getAsJsonArray("questions")?.toStringList().orEmpty()
+            confidence = (get("confidence")?.asDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
+            questions = get("questions")?.toStringList().orEmpty()
         )
+    }
+
+    private fun String.extractJsonObjectText(): String {
+        val trimmed = trim()
+        val unfenced = if (trimmed.startsWith("```")) {
+            trimmed
+                .lineSequence()
+                .drop(1)
+                .joinToString("\n")
+                .removeSuffix("```")
+                .trim()
+        } else {
+            trimmed
+        }
+
+        val start = unfenced.indexOf('{')
+        val end = unfenced.lastIndexOf('}')
+        return if (start >= 0 && end >= start) {
+            unfenced.substring(start, end + 1).trim()
+        } else {
+            unfenced
+        }
     }
 
     private fun JsonObject.getStringOrNull(name: String): String? {
@@ -253,9 +272,13 @@ class GeminiPantryVisionClient(
         }
     }
 
-    private fun JsonArray.toStringList(): List<String> {
-        return mapNotNull { element ->
-            if (element.isJsonNull) null else element.asString.trim().ifBlank { null }
+    private fun JsonElement.toStringList(): List<String> {
+        return when {
+            isJsonNull -> emptyList()
+            isJsonArray -> asJsonArray.mapNotNull { element ->
+                if (element.isJsonNull) null else element.asString.trim().ifBlank { null }
+            }
+            else -> listOfNotNull(asString.trim().ifBlank { null })
         }
     }
 
