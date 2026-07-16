@@ -419,7 +419,7 @@ As of the latest local pass:
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs or uses comma decimals, including cent-style prices such as `99c/lb` and `88c`.
-- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal price, PPU, discount, score, and confidence corrections.
+- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal price, PPU, discount, score, and confidence corrections with visible validation for invalid numeric values.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
 - Blank pantry, barcode, flyer text, and receipt text actions show on-screen status messages instead of silently doing nothing.
@@ -434,7 +434,7 @@ As of the latest local pass:
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs or uses comma decimals.
 - Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
-- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal quantity, total, and confidence corrections.
+- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal support, non-negative validation, and visible saved feedback.

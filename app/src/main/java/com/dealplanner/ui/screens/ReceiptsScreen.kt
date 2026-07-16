@@ -324,6 +324,14 @@ fun ReceiptItemEditDialog(
     var confidence by remember(receipt.id) { mutableStateOf(receipt.confidence.toString()) }
     var date by remember(receipt.id) { mutableStateOf(receipt.date.toString()) }
     var needsReview by remember(receipt.id) { mutableStateOf(receipt.needsReview) }
+    val parsedQty = qty.toFlexibleDoubleOrNull()
+    val isQtyValid = qty.isBlank() || (parsedQty != null && parsedQty >= 0.0)
+    val parsedTotalCost = totalCost.toFlexibleDoubleOrNull()
+    val isTotalCostValid = parsedTotalCost != null && parsedTotalCost >= 0.0
+    val parsedMatchedItemId = matchedItemId.toLongOrNull()
+    val isMatchedItemIdValid = matchedItemId.isBlank() || (parsedMatchedItemId != null && parsedMatchedItemId >= 0L)
+    val parsedConfidence = confidence.toFlexibleDoubleOrNull()
+    val isConfidenceValid = parsedConfidence != null && parsedConfidence in 0.0..1.0
     val parsedDate = date.toLocalDateOrNull()
     val isDateValid = parsedDate != null
 
@@ -350,6 +358,7 @@ fun ReceiptItemEditDialog(
                             onValueChange = { qty = it },
                             label = { Text("Qty") },
                             modifier = Modifier.weight(1f),
+                            isError = !isQtyValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -357,7 +366,15 @@ fun ReceiptItemEditDialog(
                             onValueChange = { totalCost = it },
                             label = { Text("Total") },
                             modifier = Modifier.weight(1f),
+                            isError = !isTotalCostValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isQtyValid || !isTotalCostValid) {
+                        Text(
+                            "Use non-negative quantity and total values, or leave quantity blank.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -384,7 +401,15 @@ fun ReceiptItemEditDialog(
                             onValueChange = { matchedItemId = it },
                             label = { Text("Match ID") },
                             modifier = Modifier.weight(1f),
+                            isError = !isMatchedItemIdValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isMatchedItemIdValid) {
+                        Text(
+                            "Use a whole-number match ID or leave blank.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -395,6 +420,7 @@ fun ReceiptItemEditDialog(
                             onValueChange = { confidence = it },
                             label = { Text("Confidence 0-1") },
                             modifier = Modifier.weight(1f),
+                            isError = !isConfidenceValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -404,6 +430,13 @@ fun ReceiptItemEditDialog(
                             modifier = Modifier.weight(1f),
                             isError = !isDateValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isConfidenceValid) {
+                        Text(
+                            "Use a confidence value from 0 to 1.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                     if (!isDateValid) {
@@ -432,18 +465,21 @@ fun ReceiptItemEditDialog(
         confirmButton = {
             TextButton(
                 enabled = rawLine.isNotBlank() &&
-                    totalCost.toFlexibleDoubleOrNull() != null &&
+                    isQtyValid &&
+                    isTotalCostValid &&
+                    isMatchedItemIdValid &&
+                    isConfidenceValid &&
                     isDateValid,
                 onClick = {
                     onSave(
                         receipt.copy(
                             rawLine = rawLine.trim(),
-                            matchedItemId = matchedItemId.toLongOrNull(),
+                            matchedItemId = parsedMatchedItemId,
                             matchedType = matchedType.trim().ifBlank { null },
-                            qty = qty.toFlexibleDoubleOrNull(),
-                            totalCost = totalCost.toFlexibleDoubleOrNull() ?: receipt.totalCost,
+                            qty = parsedQty,
+                            totalCost = parsedTotalCost ?: receipt.totalCost,
                             date = parsedDate ?: receipt.date,
-                            confidence = confidence.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: receipt.confidence,
+                            confidence = parsedConfidence ?: receipt.confidence,
                             store = store.trim().ifBlank { null },
                             needsReview = needsReview
                         )

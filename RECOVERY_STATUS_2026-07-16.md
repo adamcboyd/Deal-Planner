@@ -640,6 +640,14 @@ Latest continuation gate after Pantry edit quantity validation work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Deal and Receipt edit numeric validation work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -741,11 +749,11 @@ Verified by build/unit tests/code inspection:
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
-- Flyer deal edit/review numeric fields accept comma-decimal corrections for price, PPU, discount, score, and confidence.
+- Flyer deal edit/review numeric fields accept comma-decimal corrections for price, PPU, discount, score, and confidence, and block invalid values with visible validation.
 - Receipt photo/gallery/manual text input exists.
 - Receipt pasted-text import shows processing status, keeps pasted text available when parsing finds no receipt line items, and clears it only after successful receipt import.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
-- Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence.
+- Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence, and block invalid quantity, total, match ID, and confidence values with visible validation.
 - Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.
 - Bundled `demo_receipt.txt` also has unit coverage for the phone checklist appended tender lines `VISA DEBIT $40.65` and `CARD TENDER $40.65`.
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.

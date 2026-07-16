@@ -359,6 +359,18 @@ fun DealItemEditDialog(
     var limit by remember(deal.id) { mutableStateOf(deal.limit?.toString().orEmpty()) }
     var validUntil by remember(deal.id) { mutableStateOf(deal.validUntil?.toString().orEmpty()) }
     var couponFlag by remember(deal.id) { mutableStateOf(deal.couponFlag) }
+    val parsedPrice = price.toFlexibleDoubleOrNull()
+    val isPriceValid = parsedPrice != null && parsedPrice >= 0.0
+    val parsedLimit = limit.toIntOrNull()
+    val isLimitValid = limit.isBlank() || (parsedLimit != null && parsedLimit >= 0)
+    val parsedPricePerUnit = pricePerUnit.toFlexibleDoubleOrNull()
+    val isPricePerUnitValid = parsedPricePerUnit != null && parsedPricePerUnit >= 0.0
+    val parsedDiscountPercent = discountPercent.toFlexibleDoubleOrNull()
+    val isDiscountPercentValid = parsedDiscountPercent != null && parsedDiscountPercent in 0.0..100.0
+    val parsedDealScore = dealScore.toFlexibleDoubleOrNull()
+    val isDealScoreValid = parsedDealScore != null && parsedDealScore in 0.0..1.0
+    val parsedConfidence = confidence.toFlexibleDoubleOrNull()
+    val isConfidenceValid = parsedConfidence != null && parsedConfidence in 0.0..1.0
     val parsedValidUntil = validUntil.toLocalDateOrNull()
     val isValidUntilValid = validUntil.isBlank() || parsedValidUntil != null
 
@@ -385,6 +397,7 @@ fun DealItemEditDialog(
                             onValueChange = { price = it },
                             label = { Text("Price") },
                             modifier = Modifier.weight(1f),
+                            isError = !isPriceValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -393,6 +406,13 @@ fun DealItemEditDialog(
                             label = { Text("Unit") },
                             modifier = Modifier.weight(1f),
                             singleLine = true
+                        )
+                    }
+                    if (!isPriceValid) {
+                        Text(
+                            "Use a non-negative price like 2.99 or 2,99.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -437,7 +457,15 @@ fun DealItemEditDialog(
                             onValueChange = { limit = it },
                             label = { Text("Limit") },
                             modifier = Modifier.weight(1f),
+                            isError = !isLimitValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isLimitValid) {
+                        Text(
+                            "Use a whole number limit or leave blank.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -448,6 +476,7 @@ fun DealItemEditDialog(
                             onValueChange = { pricePerUnit = it },
                             label = { Text("PPU") },
                             modifier = Modifier.weight(1f),
+                            isError = !isPricePerUnitValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -455,7 +484,15 @@ fun DealItemEditDialog(
                             onValueChange = { discountPercent = it },
                             label = { Text("% off") },
                             modifier = Modifier.weight(1f),
+                            isError = !isDiscountPercentValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isPricePerUnitValid || !isDiscountPercentValid) {
+                        Text(
+                            "Use non-negative PPU and percent off from 0 to 100.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -466,6 +503,7 @@ fun DealItemEditDialog(
                             onValueChange = { dealScore = it },
                             label = { Text("Score 0-1") },
                             modifier = Modifier.weight(1f),
+                            isError = !isDealScoreValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -473,7 +511,15 @@ fun DealItemEditDialog(
                             onValueChange = { confidence = it },
                             label = { Text("Confidence 0-1") },
                             modifier = Modifier.weight(1f),
+                            isError = !isConfidenceValid,
                             singleLine = true
+                        )
+                    }
+                    if (!isDealScoreValid || !isConfidenceValid) {
+                        Text(
+                            "Use values from 0 to 1 for score and confidence.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -513,25 +559,30 @@ fun DealItemEditDialog(
             TextButton(
                 enabled = name.isNotBlank() &&
                     store.isNotBlank() &&
-                    price.toFlexibleDoubleOrNull() != null &&
+                    isPriceValid &&
+                    isLimitValid &&
+                    isPricePerUnitValid &&
+                    isDiscountPercentValid &&
+                    isDealScoreValid &&
+                    isConfidenceValid &&
                     isValidUntilValid,
                 onClick = {
-                    val parsedPrice = price.toFlexibleDoubleOrNull() ?: deal.price
+                    val safePrice = parsedPrice ?: deal.price
                     onSave(
                         deal.copy(
                             name = name.trim(),
                             brand = brand.trim().ifBlank { null },
                             sizeText = sizeText.trim().ifBlank { null },
-                            price = parsedPrice,
+                            price = safePrice,
                             unit = unit.trim().ifBlank { null },
                             dealType = dealType.trim().ifBlank { "per_unit" },
-                            limit = limit.toIntOrNull(),
+                            limit = parsedLimit,
                             couponFlag = couponFlag,
                             store = store.trim(),
-                            confidence = confidence.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.confidence,
-                            dealScore = dealScore.toFlexibleDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.dealScore,
-                            pricePerUnit = pricePerUnit.toFlexibleDoubleOrNull() ?: parsedPrice,
-                            discountPercent = discountPercent.toFlexibleDoubleOrNull() ?: deal.discountPercent,
+                            confidence = parsedConfidence ?: deal.confidence,
+                            dealScore = parsedDealScore ?: deal.dealScore,
+                            pricePerUnit = parsedPricePerUnit ?: safePrice,
+                            discountPercent = parsedDiscountPercent ?: deal.discountPercent,
                             validUntil = parsedValidUntil
                         )
                     )

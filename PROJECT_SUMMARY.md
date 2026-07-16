@@ -429,7 +429,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Barcode/manual code pantry lookup and intake
 - ✅ Manual barcode/code failure text retention
 - ✅ Production-ready deals parser
-- ✅ Deal review/edit flow
+- ✅ Deal review/edit flow with numeric validation
 - ✅ OCR integration (ML Kit)
 - ✅ Optional Gemini Vision integration
 - ✅ Settings save feedback and protein input validation
@@ -437,7 +437,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Budget tracking engine
 - ✅ Budget settings edit flow
 - ✅ Receipt reconciliation engine
-- ✅ Receipt review/edit flow
+- ✅ Receipt review/edit flow with numeric validation
 - ✅ 7 Compose UI screens
 - ✅ Settings build identity display sourced from `BuildConfig`
 - ✅ Repeatable demo data + seed function
