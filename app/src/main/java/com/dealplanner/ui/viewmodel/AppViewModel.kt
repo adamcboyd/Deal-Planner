@@ -101,8 +101,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             val result = pantryParser.parse(cleanedPhrase)
-            upsertPantryItem(result.item)
+            val mergedExisting = upsertPantryItem(result.item)
             refreshShoppingListFromCurrentInputs()
+            _pantryPhotoStatus.value = buildString {
+                append(if (mergedExisting) "Updated" else "Added")
+                append(" ${result.item.item}")
+                if (result.item.needsVerify) append(" with VERIFY checks")
+            }
         }
     }
 

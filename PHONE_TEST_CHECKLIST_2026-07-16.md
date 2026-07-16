@@ -91,7 +91,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 
 1. In `Pantry`, enter: `2 cans black beans 15oz pantry best by 2026-12-31`
 2. Tap `Add`.
-3. Confirm a pantry row appears or merges into an existing black beans row.
+3. Confirm a visible added/updated status appears and a pantry row appears or merges into an existing black beans row.
 4. Tap edit and confirm the item can be reviewed and saved.
 5. In the edit dialog, enter quantity `1,5`, save, and confirm it is accepted as 1.5.
 6. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.

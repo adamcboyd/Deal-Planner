@@ -424,6 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Room entities + DAOs + Database
 - ✅ Production-ready pantry parser
 - ✅ Pantry item review/edit flow
+- ✅ Visible typed pantry add/update feedback
 - ✅ Barcode/manual code pantry lookup and intake
 - ✅ Manual barcode/code failure text retention
 - ✅ Production-ready deals parser

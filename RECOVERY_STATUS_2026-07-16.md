@@ -608,6 +608,14 @@ Latest continuation gate after live Shopping refresh work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after typed pantry success status work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -689,6 +697,7 @@ Verified by build/unit tests/code inspection:
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
+- Typed pantry input shows visible added/updated status after successful add or merge.
 - Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
 - Barcode/manual code pantry input looks up product names, brands, and package quantities through Open Food Facts when network is available.
 - Barcode/manual code pantry input still creates VERIFY fallback items with the barcode preserved in notes when lookup misses or network is unavailable.
