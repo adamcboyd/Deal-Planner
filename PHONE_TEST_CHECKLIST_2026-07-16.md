@@ -55,14 +55,14 @@ To create a timestamped report before or during the phone run:
 
 Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes both the repo commit and the compiled APK source branch/commit/dirty state.
 
-To create deterministic sample files for pasted text and PDF picker checks:
+To create deterministic sample files for pasted text, gallery image, and PDF picker checks:
 
 ```powershell
 .\scripts\new-phone-test-samples.ps1
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`. The folder contains demo receipt/flyer TXT and PDF files generated from the bundled app assets.
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus a pantry-label PNG generated for gallery checks.
 
 ## Optional Gemini Setup
 
@@ -202,7 +202,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected with Gemini: AI item recognition creates one or more VERIFY items when details are uncertain and preserves common label dates when visible.
 5. Pantry gallery:
    - Tap `Gallery`.
-   - Pick a pantry image.
+   - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: same as pantry photo, including common label-date handling.
 6. Optional multi-item OCR fallback:
    - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`.
@@ -220,7 +220,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected: deals are added or a clear visible recovery message appears.
 2. Flyer gallery image:
    - Tap `Choose Flyer Image`.
-   - Pick a flyer screenshot/photo.
+   - Pick a flyer screenshot/photo, such as `deal-planner-demo-flyer.png` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: deals are added with the entered store name.
 3. Flyer PDF:
    - Tap `Choose Flyer PDF`.
@@ -236,7 +236,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected: receipt line items are added and Budget updates.
 2. Receipt gallery:
    - Tap `Gallery`.
-   - Pick a receipt image.
+   - Pick a receipt image, such as `deal-planner-demo-receipt.png` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: receipt line items are added and Budget updates.
 3. Receipt PDF:
    - Tap `PDF`.

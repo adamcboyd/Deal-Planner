@@ -12,7 +12,7 @@ function Show-Usage {
     Write-Host "  .\scripts\new-phone-test-samples.ps1"
     Write-Host "  .\scripts\new-phone-test-samples.ps1 -OutputDir phone-test-samples"
     Write-Host ""
-    Write-Host "Creates ignored timestamped TXT and PDF sample files from the bundled demo receipt/flyer assets."
+    Write-Host "Creates ignored timestamped TXT, PDF, and PNG sample files from bundled demo assets."
 }
 
 if ($Help) {
@@ -144,6 +144,66 @@ function New-SimplePdf {
     [System.IO.File]::WriteAllBytes($OutputPath, $encoding.GetBytes($builder.ToString()))
 }
 
+function New-TextImage {
+    param(
+        [string[]]$Lines,
+        [string]$OutputPath,
+        [string]$Title
+    )
+
+    Add-Type -AssemblyName System.Drawing
+
+    $displayLines = New-Object System.Collections.Generic.List[string]
+    foreach ($line in $Lines) {
+        foreach ($chunk in (Split-DisplayLine -Line $line -MaxChars 52)) {
+            $displayLines.Add($chunk) | Out-Null
+        }
+    }
+    if ($displayLines.Count -eq 0) {
+        $displayLines.Add("") | Out-Null
+    }
+
+    $width = 1400
+    $margin = 64
+    $titleHeight = 72
+    $lineHeight = 38
+    $height = [Math]::Max(720, ($margin * 2) + $titleHeight + ($displayLines.Count * $lineHeight) + 48)
+
+    $bitmap = [System.Drawing.Bitmap]::new($width, $height)
+    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+    try {
+        $graphics.Clear([System.Drawing.Color]::White)
+        $graphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
+
+        $titleFont = [System.Drawing.Font]::new("Arial", 30, [System.Drawing.FontStyle]::Bold)
+        $bodyFont = [System.Drawing.Font]::new("Consolas", 24, [System.Drawing.FontStyle]::Regular)
+        try {
+            $blackBrush = [System.Drawing.Brushes]::Black
+            $grayPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(220, 220, 220), 2)
+            try {
+                $graphics.DrawRectangle($grayPen, 24, 24, $width - 48, $height - 48)
+                $graphics.DrawString($Title, $titleFont, $blackBrush, $margin, $margin)
+
+                $y = $margin + $titleHeight
+                foreach ($line in $displayLines) {
+                    $graphics.DrawString($line, $bodyFont, $blackBrush, $margin, $y)
+                    $y += $lineHeight
+                }
+            } finally {
+                $grayPen.Dispose()
+            }
+        } finally {
+            $titleFont.Dispose()
+            $bodyFont.Dispose()
+        }
+
+        $bitmap.Save($OutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
+    }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -170,14 +230,27 @@ New-Item -ItemType Directory -Force -Path $sessionDir | Out-Null
 
 $receiptText = Join-Path $sessionDir "deal-planner-demo-receipt.txt"
 $flyerText = Join-Path $sessionDir "deal-planner-demo-flyer.txt"
+$pantryText = Join-Path $sessionDir "deal-planner-demo-pantry-label.txt"
 $receiptPdf = Join-Path $sessionDir "deal-planner-demo-receipt.pdf"
 $flyerPdf = Join-Path $sessionDir "deal-planner-demo-flyer.pdf"
+$receiptImage = Join-Path $sessionDir "deal-planner-demo-receipt.png"
+$flyerImage = Join-Path $sessionDir "deal-planner-demo-flyer.png"
+$pantryImage = Join-Path $sessionDir "deal-planner-demo-pantry-label.png"
 $readmePath = Join-Path $sessionDir "README.md"
 
 Copy-Item -LiteralPath $receiptAsset -Destination $receiptText -Force
 Copy-Item -LiteralPath $flyerAsset -Destination $flyerText -Force
+$pantryLines = @(
+    "Great Value Black Beans 15 oz pantry best by 2026-12-31",
+    "Kroger Pasta 16 oz pantry best by 2026-11-15",
+    "Private Selection Salsa 16 oz fridge opened 2026-07-01 best by 2026-08-15"
+)
+Set-Content -LiteralPath $pantryText -Value $pantryLines -Encoding UTF8
 New-SimplePdf -SourceTextPath $receiptAsset -OutputPath $receiptPdf -Title "Deal Planner Demo Receipt"
 New-SimplePdf -SourceTextPath $flyerAsset -OutputPath $flyerPdf -Title "Deal Planner Demo Flyer"
+New-TextImage -Lines (Get-Content -LiteralPath $receiptAsset) -OutputPath $receiptImage -Title "Deal Planner Demo Receipt"
+New-TextImage -Lines (Get-Content -LiteralPath $flyerAsset) -OutputPath $flyerImage -Title "Deal Planner Demo Flyer"
+New-TextImage -Lines $pantryLines -OutputPath $pantryImage -Title "Deal Planner Demo Pantry Labels"
 
 $readme = @"
 # Deal Planner Phone Test Samples - $stamp
@@ -186,11 +259,16 @@ Copy this folder to the Android phone or upload it to a location the phone can o
 
 - deal-planner-demo-receipt.txt: paste into Receipts -> Paste receipt OCR text.
 - deal-planner-demo-receipt.pdf: choose from Receipts -> PDF.
+- deal-planner-demo-receipt.png: choose from Receipts -> Gallery.
 - deal-planner-demo-flyer.txt: paste into Deals -> Paste flyer OCR text.
 - deal-planner-demo-flyer.pdf: choose from Deals -> Choose Flyer PDF.
+- deal-planner-demo-flyer.png: choose from Deals -> Choose Flyer Image.
+- deal-planner-demo-pantry-label.txt: reference text for pantry label OCR.
+- deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery.
 
 Expected receipt result: the bundled demo receipt imports grocery line items, ignores total/tender lines, and updates Budget.
 Expected flyer result: the bundled demo flyer imports multiple Kroger deals with prices, limits, coupons, and deal scores.
+Expected pantry result: the label image imports separate VERIFY pantry rows, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
 "@
 
 Set-Content -LiteralPath $readmePath -Value $readme -Encoding UTF8

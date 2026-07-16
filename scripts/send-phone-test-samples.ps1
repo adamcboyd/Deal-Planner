@@ -123,6 +123,18 @@ function Test-PdfFile {
     return $header.StartsWith("%PDF-") -and $tail.Contains("%%EOF")
 }
 
+function Test-PngFile {
+    param([string]$Path)
+
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    if ($bytes.Length -lt 8) {
+        return $false
+    }
+
+    $signature = ($bytes[0..7] | ForEach-Object { $_.ToString("X2") }) -join ""
+    return $signature -eq "89504E470D0A1A0A"
+}
+
 function Assert-SampleFolder {
     param([string]$Path)
 
@@ -133,8 +145,12 @@ function Assert-SampleFolder {
     $requiredFiles = @(
         "deal-planner-demo-receipt.txt",
         "deal-planner-demo-receipt.pdf",
+        "deal-planner-demo-receipt.png",
         "deal-planner-demo-flyer.txt",
         "deal-planner-demo-flyer.pdf",
+        "deal-planner-demo-flyer.png",
+        "deal-planner-demo-pantry-label.txt",
+        "deal-planner-demo-pantry-label.png",
         "README.md"
     )
 
@@ -149,6 +165,13 @@ function Assert-SampleFolder {
         $pdfPath = Join-Path $Path $pdfName
         if (-not (Test-PdfFile $pdfPath)) {
             throw "$pdfName is not a valid generated PDF sample."
+        }
+    }
+
+    foreach ($pngName in @("deal-planner-demo-receipt.png", "deal-planner-demo-flyer.png", "deal-planner-demo-pantry-label.png")) {
+        $pngPath = Join-Path $Path $pngName
+        if (-not (Test-PngFile $pngPath)) {
+            throw "$pngName is not a valid generated PNG sample."
         }
     }
 }

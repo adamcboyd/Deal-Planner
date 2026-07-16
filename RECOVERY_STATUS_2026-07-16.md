@@ -1045,11 +1045,29 @@ Result: created an ignored timestamped `phone-test-samples\` folder with:
 
 - `deal-planner-demo-receipt.txt`
 - `deal-planner-demo-receipt.pdf`
+- `deal-planner-demo-receipt.png`
 - `deal-planner-demo-flyer.txt`
 - `deal-planner-demo-flyer.pdf`
+- `deal-planner-demo-flyer.png`
+- `deal-planner-demo-pantry-label.txt`
+- `deal-planner-demo-pantry-label.png`
 - `README.md`
 
-The generated PDFs were checked for `%PDF-1.4` headers and `%%EOF` trailers, and `git check-ignore` confirmed the sample output is ignored.
+The generated PDFs were checked for `%PDF-1.4` headers and `%%EOF` trailers, the generated PNGs were checked for the PNG file signature, and `git check-ignore` confirmed the sample output is ignored.
+
+Latest continuation gate after gallery-image sample work:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -Help
+.\scripts\new-phone-test-samples.ps1
+.\scripts\send-phone-test-samples.ps1
+.\scripts\new-phone-test-report.ps1
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: sample generation now creates TXT/PDF/PNG files for receipt/flyer checks plus pantry-label TXT/PNG files for gallery checks. PDFs passed header/EOF checks, PNGs passed signature checks, the pantry PNG was visually inspected as readable, the transfer helper validated TXT/PDF/PNG samples before the expected no-phone stop, the generated report includes the PNG checklist row, and the Gradle gate stayed `BUILD SUCCESSFUL` with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
 Latest helper checkpoint after phone-test sample transfer work:
 
@@ -1058,7 +1076,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\send-phone-test-sa
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Result: help output printed successfully, all PowerShell helpers parsed successfully, and the helper validated the latest generated sample folder before stopping at the expected no connected/authorized Android phone condition. With one authorized phone, it copies the sample TXT/PDF files to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`.
+Result: help output printed successfully, all PowerShell helpers parsed successfully, and the helper validated the latest generated sample folder before stopping at the expected no connected/authorized Android phone condition. With one authorized phone, it copies the sample TXT/PDF/PNG files to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`.
 
 Latest continuation gate after phone-test sample transfer work:
 
@@ -1156,7 +1174,7 @@ Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already buil
 Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-install.ps1 -Help` if the exact helper options are lost.
 Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
 Use `.\scripts\new-phone-test-report.ps1` before or during phone testing; its Source Snapshot now records both the repo HEAD and the compiled APK source branch/commit/dirty state from generated debug `BuildConfig`.
-Use `.\scripts\new-phone-test-samples.ps1` before phone testing to create ignored demo receipt/flyer TXT and PDF files for pasted-text and PDF picker checks.
+Use `.\scripts\new-phone-test-samples.ps1` before phone testing to create ignored demo receipt/flyer TXT, PDF, and PNG files plus a pantry-label PNG for pasted-text, gallery-image, and PDF picker checks.
 Use `.\scripts\send-phone-test-samples.ps1` after USB debugging is authorized to copy the latest generated sample folder to the phone's Downloads folder.
 
 Phone test checklist:
@@ -1178,8 +1196,8 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture, records repo HEAD plus compiled APK source branch/commit/dirty state, and writes local reports under ignored `phone-test-results\`.
-- `scripts\new-phone-test-samples.ps1` is available for creating ignored demo receipt/flyer TXT and PDF files under `phone-test-samples\`.
-- `scripts\send-phone-test-samples.ps1` is available for copying the latest generated demo receipt/flyer TXT and PDF files to an authorized Android phone's Downloads folder.
+- `scripts\new-phone-test-samples.ps1` is available for creating ignored demo receipt/flyer TXT, PDF, and PNG files plus a pantry-label PNG under `phone-test-samples\`.
+- `scripts\send-phone-test-samples.ps1` is available for copying the latest generated demo receipt/flyer/pantry TXT, PDF, and PNG files to an authorized Android phone's Downloads folder.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
