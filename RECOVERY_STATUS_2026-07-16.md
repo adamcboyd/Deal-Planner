@@ -382,6 +382,14 @@ Latest continuation gate after Gemini comma-decimal quantity/confidence parsing 
 
 Result: `BUILD SUCCESSFUL`, with `102` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after inline weighted produce receipt parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `103` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -480,6 +488,7 @@ Verified by build/unit tests/code inspection:
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
+- Receipt reconciliation parses one-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` and comma-decimal variants such as `APPLES 1,25 lb @ 1,99/lb 2,49`.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation accepts item totals and split quantity lines when OCR uses comma decimals, such as `BLACK BEANS 1,78` plus `2 @ 0,89`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
@@ -583,6 +592,7 @@ gemini.model=gemini-3.5-flash
    - Receipts pasted OCR text with prices missing dollar signs.
    - Receipts pasted OCR text with comma-decimal prices such as `BLACK BEANS 1,78` and `2 @ 0,89`.
    - Receipts split quantity lines do not import as separate items.
+   - Receipts one-line weighted produce rows parse item name, weight, and total.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
    - Receipts edit/delete budget total adjustment.

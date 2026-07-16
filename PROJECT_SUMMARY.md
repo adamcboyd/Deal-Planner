@@ -91,7 +91,7 @@ Deal_Planner/
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 16 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 17 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -189,14 +189,14 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (102 Test Cases)
+### 7. Unit Tests (103 Test Cases)
 - ✅ GeminiPantryVisionClientTest (15 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (16 tests)
+- ✅ ReceiptReconcilerTest (17 tests)
 
 ## 🔧 Technology Stack
 
@@ -389,7 +389,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
-- ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
+- ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
 - ✅ Ignores receipt subtotal, tax, total, savings, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
@@ -424,7 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 102 unit tests
+- ✅ 103 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

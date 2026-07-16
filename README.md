@@ -281,6 +281,7 @@ On the Receipts tab:
 9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 11. OCR prices work with or without dollar signs, including comma-decimal OCR such as `BLACK BEANS 1,78` or `2 @ 0,89 BLACK BEANS 1,78`.
+12. One-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` are imported with the item name, weight, and total separated.
 
 ### Meal Planning
 
@@ -326,7 +327,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
+- Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split and inline weighted quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases, storage aliases, malformed string/list fields)
 
 ## Key Algorithms
@@ -392,7 +393,7 @@ As of the latest local pass:
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
-- Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
+- Receipt reconciliation handles fuzzy matching and split or inline weighted receipt quantity lines, including price-per-pound produce lines.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs or uses comma decimals.
 - Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.

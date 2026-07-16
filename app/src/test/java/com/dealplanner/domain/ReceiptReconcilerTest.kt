@@ -250,6 +250,53 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse inline weighted produce receipt lines`() {
+        val ocrText = """
+            BANANAS 1.50 lb @ $0.69/lb $1.04
+            APPLES 1,25 lb @ 1,99/lb 2,49
+        """.trimIndent()
+        val deals = listOf(
+            DealItem(
+                id = 4,
+                name = "Bananas",
+                price = 0.69,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 0.69
+            ),
+            DealItem(
+                id = 5,
+                name = "Apples",
+                price = 1.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 1.99
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+
+        val bananas = result.receiptItems.first { it.rawLine.startsWith("BANANAS") }
+        assertThat(bananas.qty).isEqualTo(1.5)
+        assertThat(bananas.totalCost).isEqualTo(1.04)
+        assertThat(bananas.matchedType).isEqualTo("deal")
+        assertThat(bananas.matchedItemId).isEqualTo(4)
+
+        val apples = result.receiptItems.first { it.rawLine.startsWith("APPLES") }
+        assertThat(apples.qty).isEqualTo(1.25)
+        assertThat(apples.totalCost).isEqualTo(2.49)
+        assertThat(apples.matchedType).isEqualTo("deal")
+        assertThat(apples.matchedItemId).isEqualTo(5)
+
+        assertThat(result.total).isEqualTo(3.53)
+        assertThat(result.warnings).isEmpty()
+    }
+
+    @Test
     fun `receipt pantry match wins over weaker deal match`() {
         val ocrText = "BLACK BEANS       $1.78"
         val deals = listOf(
