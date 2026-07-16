@@ -154,6 +154,7 @@ Deal_Planner/
 - ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
 - ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
+- ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
@@ -344,6 +345,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
+- ✅ Lets users correct flyer OCR/PDF deal output before using it in meal plans
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Scores deals
@@ -360,6 +362,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Production-ready pantry parser
 - ✅ Pantry item review/edit flow
 - ✅ Production-ready deals parser
+- ✅ Deal review/edit flow
 - ✅ OCR integration (ML Kit)
 - ✅ Optional Gemini Vision integration
 - ✅ Meal planning engine (rules-based)

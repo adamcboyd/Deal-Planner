@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Star
@@ -24,6 +25,8 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.DealItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 @Composable
 fun DealsScreen(viewModel: AppViewModel) {
@@ -151,6 +154,7 @@ fun DealsScreen(viewModel: AppViewModel) {
             items(deals) { deal ->
                 DealItemCard(
                     deal = deal,
+                    onUpdate = { viewModel.updateDeal(it) },
                     onDelete = { viewModel.deleteDeal(deal) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -178,8 +182,11 @@ fun DealsScreen(viewModel: AppViewModel) {
 @Composable
 fun DealItemCard(
     deal: DealItem,
+    onUpdate: (DealItem) -> Unit,
     onDelete: () -> Unit
 ) {
+    var showEditDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = if (deal.confidence < 0.7) {
@@ -253,9 +260,244 @@ fun DealItemCard(
                 }
             }
 
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+            Column(horizontalAlignment = Alignment.End) {
+                IconButton(onClick = { showEditDialog = true }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                }
             }
         }
+    }
+
+    if (showEditDialog) {
+        DealItemEditDialog(
+            deal = deal,
+            onDismiss = { showEditDialog = false },
+            onSave = { updatedDeal ->
+                onUpdate(updatedDeal)
+                showEditDialog = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DealItemEditDialog(
+    deal: DealItem,
+    onDismiss: () -> Unit,
+    onSave: (DealItem) -> Unit
+) {
+    var name by remember(deal.id) { mutableStateOf(deal.name) }
+    var brand by remember(deal.id) { mutableStateOf(deal.brand.orEmpty()) }
+    var sizeText by remember(deal.id) { mutableStateOf(deal.sizeText.orEmpty()) }
+    var price by remember(deal.id) { mutableStateOf(deal.price.toString()) }
+    var unit by remember(deal.id) { mutableStateOf(deal.unit.orEmpty()) }
+    var store by remember(deal.id) { mutableStateOf(deal.store) }
+    var dealType by remember(deal.id) { mutableStateOf(deal.dealType) }
+    var pricePerUnit by remember(deal.id) { mutableStateOf(deal.pricePerUnit.toString()) }
+    var discountPercent by remember(deal.id) { mutableStateOf(deal.discountPercent.toString()) }
+    var dealScore by remember(deal.id) { mutableStateOf(deal.dealScore.toString()) }
+    var confidence by remember(deal.id) { mutableStateOf(deal.confidence.toString()) }
+    var limit by remember(deal.id) { mutableStateOf(deal.limit?.toString().orEmpty()) }
+    var validUntil by remember(deal.id) { mutableStateOf(deal.validUntil?.toString().orEmpty()) }
+    var couponFlag by remember(deal.id) { mutableStateOf(deal.couponFlag) }
+    val parsedValidUntil = validUntil.toLocalDateOrNull()
+    val isValidUntilValid = validUntil.isBlank() || parsedValidUntil != null
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Review Deal") },
+        text = {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Deal item") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = price,
+                            onValueChange = { price = it },
+                            label = { Text("Price") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = unit,
+                            onValueChange = { unit = it },
+                            label = { Text("Unit") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    OutlinedTextField(
+                        value = store,
+                        onValueChange = { store = it },
+                        label = { Text("Store") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = brand,
+                        onValueChange = { brand = it },
+                        label = { Text("Brand") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = sizeText,
+                        onValueChange = { sizeText = it },
+                        label = { Text("Package size") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = dealType,
+                            onValueChange = { dealType = it },
+                            label = { Text("Deal type") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = limit,
+                            onValueChange = { limit = it },
+                            label = { Text("Limit") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = pricePerUnit,
+                            onValueChange = { pricePerUnit = it },
+                            label = { Text("PPU") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = discountPercent,
+                            onValueChange = { discountPercent = it },
+                            label = { Text("% off") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = dealScore,
+                            onValueChange = { dealScore = it },
+                            label = { Text("Score 0-1") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = confidence,
+                            onValueChange = { confidence = it },
+                            label = { Text("Confidence 0-1") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    OutlinedTextField(
+                        value = validUntil,
+                        onValueChange = { validUntil = it },
+                        label = { Text("Valid until YYYY-MM-DD") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isValidUntilValid,
+                        singleLine = true
+                    )
+                    if (!isValidUntilValid) {
+                        Text(
+                            "Use YYYY-MM-DD or leave blank.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Coupon required", style = MaterialTheme.typography.bodyLarge)
+                        Switch(
+                            checked = couponFlag,
+                            onCheckedChange = { couponFlag = it }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = name.isNotBlank() &&
+                    store.isNotBlank() &&
+                    price.toDoubleOrNull() != null &&
+                    isValidUntilValid,
+                onClick = {
+                    val parsedPrice = price.toDoubleOrNull() ?: deal.price
+                    onSave(
+                        deal.copy(
+                            name = name.trim(),
+                            brand = brand.trim().ifBlank { null },
+                            sizeText = sizeText.trim().ifBlank { null },
+                            price = parsedPrice,
+                            unit = unit.trim().ifBlank { null },
+                            dealType = dealType.trim().ifBlank { "per_unit" },
+                            limit = limit.toIntOrNull(),
+                            couponFlag = couponFlag,
+                            store = store.trim(),
+                            confidence = confidence.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.confidence,
+                            dealScore = dealScore.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: deal.dealScore,
+                            pricePerUnit = pricePerUnit.toDoubleOrNull() ?: parsedPrice,
+                            discountPercent = discountPercent.toDoubleOrNull() ?: deal.discountPercent,
+                            validUntil = parsedValidUntil
+                        )
+                    )
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+private fun String.toLocalDateOrNull(): LocalDate? {
+    if (isBlank()) return null
+    return try {
+        LocalDate.parse(trim())
+    } catch (_: DateTimeParseException) {
+        null
     }
 }

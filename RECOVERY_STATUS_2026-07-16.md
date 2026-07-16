@@ -64,6 +64,7 @@ Verified by build/unit tests/code inspection:
 - Pantry photo/gallery input exists.
 - Pantry items can be edited/reviewed after manual, OCR, or AI import.
 - Flyer photo/gallery/PDF input exists.
+- Flyer deals can be edited/reviewed after photo, gallery, or PDF import.
 - Receipt photo/gallery/manual text input exists.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
@@ -120,6 +121,7 @@ gemini.model=gemini-3.5-flash
    - Deals flyer photo.
    - Deals gallery image.
    - Deals PDF.
+   - Deals edit/review dialog for low-confidence OCR results.
    - Receipts photo.
    - Receipts gallery image.
    - Receipts pasted OCR text.

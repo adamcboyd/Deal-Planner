@@ -211,6 +211,8 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 The built-in demo flyer covers the same formats.
 
+Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date.
+
 ### Processing Receipts
 
 On the Receipts tab:
@@ -306,6 +308,7 @@ As of the latest local pass:
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry cards can be edited after manual, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deal cards can be edited after flyer photo/image/PDF import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
@@ -328,6 +331,7 @@ As of the latest local pass:
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Receipt photo/gallery/manual text import
+- [x] Deal review/edit flow after flyer OCR/PDF import
 - [ ] Barcode scanning for pantry seeding
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF
