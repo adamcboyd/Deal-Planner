@@ -201,7 +201,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (171 Test Cases)
+### 7. Unit Tests (172 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -424,6 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Ignores household/non-food flyer deals when selecting generated meal sides
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
 - ✅ Shows meal-generation status and planner warnings
+- ✅ Prevents negative protein-per-meal settings from creating negative Shopping quantities or costs
 - ✅ Refreshes the visible shopping list after pantry/deals/receipts/settings changes once meal plans exist
 - ✅ Tracks budget
 - ✅ Editable budget settings with validation and saved feedback
@@ -446,7 +447,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ OCR integration (ML Kit)
 - ✅ Store-name normalization for flyer and receipt imports
 - ✅ Optional Gemini Vision integration with flexible and review-safe label-date handling
-- ✅ Settings save feedback and protein input validation
+- ✅ Settings save feedback and non-negative protein input validation
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
 - ✅ Budget settings edit flow
@@ -458,7 +459,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 171 unit tests
+- ✅ 172 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

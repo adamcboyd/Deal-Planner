@@ -86,6 +86,12 @@ class MealPlanningEngine {
 
         // 2. Filter deals based on params
         val suitableDeals = filterDealsByParams(request.deals, request.params)
+        val proteinQtyPerMeal = request.params.proteinPerMealLb
+            .takeIf { it >= 0.0 }
+            ?: Params().proteinPerMealLb
+        if (request.params.proteinPerMealLb < 0.0) {
+            warnings.add("Protein per meal setting was below zero; using the default 0.5 lb.")
+        }
 
         // 3. Select top protein deals
         val proteinDeals = suitableDeals
@@ -134,7 +140,7 @@ class MealPlanningEngine {
                 val starch = pantryStarches.pickByIndexOrNull(slotIndex)
 
                 if (proteinDeal != null) {
-                    val proteinQty = request.params.proteinPerMealLb
+                    val proteinQty = proteinQtyPerMeal
                     val vegQty = 0.5 // Default 0.5 lb vegetables per meal
                     val starchQty = 0.5 // Default serving
 

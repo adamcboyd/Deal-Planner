@@ -23,7 +23,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
     var proteinPerMeal by remember { mutableStateOf(params?.proteinPerMealLb?.toString() ?: "0.5") }
     var settingsEdited by remember { mutableStateOf(false) }
     val parsedProteinPerMeal = proteinPerMeal.toFlexibleDoubleOrNull()
-    val isProteinPerMealValid = parsedProteinPerMeal != null
+    val isProteinPerMealValid = parsedProteinPerMeal != null && parsedProteinPerMeal >= 0.0
 
     LaunchedEffect(params) {
         params?.let {
@@ -153,7 +153,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         if (isProteinPerMealValid) {
                             "Default: 0.5 lb per meal"
                         } else {
-                            "Use a number like 0.5 or 0,5."
+                            "Use a non-negative number like 0.5 or 0,5."
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isProteinPerMealValid) {

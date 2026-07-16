@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after meal-side filtering for household/non-food flyer deals; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-negative protein-per-meal settings validation; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1363,6 +1363,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `MealPlanningEngineTest` passed locally, then the full Gradle gate passed with `171` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Meal planning now requires recognized meal-side grocery terms for generated vegetable slots and ignores household/non-food flyer deals such as detergent so they do not enter meals or Shopping totals.
 
+Latest focused Settings protein validation check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.domain.MealPlanningEngineTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `MealPlanningEngineTest` passed locally, then the full Gradle gate passed with `172` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Settings now blocks negative protein-per-meal input, and the meal planner falls back to the default 0.5 lb value if old/corrupt saved settings contain a negative value, preventing negative Shopping quantities or estimated costs.
+
 Additional check:
 
 ```powershell
@@ -1456,6 +1467,7 @@ Verified by build/unit tests/code inspection:
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
 - Meal-side filtering has unit coverage so household/non-food flyer deals do not become generated meal vegetables or Shopping items.
+- Negative protein-per-meal settings have unit coverage so they fall back to the default quantity instead of producing negative Shopping quantities or estimated costs.
 - Menu Generate shows visible meal-plan generation status and any rules-engine warnings, such as missing protein deals or pantry starch anchors.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
 - Shopping list estimated costs use planned quantities and normalized price-per-unit values instead of multiplying sticker price by planned quantity in the UI.
@@ -1519,7 +1531,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal and leading-decimal values such as `0,5` or `.5`.
-- Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
+- Settings Save shows visible saved feedback and blocks invalid or negative protein-per-meal text instead of silently defaulting.
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, debug/release build identity, and source identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.

@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after meal-side filtering for household/non-food flyer deals; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-negative protein-per-meal settings validation; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -279,7 +279,8 @@ In `Settings`:
 
 1. Enter protein per meal as `0,5`, tap `Save Settings`, and confirm `Settings saved.` appears.
 2. Enter protein per meal as `.5` or `,5`, tap `Save Settings`, and confirm it is accepted as 0.5.
-3. Enter invalid protein text such as `abc`, and confirm Save is disabled with a visible number-format message.
+3. Enter negative protein text such as `-1`, and confirm Save is disabled with a visible non-negative number message.
+4. Enter invalid protein text such as `abc`, and confirm Save is disabled with a visible non-negative number message.
 
 ## Build Identity Check
 
@@ -323,6 +324,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows into separate VERIFY rows.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
+- Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.
 - AI pantry VERIFY rows explain what needs review in the item notes, including model-provided clarifying questions or review-note warnings when present.

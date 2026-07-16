@@ -386,4 +386,34 @@ class MealPlanningEngineTest {
         assertThat(usedVegetables).doesNotContain("Tide Laundry Detergent")
         assertThat(result.shoppingList.map { it.dealItem.name }).doesNotContain("Tide Laundry Detergent")
     }
+
+    @Test
+    fun `negative protein setting falls back to default quantity`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(proteinPerMealLb = -1.0),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.8,
+                    pricePerUnit = 2.99
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 1
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        val chickenItem = result.shoppingList.single { it.dealItem.name == "Chicken Breast" }
+        assertThat(chickenItem.quantity).isEqualTo(1.0)
+        assertThat(chickenItem.estimatedCost).isWithin(0.001).of(2.99)
+        assertThat(result.warnings).contains(
+            "Protein per meal setting was below zero; using the default 0.5 lb."
+        )
+    }
 }

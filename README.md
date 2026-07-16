@@ -487,7 +487,8 @@ As of the latest local pass:
 - Settings can test the Gemini API key/model connection from the running app.
 - Phone helpers verify the generated debug `BuildConfig` Gemini key/model state without printing secrets, so stale APKs can be caught before live AI testing.
 - Settings accepts comma-decimal and leading-decimal protein-per-meal values such as `0,5` or `.5`.
-- Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
+- Settings Save shows visible saved feedback and blocks invalid or negative protein-per-meal text instead of silently defaulting.
+- Meal planning guards against negative saved protein settings so Shopping quantities and estimated costs cannot go below zero.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, alternate review-question aliases such as `clarifying_questions` and `followUpQuestions`, warning aliases such as `review_notes`, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, non-JSON model text fallback, and confidence clamping.
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and unpadded `2026-7-1` before saving review items.
