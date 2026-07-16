@@ -378,6 +378,7 @@ Tests cover:
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Barcode lookup result mapping into reviewable pantry rows and phone-visible add/update status messages
 - Manual input clear/retain policy for barcode, pasted flyer text, and pasted receipt text status changes
+- Budget Settings validation for monthly budget, spent-to-date baseline, and breakfast anchor cost dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Settings protein-per-meal validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields, while rejecting non-finite values such as NaN or Infinity

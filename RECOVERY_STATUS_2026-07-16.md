@@ -1893,3 +1893,27 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `197` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest continuation note after Budget input validator extraction:
+
+Code checkpoint:
+
+- Added `BudgetInputValidator` as a pure UI-state helper for Budget Settings numeric validation.
+- `BudgetScreen` now uses the shared validator for monthly food budget, spent-to-date baseline, breakfast anchor cost parsing, visible error text, and Save enablement.
+- Added direct unit coverage for dot decimal, comma decimal, leading decimal, zero, negative, blank, invalid, and non-finite Budget Settings text.
+
+Targeted UI-state gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ui.state.*"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `201` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

@@ -99,6 +99,7 @@ Deal_Planner/
             ├── ocr/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
             ├── ui/state/
+            │   ├── BudgetInputValidatorTest.kt ✅ Budget numeric validation tests
             │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
             └── util/
@@ -429,6 +430,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Recalculates budget daily envelope and projected spend from current-month receipt history
+- ✅ Validates Budget Settings monthly budget, spent-to-date baseline, and breakfast anchor cost with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Generates deterministic meal plans from the same pantry/deals/settings inputs
@@ -471,7 +473,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 197 unit tests
+- ✅ 201 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

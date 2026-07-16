@@ -9,8 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dealplanner.data.model.BudgetState
+import com.dealplanner.ui.state.BudgetInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleDoubleOrNull
 
 @Composable
 fun BudgetScreen(viewModel: AppViewModel) {
@@ -32,12 +32,12 @@ fun BudgetScreen(viewModel: AppViewModel) {
     var spentToDateText by remember { mutableStateOf("") }
     var breakfastAnchorCostText by remember { mutableStateOf("") }
     var budgetEdited by remember { mutableStateOf(false) }
-    val parsedStartingBudget = startingBudgetText.toFlexibleDoubleOrNull()
-    val parsedSpentToDate = spentToDateText.toFlexibleDoubleOrNull()
-    val parsedBreakfastAnchorCost = breakfastAnchorCostText.toFlexibleDoubleOrNull()
-    val isStartingBudgetValid = parsedStartingBudget != null && parsedStartingBudget >= 0.0
-    val isSpentToDateValid = parsedSpentToDate != null && parsedSpentToDate >= 0.0
-    val isBreakfastAnchorCostValid = parsedBreakfastAnchorCost != null && parsedBreakfastAnchorCost >= 0.0
+    val startingBudgetValidation = BudgetInputValidator.validateBudgetNumber(startingBudgetText)
+    val spentToDateValidation = BudgetInputValidator.validateBudgetNumber(spentToDateText)
+    val breakfastAnchorCostValidation = BudgetInputValidator.validateBudgetNumber(breakfastAnchorCostText)
+    val isStartingBudgetValid = startingBudgetValidation.isValid
+    val isSpentToDateValid = spentToDateValidation.isValid
+    val isBreakfastAnchorCostValid = breakfastAnchorCostValidation.isValid
     val isBudgetFormValid = isStartingBudgetValid && isSpentToDateValid && isBreakfastAnchorCostValid
 
     LaunchedEffect(budgetState) {
@@ -105,7 +105,7 @@ fun BudgetScreen(viewModel: AppViewModel) {
                         singleLine = true
                     )
                     if (!isStartingBudgetValid) {
-                        BudgetNumberError()
+                        BudgetNumberError(startingBudgetValidation.message)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -122,7 +122,7 @@ fun BudgetScreen(viewModel: AppViewModel) {
                         singleLine = true
                     )
                     if (!isSpentToDateValid) {
-                        BudgetNumberError()
+                        BudgetNumberError(spentToDateValidation.message)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -139,16 +139,16 @@ fun BudgetScreen(viewModel: AppViewModel) {
                         singleLine = true
                     )
                     if (!isBreakfastAnchorCostValid) {
-                        BudgetNumberError()
+                        BudgetNumberError(breakfastAnchorCostValidation.message)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Button(
                         onClick = {
-                            val startingValue = parsedStartingBudget ?: return@Button
-                            val spentValue = parsedSpentToDate ?: return@Button
-                            val breakfastValue = parsedBreakfastAnchorCost ?: return@Button
+                            val startingValue = startingBudgetValidation.parsedValue ?: return@Button
+                            val spentValue = spentToDateValidation.parsedValue ?: return@Button
+                            val breakfastValue = breakfastAnchorCostValidation.parsedValue ?: return@Button
                             val currentBudget = budgetState ?: BudgetState(startingBudget = startingValue)
 
                             viewModel.updateBudget(
@@ -347,9 +347,9 @@ fun BudgetScreen(viewModel: AppViewModel) {
 }
 
 @Composable
-private fun BudgetNumberError() {
+private fun BudgetNumberError(message: String) {
     Text(
-        "Use a non-negative number like 292 or 292,50.",
+        message,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.error
     )
