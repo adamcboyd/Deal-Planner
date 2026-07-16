@@ -128,4 +128,41 @@ class GeminiPantryVisionClientTest {
         assertThat(item.questions).containsExactly("What is the expiration date?")
         assertThat(result.warnings).containsExactly("amount estimated")
     }
+
+    @Test
+    fun `parse pantry vision response skips malformed string fields`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "brand": {"name": "bad shape"},
+                  "product": {"name": "not a string"},
+                  "quantity": 1,
+                  "unit": "box",
+                  "confidence": 0.8,
+                  "questions": ["Keep this question", {"bad": true}, null, 7]
+                },
+                {
+                  "brand": ["bad shape"],
+                  "product": "corn flakes",
+                  "quantity": 1,
+                  "unit": "box",
+                  "confidence": 0.8,
+                  "questions": ["What is the expiration date?", {"bad": true}]
+                }
+              ],
+              "warnings": ["label glare", {"bad": true}, null, 3]
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.product).isEqualTo("corn flakes")
+        assertThat(item.brand).isNull()
+        assertThat(item.questions).containsExactly("What is the expiration date?")
+        assertThat(result.warnings).containsExactly("label glare", "3")
+    }
 }

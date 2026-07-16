@@ -261,7 +261,12 @@ class GeminiPantryVisionClient(
     private fun JsonObject.getStringOrNull(name: String): String? {
         val element = get(name) ?: return null
         if (element.isJsonNull) return null
-        return element.asString.trim().ifBlank { null }
+        if (!element.isJsonPrimitive) return null
+        return try {
+            element.asString.trim().ifBlank { null }
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private fun JsonElement.asDoubleOrNull(): Double? {
@@ -276,9 +281,14 @@ class GeminiPantryVisionClient(
         return when {
             isJsonNull -> emptyList()
             isJsonArray -> asJsonArray.mapNotNull { element ->
-                if (element.isJsonNull) null else element.asString.trim().ifBlank { null }
+                if (!element.isJsonPrimitive) {
+                    null
+                } else {
+                    element.asString.trim().ifBlank { null }
+                }
             }
-            else -> listOfNotNull(asString.trim().ifBlank { null })
+            isJsonPrimitive -> listOfNotNull(asString.trim().ifBlank { null })
+            else -> emptyList()
         }
     }
 

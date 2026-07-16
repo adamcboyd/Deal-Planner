@@ -80,7 +80,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 9 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 10 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 12 test cases
@@ -132,7 +132,7 @@ Deal_Planner/
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
-- ✅ Gemini pantry response parsing for fenced JSON and minor model-output variations
+- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, and malformed string/list fields
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -183,8 +183,8 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (67 Test Cases)
-- ✅ GeminiPantryVisionClientTest (9 tests)
+### 7. Unit Tests (68 Test Cases)
+- ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -411,7 +411,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
-- ✅ 67 unit tests
+- ✅ 68 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

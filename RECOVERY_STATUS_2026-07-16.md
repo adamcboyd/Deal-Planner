@@ -142,6 +142,14 @@ Latest continuation gate after navigation string-resource cleanup:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest continuation gate after malformed Gemini pantry response hardening:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -218,7 +226,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 
 Not yet verified on a real phone:
