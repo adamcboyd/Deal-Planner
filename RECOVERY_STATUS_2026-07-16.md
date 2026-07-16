@@ -740,6 +740,14 @@ Latest continuation gate after flyer no-slash per-pound price parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `136` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after pantry dozen count quantity parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `137` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell

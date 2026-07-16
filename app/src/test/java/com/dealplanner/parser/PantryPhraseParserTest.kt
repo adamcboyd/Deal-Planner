@@ -33,6 +33,22 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse dozen pantry quantities as count unless explicit unit follows`() {
+        val eggs = parser.parse("a dozen eggs fridge")
+        val cans = parser.parse("dozen cans black beans pantry")
+
+        assertThat(eggs.item.item).isEqualTo("eggs")
+        assertThat(eggs.item.qty).isEqualTo(12.0)
+        assertThat(eggs.item.unit).isEqualTo("count")
+        assertThat(eggs.item.location).isEqualTo("fridge")
+
+        assertThat(cans.item.item).isEqualTo("black beans")
+        assertThat(cans.item.qty).isEqualTo(12.0)
+        assertThat(cans.item.unit).isEqualTo("can")
+        assertThat(cans.item.location).isEqualTo("pantry")
+    }
+
+    @Test
     fun `parse item with size`() {
         val result = parser.parse("peanut butter 16oz")
 

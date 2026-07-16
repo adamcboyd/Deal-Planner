@@ -56,6 +56,7 @@ class PantryPhraseParser {
 
         var qty = 1.0
         var unit: String? = null
+        var unitHintFromQuantity: String? = null
         var size: String? = null
         var brand: String? = null
         var location: String? = null
@@ -86,6 +87,9 @@ class PantryPhraseParser {
             // Check for word quantities
             if (token in qtyWords) {
                 qty = qtyWords[token]!!
+                if (token == "dozen") {
+                    unitHintFromQuantity = "count"
+                }
                 i++
                 continue
             }
@@ -110,6 +114,9 @@ class PantryPhraseParser {
         // Extract package/container unit immediately after quantity.
         if (i < tokens.size && tokens[i] in unitKeywords) {
             unit = normalizeUnit(tokens[i])
+        }
+        if (unit == null) {
+            unit = unitHintFromQuantity
         }
 
         // Extract unit and size
