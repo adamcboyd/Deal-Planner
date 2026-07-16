@@ -26,7 +26,12 @@ class PantryPhraseParser {
 
     private val locationKeywords = listOf("pantry", "fridge", "freezer", "cabinet", "shelf", "counter")
     private val formKeywords = listOf("canned", "frozen", "fresh", "dried", "boxed", "bagged")
-    private val unitKeywords = listOf("lb", "lbs", "pound", "pounds", "oz", "ounce", "ounces", "g", "gram", "grams", "kg", "can", "cans", "jar", "jars", "box", "boxes", "bag", "bags", "count")
+    private val unitKeywords = listOf(
+        "lb", "lbs", "pound", "pounds", "oz", "ounce", "ounces", "g", "gram", "grams", "kg",
+        "ml", "l", "can", "cans", "jar", "jars", "box", "boxes", "bag", "bags",
+        "bottle", "bottles", "carton", "cartons", "container", "containers", "cup", "cups",
+        "pack", "packs", "package", "packages", "pkg", "pkgs", "ct", "count", "ea", "each"
+    )
 
     private val qtyWords = mapOf(
         "a" to 1.0, "an" to 1.0, "one" to 1.0, "two" to 2.0, "three" to 3.0,
@@ -108,11 +113,12 @@ class PantryPhraseParser {
         }
 
         // Extract unit and size
-        val sizePattern = Regex("""(\d+(?:[.,]\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""")
+        val sizePattern = Regex("""(\d+(?:[.,]\d+)?)\s*((?:fl\.?\s*|fluid\s+)?oz|lb|lbs|g|kg|ml|l|ct|count)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
-            size = "${sizeMatch.groupValues[1].normalizePantryNumberText()}${sizeMatch.groupValues[2]}"
-            val sizeUnit = normalizeUnit(sizeMatch.groupValues[2])
+            val sizeUnitText = normalizeSizeUnitText(sizeMatch.groupValues[2])
+            size = formatSizeText(sizeMatch.groupValues[1], sizeUnitText)
+            val sizeUnit = normalizeUnit(sizeUnitText)
             if (unit == null || unit in listOf("lb", "oz", "g", "kg", "ml", "l")) {
                 unit = sizeUnit
             }
@@ -209,11 +215,40 @@ class PantryPhraseParser {
             "lbs", "pound", "pounds" -> "lb"
             "ounce", "ounces" -> "oz"
             "gram", "grams" -> "g"
+            "fl oz", "fluid oz" -> "oz"
             "can", "cans" -> "can"
             "jar", "jars" -> "jar"
             "box", "boxes" -> "box"
             "bag", "bags" -> "bag"
+            "bottle", "bottles" -> "bottle"
+            "carton", "cartons" -> "carton"
+            "container", "containers" -> "container"
+            "cup", "cups" -> "cup"
+            "pack", "packs" -> "pack"
+            "package", "packages", "pkg", "pkgs" -> "package"
+            "ct", "ea", "each" -> "count"
             else -> unit.lowercase()
+        }
+    }
+
+    private fun normalizeSizeUnitText(unit: String): String {
+        val normalized = unit.lowercase()
+            .replace(".", "")
+            .replace(Regex("""\s+"""), " ")
+            .trim()
+
+        return when (normalized) {
+            "fl oz", "fluid oz" -> "fl oz"
+            else -> normalized
+        }
+    }
+
+    private fun formatSizeText(number: String, unit: String): String {
+        val normalizedNumber = number.normalizePantryNumberText()
+        return if (unit.contains(" ")) {
+            "$normalizedNumber $unit"
+        } else {
+            "$normalizedNumber$unit"
         }
     }
 
@@ -236,7 +271,7 @@ class PantryPhraseParser {
             listOf(
                 "of", "in", "on", "the", "a", "an", "opened", "best", "by", "bestby", "before",
                 "best-by", "best-before", "if", "use", "use-by", "used", "expires", "expiration", "exp", "date",
-                "today", "yesterday", "tomorrow", "days", "day", "ago"
+                "today", "yesterday", "tomorrow", "days", "day", "ago", "fl", "fluid"
             )
         )
 
@@ -257,7 +292,7 @@ class PantryPhraseParser {
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
             token.toPantryNumberOrNull() == null &&
-            !Regex("""\d+(?:[.,]\d+)?(?:oz|lb|lbs|g|kg|ml|l)""").matches(token) &&
+            !Regex("""\d+(?:[.,]\d+)?(?:oz|lb|lbs|g|kg|ml|l|ct|count)""").matches(token) &&
             !DATE_TOKEN_PATTERN.matches(token)
         }
 

@@ -341,7 +341,7 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, brands, dates, comma-decimal OCR quantities/sizes)
+- Pantry phrase parsing (fractions, brands, dates, common container/count units, fluid-ounce labels, comma-decimal OCR quantities/sizes)
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal flyer OCR prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)

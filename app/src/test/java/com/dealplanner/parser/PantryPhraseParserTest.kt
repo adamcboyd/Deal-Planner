@@ -84,6 +84,32 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse common pantry container and count units`() {
+        val oil = parser.parse("2 bottles olive oil 32 fl oz pantry")
+        val milk = parser.parse("1 carton milk 64 fluid oz fridge")
+        val eggs = parser.parse("Kroger eggs 12 ct fridge")
+
+        assertThat(oil.item.item).isEqualTo("olive oil")
+        assertThat(oil.item.qty).isEqualTo(2.0)
+        assertThat(oil.item.unit).isEqualTo("bottle")
+        assertThat(oil.item.size).isEqualTo("32 fl oz")
+        assertThat(oil.item.location).isEqualTo("pantry")
+
+        assertThat(milk.item.item).isEqualTo("milk")
+        assertThat(milk.item.qty).isEqualTo(1.0)
+        assertThat(milk.item.unit).isEqualTo("carton")
+        assertThat(milk.item.size).isEqualTo("64 fl oz")
+        assertThat(milk.item.location).isEqualTo("fridge")
+
+        assertThat(eggs.item.item).isEqualTo("eggs")
+        assertThat(eggs.item.brand).isEqualTo("Kroger")
+        assertThat(eggs.item.qty).isEqualTo(1.0)
+        assertThat(eggs.item.unit).isEqualTo("count")
+        assertThat(eggs.item.size).isEqualTo("12ct")
+        assertThat(eggs.item.location).isEqualTo("fridge")
+    }
+
+    @Test
     fun `parse item with fraction word`() {
         val result = parser.parse("half lb butter")
 
