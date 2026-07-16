@@ -60,6 +60,62 @@ function Test-RealGeminiKey {
     )
 }
 
+function Get-BuildConfigValue {
+    param(
+        [string]$Path,
+        [string]$Name
+    )
+
+    if (-not (Test-Path $Path)) {
+        return $null
+    }
+
+    $escapedName = [regex]::Escape($Name)
+    $line = Get-Content -LiteralPath $Path |
+        Where-Object { $_ -match "^\s+public static final .* $escapedName = " } |
+        Select-Object -First 1
+    if (-not $line) {
+        return $null
+    }
+
+    if ($line -match '=\s+"([^"]*)";') {
+        return $Matches[1]
+    }
+
+    if ($line -match '=\s+(true|false);') {
+        return $Matches[1]
+    }
+
+    return $null
+}
+
+function Write-BuildConfigSummary {
+    param([string]$Root)
+
+    $buildConfigPath = Join-Path $Root "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
+    $sourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
+    $sourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
+    $sourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
+    $geminiModel = Get-BuildConfigValue $buildConfigPath "GEMINI_MODEL"
+    $geminiKey = Get-BuildConfigValue $buildConfigPath "GEMINI_API_KEY"
+
+    if ($sourceBranch -and $sourceSha) {
+        $dirtyLabel = if ($sourceDirty -eq "true") { "dirty" } else { "clean" }
+        Write-Host "Generated APK source identity: $sourceBranch @ $sourceSha ($dirtyLabel BuildConfig)"
+    } else {
+        Write-Warning "Generated BuildConfig source identity was not found. Rebuild before phone identity checks."
+    }
+
+    if ([string]::IsNullOrWhiteSpace($geminiModel)) {
+        Write-Warning "Generated BuildConfig Gemini model was not found."
+    } else {
+        Write-Host "Generated APK Gemini model: $($geminiModel.Trim())"
+    }
+
+    $geminiConfigured = Test-RealGeminiKey $geminiKey
+    Write-Host "Generated APK Gemini configured: $geminiConfigured (key value not printed)"
+}
+
 function Get-RelativeRepoPath {
     param(
         [string]$Root,
@@ -292,6 +348,7 @@ if (-not (Test-Path $apkPath)) {
 Assert-ApkIdentity -ApkPath $apkPath -ExpectedPackageName $PackageName -ExpectedAppLabel $AppLabel
 Assert-ApkFreshForBuildInputs -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 Assert-ApkFreshForGeminiConfig -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
+Write-BuildConfigSummary -Root $repoRoot
 
 $adbCommand = Get-Command adb -ErrorAction SilentlyContinue
 if ($null -eq $adbCommand) {

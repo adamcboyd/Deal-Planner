@@ -20,7 +20,7 @@ adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
+Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
 Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:

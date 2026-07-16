@@ -1025,6 +1025,15 @@ Result:
 - Strict `-RequireGemini` intentionally fails without a real key, including an explicit `APK Gemini key` failure when generated debug `BuildConfig` has no non-placeholder key.
 - Generated phone-test reports now include non-secret `APK Gemini configured` and `APK Gemini model` fields in Source Snapshot.
 
+Latest helper checkpoint after install identity output work:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-install.ps1 -Help
+.\scripts\phone-debug-install.ps1 -SkipBuild -NoLaunch
+```
+
+Expected no-phone local result: before stopping at the expected no connected/authorized Android phone condition, the install helper verifies APK identity/permissions and prints generated APK source identity plus generated APK Gemini model/configured state without printing secrets.
+
 Latest continuation gate after receipt PDF import work:
 
 ```powershell
@@ -1102,7 +1111,7 @@ Verified by build/unit tests/code inspection:
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
 - Settings -> About Deal Planner displays the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
-- `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
+- `scripts\phone-debug-install.ps1` can build, verify, print generated APK source/Gemini identity, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, generated debug `BuildConfig` source identity, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner`, required `INTERNET` and `CAMERA` permissions, and no broad storage/media permissions before phone testing.

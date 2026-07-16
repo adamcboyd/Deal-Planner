@@ -415,7 +415,7 @@ As of the latest local pass:
 
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
-- `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
+- `scripts\phone-debug-install.ps1` can build, verify, print generated APK source/Gemini identity, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity and compiled Gemini key/model readiness that Settings should reflect on the phone.
