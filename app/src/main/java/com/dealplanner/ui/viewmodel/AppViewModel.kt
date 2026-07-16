@@ -86,6 +86,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _settingsStatus = MutableStateFlow<String?>(null)
     val settingsStatus: StateFlow<String?> = _settingsStatus.asStateFlow()
 
+    private val _budgetStatus = MutableStateFlow<String?>(null)
+    val budgetStatus: StateFlow<String?> = _budgetStatus.asStateFlow()
+
     init {
         viewModelScope.launch {
             initializeDefaults()
@@ -436,8 +439,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Budget operations
     fun updateBudget(budget: BudgetState) {
         viewModelScope.launch {
-            repository.updateBudget(budget)
+            _budgetStatus.value = "Saving budget..."
+            val normalizedBudget = budget.copy(
+                dailyEnvelope = budgetEngine.calculateDailyEnvelope(budget)
+            )
+            repository.updateBudget(normalizedBudget)
             updateBudgetAnalysis()
+            _budgetStatus.value = "Budget saved."
         }
     }
 

@@ -129,6 +129,11 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 12. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
 13. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
+### Budget
+
+1. In `Budget`, change monthly food budget to `292,50`, tap `Save Budget`, and confirm `Budget saved.` appears.
+2. Enter invalid budget text such as `abc`, and confirm Save is disabled with a visible non-negative-number message.
+
 ## Phone Input Tests
 
 ### Pantry Inputs
@@ -240,6 +245,7 @@ Verify these show visible status messages instead of silent failures:
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
+- Budget Settings saves valid comma-decimal values and blocks invalid numeric text.
 - Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.

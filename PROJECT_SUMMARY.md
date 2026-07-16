@@ -413,6 +413,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Shows meal-generation status and planner warnings
 - ✅ Refreshes the visible shopping list after pantry/deals/receipts/settings changes once meal plans exist
 - ✅ Tracks budget
+- ✅ Editable budget settings with validation and saved feedback
 - ✅ Creates shopping lists
 - ✅ Keeps different shopping-list deal identities separate before and after Room assigns ids
 - ✅ Passes all unit tests
@@ -434,6 +435,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Settings save feedback and protein input validation
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
+- ✅ Budget settings edit flow
 - ✅ Receipt reconciliation engine
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens

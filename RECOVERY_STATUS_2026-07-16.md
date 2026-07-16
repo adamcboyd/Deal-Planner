@@ -624,6 +624,14 @@ Latest continuation gate after Settings save feedback work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Budget settings editor work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -743,6 +751,7 @@ Verified by build/unit tests/code inspection:
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
 - Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.
 - Budget screen current balance, monthly overview, and progress display use receipt-aware analysis values when available, so stale stored budget totals do not contradict current receipt history.
+- Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal support, non-negative validation, and visible saved feedback.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
@@ -862,6 +871,7 @@ Optional if anything fails on the phone:
    - Receipts edit/delete budget total adjustment.
    - Budget daily envelope changes after receipt import, receipt total edit, and receipt delete.
    - Budget projected spend reflects current-month receipt history.
+   - Budget Settings comma-decimal save such as monthly budget `292,50`, plus invalid text such as `abc`.
    - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.

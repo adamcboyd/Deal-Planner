@@ -8,12 +8,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dealplanner.data.model.BudgetState
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleDoubleOrNull
 
 @Composable
 fun BudgetScreen(viewModel: AppViewModel) {
     val budgetState by viewModel.budgetState.collectAsState()
     val budgetAnalysis by viewModel.budgetAnalysis.collectAsState()
+    val budgetStatus by viewModel.budgetStatus.collectAsState()
     val startingBudget = budgetState?.startingBudget ?: 0.0
     val displayCurrentBalance = budgetAnalysis?.currentBalance
         ?: budgetState?.let { it.startingBudget - it.spentToDate }
@@ -24,6 +27,26 @@ fun BudgetScreen(viewModel: AppViewModel) {
         (displaySpentToDate / startingBudget).coerceIn(0.0, 1.0).toFloat()
     } else {
         0.0f
+    }
+    var startingBudgetText by remember { mutableStateOf("") }
+    var spentToDateText by remember { mutableStateOf("") }
+    var breakfastAnchorCostText by remember { mutableStateOf("") }
+    var budgetEdited by remember { mutableStateOf(false) }
+    val parsedStartingBudget = startingBudgetText.toFlexibleDoubleOrNull()
+    val parsedSpentToDate = spentToDateText.toFlexibleDoubleOrNull()
+    val parsedBreakfastAnchorCost = breakfastAnchorCostText.toFlexibleDoubleOrNull()
+    val isStartingBudgetValid = parsedStartingBudget != null && parsedStartingBudget >= 0.0
+    val isSpentToDateValid = parsedSpentToDate != null && parsedSpentToDate >= 0.0
+    val isBreakfastAnchorCostValid = parsedBreakfastAnchorCost != null && parsedBreakfastAnchorCost >= 0.0
+    val isBudgetFormValid = isStartingBudgetValid && isSpentToDateValid && isBreakfastAnchorCostValid
+
+    LaunchedEffect(budgetState) {
+        budgetState?.let { budget ->
+            startingBudgetText = budget.startingBudget.toString()
+            spentToDateText = budget.spentToDate.toString()
+            breakfastAnchorCostText = budget.breakfastAnchorCost.toString()
+            budgetEdited = false
+        }
     }
 
     LazyColumn(
@@ -56,6 +79,101 @@ fun BudgetScreen(viewModel: AppViewModel) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
+                }
+            }
+        }
+
+        // Budget settings
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "Budget Settings",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = startingBudgetText,
+                        onValueChange = {
+                            startingBudgetText = it
+                            budgetEdited = true
+                        },
+                        label = { Text("Monthly food budget") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isStartingBudgetValid,
+                        singleLine = true
+                    )
+                    if (!isStartingBudgetValid) {
+                        BudgetNumberError()
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = spentToDateText,
+                        onValueChange = {
+                            spentToDateText = it
+                            budgetEdited = true
+                        },
+                        label = { Text("Spent to date baseline") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isSpentToDateValid,
+                        singleLine = true
+                    )
+                    if (!isSpentToDateValid) {
+                        BudgetNumberError()
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = breakfastAnchorCostText,
+                        onValueChange = {
+                            breakfastAnchorCostText = it
+                            budgetEdited = true
+                        },
+                        label = { Text("Breakfast anchor cost") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isBreakfastAnchorCostValid,
+                        singleLine = true
+                    )
+                    if (!isBreakfastAnchorCostValid) {
+                        BudgetNumberError()
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = {
+                            val startingValue = parsedStartingBudget ?: return@Button
+                            val spentValue = parsedSpentToDate ?: return@Button
+                            val breakfastValue = parsedBreakfastAnchorCost ?: return@Button
+                            val currentBudget = budgetState ?: BudgetState(startingBudget = startingValue)
+
+                            viewModel.updateBudget(
+                                currentBudget.copy(
+                                    startingBudget = startingValue,
+                                    spentToDate = spentValue,
+                                    breakfastAnchorCost = breakfastValue
+                                )
+                            )
+                            budgetEdited = false
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isBudgetFormValid
+                    ) {
+                        Text("Save Budget")
+                    }
+
+                    if (budgetStatus != null && !budgetEdited) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            budgetStatus.orEmpty(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
@@ -226,4 +344,13 @@ fun BudgetScreen(viewModel: AppViewModel) {
             }
         }
     }
+}
+
+@Composable
+private fun BudgetNumberError() {
+    Text(
+        "Use a non-negative number like 292 or 292,50.",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error
+    )
 }
