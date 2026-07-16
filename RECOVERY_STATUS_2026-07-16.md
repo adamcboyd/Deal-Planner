@@ -412,7 +412,7 @@ Latest phone preflight helper check:
 .\scripts\phone-debug-preflight.ps1
 ```
 
-Result after committing the stale Gemini APK install guard checkpoint: `0 failure(s), 2 warning(s)` for expected local conditions: no connected/authorized phone and no Gemini key configured. Git branch was clean and Open Food Facts barcode lookup endpoint was reachable.
+Result after committing the debug APK source freshness guard checkpoint: `0 failure(s), 2 warning(s)` for expected local conditions: no connected/authorized phone and no Gemini key configured. Git branch was clean, app-debug.apk was newer than app source/resources/build config, and Open Food Facts barcode lookup endpoint was reachable.
 
 Latest continuation gate after stale Gemini APK install guard work:
 
@@ -431,6 +431,14 @@ Latest continuation gate after Gemini single-item response parsing work:
 Result: `BUILD SUCCESSFUL`, with `108` unit tests detected and `0 errors, 21 warnings`.
 
 Latest continuation gate after bundled demo receipt coverage work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `109` unit tests detected and `0 errors, 21 warnings`.
+
+Latest continuation gate after debug APK source freshness guard work:
 
 ```powershell
 .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
@@ -469,7 +477,7 @@ Phone install helper:
 ```
 
 Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
-Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and Gemini/local configuration has not changed.
+Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and app source/resources/build config plus Gemini/local configuration have not changed.
 
 Phone test checklist:
 
@@ -483,7 +491,7 @@ Verified by build/unit tests/code inspection:
 - Room database filename is now `deal_planner_db`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, APK, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
-- `scripts\phone-debug-preflight.ps1` warns when `local.properties` is newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so Gemini key/model values must be rebuilt into `BuildConfig`.
+- `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.

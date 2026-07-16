@@ -28,7 +28,7 @@ If the APK is already built:
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
 
-Do not use `-SkipBuild` after changing `local.properties` or Gemini environment values. The install helper blocks a stale APK when `local.properties` is newer than `app-debug.apk`.
+Do not use `-SkipBuild` after changing app code/resources, Gradle config, `local.properties`, or Gemini environment values. The install helper blocks a stale APK when app source/config or `local.properties` is newer than `app-debug.apk`.
 
 ## Optional Gemini Setup
 

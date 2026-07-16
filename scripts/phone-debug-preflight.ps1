@@ -58,6 +58,47 @@ function Test-RealKey {
     )
 }
 
+function Get-RelativeRepoPath {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    if ($Path.StartsWith($Root, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $Path.Substring($Root.Length).TrimStart('\', '/')
+    }
+
+    return $Path
+}
+
+function Get-LatestBuildInput {
+    param([string]$Root)
+
+    $candidatePaths = @(
+        "app\src\main",
+        "app\build.gradle.kts",
+        "build.gradle.kts",
+        "settings.gradle.kts",
+        "gradle.properties"
+    )
+
+    $items = foreach ($candidatePath in $candidatePaths) {
+        $fullPath = Join-Path $Root $candidatePath
+        if (-not (Test-Path $fullPath)) {
+            continue
+        }
+
+        $item = Get-Item $fullPath
+        if ($item.PSIsContainer) {
+            Get-ChildItem -LiteralPath $fullPath -Recurse -File -Force
+        } else {
+            $item
+        }
+    }
+
+    return @($items | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
+}
+
 $results = [System.Collections.Generic.List[object]]::new()
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
@@ -161,6 +202,16 @@ if ($apkInfo -and (Test-Path $localPropertiesPath)) {
     }
 } elseif ($apkInfo -and ((Test-RealKey $envGeminiKey) -or -not [string]::IsNullOrWhiteSpace($envGeminiModel))) {
     Add-Check $results "Gemini APK freshness" "WARN" "GEMINI_* environment values cannot be timestamp-checked against app-debug.apk. Rebuild before AI phone testing if they changed."
+}
+
+if ($apkInfo) {
+    $latestBuildInput = Get-LatestBuildInput $repoRoot
+    if ($latestBuildInput.Count -gt 0 -and $latestBuildInput[0].LastWriteTime -gt $apkInfo.LastWriteTime) {
+        $relativePath = Get-RelativeRepoPath $repoRoot $latestBuildInput[0].FullName
+        Add-Check $results "APK source freshness" "WARN" "$relativePath is newer than app-debug.apk. Rebuild before phone testing."
+    } else {
+        Add-Check $results "APK source freshness" "OK" "app-debug.apk is newer than app source/resources/build config."
+    }
 }
 
 if ($SkipNetwork) {

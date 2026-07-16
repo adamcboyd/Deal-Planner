@@ -35,6 +35,69 @@ function Test-RealGeminiKey {
     )
 }
 
+function Get-RelativeRepoPath {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    if ($Path.StartsWith($Root, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $Path.Substring($Root.Length).TrimStart('\', '/')
+    }
+
+    return $Path
+}
+
+function Get-LatestBuildInput {
+    param([string]$Root)
+
+    $candidatePaths = @(
+        "app\src\main",
+        "app\build.gradle.kts",
+        "build.gradle.kts",
+        "settings.gradle.kts",
+        "gradle.properties"
+    )
+
+    $items = foreach ($candidatePath in $candidatePaths) {
+        $fullPath = Join-Path $Root $candidatePath
+        if (-not (Test-Path $fullPath)) {
+            continue
+        }
+
+        $item = Get-Item $fullPath
+        if ($item.PSIsContainer) {
+            Get-ChildItem -LiteralPath $fullPath -Recurse -File -Force
+        } else {
+            $item
+        }
+    }
+
+    return @($items | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
+}
+
+function Assert-ApkFreshForBuildInputs {
+    param(
+        [string]$ApkPath,
+        [bool]$SkipBuildRequested
+    )
+
+    if (-not $SkipBuildRequested) {
+        return
+    }
+
+    $apkInfo = Get-Item $ApkPath
+    $latestBuildInput = Get-LatestBuildInput $repoRoot
+    if ($latestBuildInput.Count -eq 0) {
+        return
+    }
+
+    if ($latestBuildInput[0].LastWriteTime -gt $apkInfo.LastWriteTime) {
+        $relativePath = Get-RelativeRepoPath $repoRoot $latestBuildInput[0].FullName
+        throw "$relativePath is newer than app-debug.apk. Run .\scripts\phone-debug-install.ps1 without -SkipBuild so the phone gets the current app code/resources."
+    }
+}
+
 function Assert-ApkFreshForGeminiConfig {
     param(
         [string]$ApkPath,
@@ -84,6 +147,7 @@ if (-not (Test-Path $apkPath)) {
     throw "Debug APK not found at $apkPath. Run without -SkipBuild first."
 }
 
+Assert-ApkFreshForBuildInputs -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 Assert-ApkFreshForGeminiConfig -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 
 $adbCommand = Get-Command adb -ErrorAction SilentlyContinue

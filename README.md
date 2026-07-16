@@ -144,7 +144,7 @@ Command-line phone install helper:
 .\scripts\phone-debug-preflight.ps1
 ```
 
-This checks the repo state, debug APK, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
+This checks the repo state, debug APK, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
 
 ```powershell
 .\scripts\phone-debug-install.ps1
@@ -156,7 +156,7 @@ If the debug APK is already built and you only want to reinstall/launch on a con
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
 
-Use `-SkipBuild` only when you have not changed `local.properties` or Gemini environment values since the APK was built.
+Use `-SkipBuild` only when you have not changed app code/resources, Gradle config, `local.properties`, or Gemini environment values since the APK was built.
 
 Debug APK output:
 
@@ -375,7 +375,7 @@ As of the latest local pass:
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
-- `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than `local.properties`, preventing stale Gemini key/model values from reaching the phone.
+- `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
