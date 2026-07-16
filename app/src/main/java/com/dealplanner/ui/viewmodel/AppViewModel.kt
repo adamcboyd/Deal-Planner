@@ -73,6 +73,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _receiptScanStatus = MutableStateFlow<String?>(null)
     val receiptScanStatus: StateFlow<String?> = _receiptScanStatus.asStateFlow()
 
+    private val _aiVisionConnectionStatus = MutableStateFlow<String?>(null)
+    val aiVisionConnectionStatus: StateFlow<String?> = _aiVisionConnectionStatus.asStateFlow()
+
     init {
         viewModelScope.launch {
             initializeDefaults()
@@ -415,6 +418,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun updateParams(params: Params) {
         viewModelScope.launch {
             repository.updateParams(params)
+        }
+    }
+
+    fun testAiVisionConnection() {
+        viewModelScope.launch {
+            _aiVisionConnectionStatus.value = "Testing Gemini connection..."
+            val result = pantryVisionClient.testConnection()
+            _aiVisionConnectionStatus.value = result.message
         }
     }
 

@@ -1,6 +1,7 @@
 package com.dealplanner.ai
 
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class GeminiPantryVisionClientTest {
@@ -31,5 +32,15 @@ class GeminiPantryVisionClientTest {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "")
 
         assertThat(client.modelName).isEqualTo("gemini-3.5-flash")
+    }
+
+    @Test
+    fun `connection test reports missing key without network`() = runTest {
+        val client = GeminiPantryVisionClient(apiKey = "", model = "gemini-3.5-flash")
+
+        val result = client.testConnection()
+
+        assertThat(result.success).isFalse()
+        assertThat(result.message).contains("not configured")
     }
 }

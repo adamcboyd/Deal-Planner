@@ -80,7 +80,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 4 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 5 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 14 test cases
             │   └── DealsParserTest.kt         ✅ 8 test cases
@@ -124,7 +124,7 @@ Deal_Planner/
 - ✅ Flyer camera/gallery/PDF import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
-- ✅ Settings screen AI configuration status
+- ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
 
 ### 4. Business Logic Engines
@@ -160,7 +160,7 @@ Deal_Planner/
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
-- ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status
+- ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
 - ✅ Material 3 theming with dark/light support
 
 ### 6. Demo Data
@@ -170,8 +170,8 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (46 Test Cases)
-- ✅ GeminiPantryVisionClientTest (4 tests)
+### 7. Unit Tests (47 Test Cases)
+- ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (14 tests)
 - ✅ DealsParserTest (8 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -253,7 +253,8 @@ Deal_Planner/
 2. Toggle GERD-friendly, avoid peppers
 3. Adjust protein per meal
 4. Check AI Pantry Photo Status
-5. Save settings
+5. Tap Test AI Connection after adding a Gemini key
+6. Save settings
 
 ## 🧪 Testing
 
@@ -347,6 +348,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
+- ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF deal output before using it in meal plans
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
@@ -375,7 +377,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 46 unit tests
+- ✅ 47 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

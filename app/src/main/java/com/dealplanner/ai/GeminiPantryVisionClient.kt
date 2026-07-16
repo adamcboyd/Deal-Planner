@@ -42,6 +42,11 @@ class GeminiPantryVisionClient(
         val rawResponse: String
     )
 
+    data class ConnectionTestResult(
+        val success: Boolean,
+        val message: String
+    )
+
     val modelName: String = model.ifBlank { "gemini-3.5-flash" }
 
     fun isConfigured(): Boolean {
@@ -58,6 +63,42 @@ class GeminiPantryVisionClient(
 
         val base64Image = bitmap.toJpegBase64()
         val requestBody = buildRequest(base64Image).toString()
+        val responseText = postGenerateContent(requestBody)
+
+        parseVisionResult(extractResponseText(responseText))
+    }
+
+    suspend fun testConnection(): ConnectionTestResult = withContext(Dispatchers.IO) {
+        if (!isConfigured()) {
+            return@withContext ConnectionTestResult(
+                success = false,
+                message = "Gemini API key is not configured."
+            )
+        }
+
+        try {
+            val responseText = postGenerateContent(buildConnectionTestRequest().toString())
+            val answer = extractResponseText(responseText).trim()
+            if (answer.isBlank()) {
+                ConnectionTestResult(
+                    success = false,
+                    message = "Gemini responded, but returned an empty test response."
+                )
+            } else {
+                ConnectionTestResult(
+                    success = true,
+                    message = "Gemini connection OK using $modelName."
+                )
+            }
+        } catch (e: Exception) {
+            ConnectionTestResult(
+                success = false,
+                message = "Gemini connection failed: ${e.message ?: "unknown error"}"
+            )
+        }
+    }
+
+    private fun postGenerateContent(requestBody: String): String {
         val endpoint = URL("https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent")
         val connection = (endpoint.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
@@ -68,19 +109,17 @@ class GeminiPantryVisionClient(
             setRequestProperty("x-goog-api-key", apiKey)
         }
 
-        try {
+        return try {
             connection.outputStream.use { output ->
                 output.write(requestBody.toByteArray(Charsets.UTF_8))
             }
 
-            val responseText = if (connection.responseCode in 200..299) {
+            if (connection.responseCode in 200..299) {
                 connection.inputStream.bufferedReader().use { it.readText() }
             } else {
                 val errorText = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
                 throw IOException("Gemini request failed (${connection.responseCode}): $errorText")
             }
-
-            parseVisionResult(extractResponseText(responseText))
         } finally {
             connection.disconnect()
         }
@@ -115,6 +154,27 @@ class GeminiPantryVisionClient(
                 JsonObject().apply {
                     addProperty("temperature", 0.1)
                     addProperty("responseMimeType", "application/json")
+                }
+            )
+        }
+    }
+
+    private fun buildConnectionTestRequest(): JsonObject {
+        val promptPart = JsonObject().apply {
+            addProperty("text", "Reply with OK to confirm this Deal Planner Gemini setup works.")
+        }
+
+        val content = JsonObject().apply {
+            add("parts", JsonArray().apply { add(promptPart) })
+        }
+
+        return JsonObject().apply {
+            add("contents", JsonArray().apply { add(content) })
+            add(
+                "generationConfig",
+                JsonObject().apply {
+                    addProperty("temperature", 0.0)
+                    addProperty("maxOutputTokens", 16)
                 }
             )
         }

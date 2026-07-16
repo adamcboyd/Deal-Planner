@@ -72,6 +72,7 @@ Verified by build/unit tests/code inspection:
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
+- Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Placeholder Gemini keys are treated as not configured.
 - Demo data loading exists.
 
@@ -93,6 +94,7 @@ Current AI configuration:
 - `GEMINI_API_KEY` environment variable was not set in this shell.
 - Therefore Gemini Vision is not live-configured yet; the app will use ML Kit OCR fallback.
 - Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI documentation checked on 2026-07-16.
+- Live Gemini connection testing is now available from Settings after adding a real key.
 
 ## Important Cautions
 
@@ -130,6 +132,7 @@ gemini.model=gemini-3.5-flash
    - Receipts edit/review dialog for OCR and match corrections.
    - Receipts edit/delete budget total adjustment.
    - Settings AI status before and after adding a real Gemini key.
+   - Settings Test AI Connection before pantry AI photo testing.
    - Generate meal plan.
    - Review shopping list.
    - Review budget.

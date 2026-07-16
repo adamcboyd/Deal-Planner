@@ -12,6 +12,7 @@ import com.dealplanner.ui.viewmodel.AppViewModel
 @Composable
 fun ParamsScreen(viewModel: AppViewModel) {
     val params by viewModel.params.collectAsState()
+    val aiVisionConnectionStatus by viewModel.aiVisionConnectionStatus.collectAsState()
 
     var gerdFriendly by remember { mutableStateOf(params?.gerdFriendly ?: false) }
     var avoidPeppers by remember { mutableStateOf(params?.avoidPeppers ?: false) }
@@ -189,6 +190,25 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { viewModel.testAiVisionConnection() },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Test AI Connection")
+                    }
+                    if (aiVisionConnectionStatus != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            aiVisionConnectionStatus.orEmpty(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (aiVisionConnectionStatus?.contains("OK") == true) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
                 }
             }
         }

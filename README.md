@@ -100,7 +100,7 @@ gemini.model=gemini-3.5-flash
 Do not commit `local.properties`; it is ignored by Git.
 
 A non-secret template is included at `local.properties.example`.
-The Settings tab shows whether Gemini Vision is configured and which model the build is using.
+The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks.
 
 ### Build & Run
 
@@ -250,6 +250,7 @@ The Settings tab includes **AI Pantry Photo Status**:
 - If Gemini is configured, it shows the model used for pantry photo recognition.
 - If Gemini is not configured, it states that pantry photos will use on-device OCR fallback.
 - Placeholder keys such as `YOUR_GEMINI_API_KEY` are treated as not configured.
+- **Test AI Connection** performs a small Gemini request from the phone so you can confirm the key, network, and model before testing pantry photos.
 
 ## Testing
 
@@ -317,6 +318,7 @@ As of the latest local pass:
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
 - Receipt edits and deletes adjust budget spending totals.
+- Settings can test the Gemini API key/model connection from the running app.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions
