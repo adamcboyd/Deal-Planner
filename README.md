@@ -145,6 +145,7 @@ Command-line phone install helper:
 ```
 
 This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
+Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 
 ```powershell
 .\scripts\phone-debug-install.ps1
@@ -397,7 +398,7 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
-- `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner` and includes network/camera permissions before phone testing.
+- `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, and matches the GitHub branch SHA when network checks are enabled.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
@@ -424,6 +425,7 @@ As of the latest local pass:
 - Deals parser accepts flyer prices when OCR drops dollar signs, drops leading zeroes such as `.99/lb`, drops price/unit slashes, or uses comma decimals, including cent-style prices such as `99c/lb`, `99c lb`, and `88c`.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal and leading-decimal price, PPU, discount, score, and confidence corrections with visible validation for invalid numeric values.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
+- Gallery and PDF imports use picker-scoped URI grants instead of broad storage/media permissions.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
 - Blank pantry, barcode, flyer text, and receipt text actions show on-screen status messages instead of silently doing nothing.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.

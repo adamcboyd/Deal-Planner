@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `52f2010 fix: split clear multi-item pantry OCR imports`
-- The branch may include later docs-only recovery commits, but `52f2010` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `6c04fb1 fix: keep picker imports off storage permissions`
+- The branch may include later docs-only recovery commits, but `6c04fb1` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -940,6 +940,23 @@ Latest continuation gate after pantry OCR multi-item fallback work:
 
 Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest continuation gate after scoped picker-permission work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
+Latest APK permission helper check:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1
+.\scripts\phone-debug-install.ps1 -SkipBuild -NoLaunch
+```
+
+Result: preflight reported `APK permissions` and `APK storage permissions` as OK. The install helper verified `com.dealplanner / Deal Planner` scoped permissions before stopping at the expected no-phone-connected condition.
+
 Additional check:
 
 ```powershell
@@ -988,7 +1005,7 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
-- `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner` plus required `INTERNET` and `CAMERA` permissions before phone testing.
+- `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner`, required `INTERNET` and `CAMERA` permissions, and no broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
@@ -1038,6 +1055,7 @@ Verified by build/unit tests/code inspection:
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
+- Gallery image and PDF imports rely on Android picker URI grants; the APK no longer requests `READ_EXTERNAL_STORAGE` or `READ_MEDIA_IMAGES`.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
 - ML Kit pantry OCR fallback preserves single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Flyer photo/gallery/PDF/manual text input exists.

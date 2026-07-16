@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `52f2010 fix: split clear multi-item pantry OCR imports`
+- Current validated app-code checkpoint: `6c04fb1 fix: keep picker imports off storage permissions`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -21,6 +21,7 @@ adb devices
 ```
 
 Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
+Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:
 
@@ -267,6 +268,7 @@ Verify these show visible status messages instead of silent failures:
 - Manual pantry, deals, and receipt text paths work and show visible status for blank input.
 - Failed pasted flyer/receipt parses keep the pasted text visible for correction.
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
+- Gallery/PDF picker paths work without the APK requesting broad storage/media-library permissions.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
 - Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
