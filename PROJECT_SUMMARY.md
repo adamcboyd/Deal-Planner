@@ -389,7 +389,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs
-- ✅ Ignores receipt subtotal, tax, total, savings, and tender/payment lines
+- ✅ Ignores receipt subtotal, tax, total, savings, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Recalculates budget daily envelope and projected spend from current-month receipt history

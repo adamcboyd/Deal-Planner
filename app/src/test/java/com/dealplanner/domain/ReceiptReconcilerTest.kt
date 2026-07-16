@@ -268,6 +268,8 @@ class ReceiptReconcilerTest {
             TAX              $0.00
             TOTAL            $4.78
             EBT/CARD         $4.78
+            VISA DEBIT       $4.78
+            CARD TENDER      $4.78
         """.trimIndent()
 
         val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")

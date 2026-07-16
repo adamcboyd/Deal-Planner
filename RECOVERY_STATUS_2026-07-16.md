@@ -238,6 +238,14 @@ Latest continuation gate after scoped pantry opened/best-by date parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `84` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt card-tender filtering work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `84` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -326,7 +334,7 @@ Verified by build/unit tests/code inspection:
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
-- Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.
+- Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
 - Receipt reconciliation ignores coupon, discount, reward, refund, return, promo, markdown, and adjustment lines so those OCR rows do not increase spending.
 - Receipt totals are rounded to cents before budget updates.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.

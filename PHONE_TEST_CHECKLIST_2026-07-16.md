@@ -95,6 +95,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 6. Confirm Budget spending/projection changes after receipt import.
 7. Edit one receipt line and confirm Budget updates.
 8. Delete one receipt line and confirm Budget updates again.
+9. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
 
 ## Phone Input Tests
 
