@@ -142,6 +142,18 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse date label wording without leaking date into item name`() {
+        val expirationDate = parser.parse("milk expiration date 12/31/2026")
+        val bestByDate = parser.parse("yogurt best by date 2026-12-31")
+
+        assertThat(expirationDate.item.item).isEqualTo("milk")
+        assertThat(expirationDate.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        assertThat(bestByDate.item.item).isEqualTo("yogurt")
+        assertThat(bestByDate.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+    }
+
+    @Test
     fun `parse complex item`() {
         val result = parser.parse("2 cans Great Value black beans 15oz in pantry")
 
