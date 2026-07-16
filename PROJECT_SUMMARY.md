@@ -424,6 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Production-ready pantry parser
 - ✅ Pantry item review/edit flow
 - ✅ Barcode/manual code pantry lookup and intake
+- ✅ Manual barcode/code failure text retention
 - ✅ Production-ready deals parser
 - ✅ Deal review/edit flow
 - ✅ OCR integration (ML Kit)

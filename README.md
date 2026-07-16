@@ -398,6 +398,7 @@ As of the latest local pass:
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Pasted flyer and receipt OCR text shows a processing status, stays in the field when parsing fails, and clears only after a successful import.
+- Manual barcode/code text stays in the field when no UPC/EAN/GTIN code is found, and clears only after a successful barcode import.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.

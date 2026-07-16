@@ -40,6 +40,7 @@ fun PantryScreen(viewModel: AppViewModel) {
     val pantryPhotoStatus by viewModel.pantryPhotoStatus.collectAsState()
     var inputText by remember { mutableStateOf("") }
     var barcodeText by remember { mutableStateOf("") }
+    var clearBarcodeTextOnSuccess by remember { mutableStateOf(false) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -103,6 +104,18 @@ fun PantryScreen(viewModel: AppViewModel) {
             cameraLauncher.launch(uri)
         } else {
             viewModel.reportPantryCameraPermissionDenied()
+        }
+    }
+
+    LaunchedEffect(pantryPhotoStatus) {
+        val status = pantryPhotoStatus.orEmpty()
+        val barcodeImportSucceeded = status.startsWith("Added ") || status.startsWith("Updated ")
+        if (clearBarcodeTextOnSuccess && barcodeImportSucceeded && status.contains("barcode", ignoreCase = true)) {
+            barcodeText = ""
+            clearBarcodeTextOnSuccess = false
+        }
+        if (clearBarcodeTextOnSuccess && status == "No barcode found.") {
+            clearBarcodeTextOnSuccess = false
         }
     }
 
@@ -205,10 +218,8 @@ fun PantryScreen(viewModel: AppViewModel) {
                     }
                     OutlinedButton(
                         onClick = {
+                            clearBarcodeTextOnSuccess = barcodeText.isNotBlank()
                             viewModel.addPantryBarcode(barcodeText)
-                            if (barcodeText.isNotBlank()) {
-                                barcodeText = ""
-                            }
                         },
                         modifier = Modifier.weight(1f)
                     ) {
