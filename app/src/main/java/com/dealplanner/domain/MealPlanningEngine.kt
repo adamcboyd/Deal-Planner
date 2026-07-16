@@ -100,7 +100,7 @@ class MealPlanningEngine {
 
             // Breakfast
             if (request.params.breakfastAnchor && pantryBreakfastItems.isNotEmpty()) {
-                val breakfastItem = pantryBreakfastItems.random()
+                val breakfastItem = pantryBreakfastItems.pickByIndex(dayOffset)
                 slots.add(
                     MealSlot(
                         mealType = "breakfast",
@@ -113,10 +113,11 @@ class MealPlanningEngine {
             }
 
             // Lunch & Dinner
-            listOf("lunch", "dinner").forEach { mealType ->
-                val proteinDeal = proteinDeals.randomOrNull()
-                val vegDeal = vegDeals.randomOrNull()
-                val starch = pantryStarches.randomOrNull()
+            listOf("lunch", "dinner").forEachIndexed { mealIndex, mealType ->
+                val slotIndex = dayOffset * 2 + mealIndex
+                val proteinDeal = proteinDeals.pickByIndexOrNull(slotIndex)
+                val vegDeal = vegDeals.pickByIndexOrNull(slotIndex)
+                val starch = pantryStarches.pickByIndexOrNull(slotIndex)
 
                 if (proteinDeal != null) {
                     val proteinQty = request.params.proteinPerMealLb
@@ -179,6 +180,19 @@ class MealPlanningEngine {
                 item.item.lowercase().contains(keyword)
             } && item.qty > 0
         }
+    }
+
+    private fun <T> List<T>.pickByIndex(index: Int): T {
+        return this[index.floorMod(size)]
+    }
+
+    private fun <T> List<T>.pickByIndexOrNull(index: Int): T? {
+        if (isEmpty()) return null
+        return pickByIndex(index)
+    }
+
+    private fun Int.floorMod(divisor: Int): Int {
+        return ((this % divisor) + divisor) % divisor
     }
 
     private fun filterDealsByParams(deals: List<DealItem>, params: Params): List<DealItem> {

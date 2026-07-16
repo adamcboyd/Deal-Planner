@@ -100,6 +100,68 @@ class MealPlanningEngineTest {
     }
 
     @Test
+    fun `generate meal plan is deterministic for same inputs`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(),
+            pantryItems = listOf(
+                PantryItem(item = "rice", qty = 5.0, unit = "lb"),
+                PantryItem(item = "pasta", qty = 2.0, unit = "lb"),
+                PantryItem(item = "oats", qty = 2.0, unit = "lb")
+            ),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.8,
+                    pricePerUnit = 2.99
+                ),
+                DealItem(
+                    name = "Pork Shoulder",
+                    price = 3.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.85,
+                    pricePerUnit = 3.99
+                ),
+                DealItem(
+                    name = "Broccoli",
+                    price = 1.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.7,
+                    pricePerUnit = 1.99
+                ),
+                DealItem(
+                    name = "Carrots",
+                    price = 1.49,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.65,
+                    pricePerUnit = 1.49
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 7
+        )
+
+        val first = engine.generateMealPlan(request)
+        val second = engine.generateMealPlan(request)
+
+        assertThat(second.mealPlans.map { it.slots })
+            .containsExactlyElementsIn(first.mealPlans.map { it.slots })
+            .inOrder()
+        assertThat(second.shoppingList.map { it.dealItem.name to it.quantity })
+            .containsExactlyElementsIn(first.shoppingList.map { it.dealItem.name to it.quantity })
+            .inOrder()
+    }
+
+    @Test
     fun `filter GERD-friendly foods`() {
         val params = Params(gerdFriendly = true)
         val pantryItems = listOf(

@@ -261,7 +261,7 @@ On the Receipts tab:
 
 ### Meal Planning
 
-Click "Generate" in the Menu tab to create a 7-day plan. Re-generating replaces the active generated week instead of stacking duplicate plan rows.
+Click "Generate" in the Menu tab to create a deterministic 7-day plan. The same pantry, deal, and settings inputs produce the same meal plan for repeatable phone testing. Re-generating replaces the active generated week instead of stacking duplicate plan rows.
 - Breakfast uses pantry anchors (oats, cereal) if enabled
 - Lunch/Dinner pairs: Protein + Veg + Starch
 - Proteins from top-scored deals
@@ -300,7 +300,7 @@ Tests cover:
 - Open Food Facts barcode response parsing and barcode normalization
 - Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices)
 - Meal planning (GERD-filtering, anchors)
-- Meal plan date coverage for repeatable 7-day generation
+- Meal plan date coverage and deterministic repeatable 7-day generation
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, malformed string/list fields)
@@ -348,7 +348,7 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
-- Menu Generate replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
+- Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.

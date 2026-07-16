@@ -166,6 +166,14 @@ Latest continuation gate after repeatable meal-plan generation work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest continuation gate after deterministic meal-plan rotation work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -212,7 +220,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Meal planning engine has unit tests.
-- Meal plan generation has unit coverage for one generated row per requested date.
+- Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
@@ -247,7 +255,7 @@ Verified by build/unit tests/code inspection:
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
-- Menu Generate replaces the active generated week so repeated taps do not duplicate meal-plan rows.
+- Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 
 Not yet verified on a real phone:
 
