@@ -214,7 +214,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (232 Test Cases)
+### 7. Unit Tests (233 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -444,6 +444,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses receipt OCR item totals and inline quantity lines before or after the item name, with or without dollar signs and with comma decimals
 - ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields while rejecting non-finite values
 - ✅ Ignores receipt subtotal, tax, total, savings, saved-total, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
+- ✅ Ignores receipt return/refund rows with negative totals so they do not import as positive grocery spending
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Recalculates budget daily envelope and projected spend from current-month receipt history
@@ -495,7 +496,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
-- ✅ 232 unit tests
+- ✅ 233 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

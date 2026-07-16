@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry label punctuation and AI brand normalization work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after receipt negative-return filtering work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -183,8 +183,9 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 18. Delete one receipt line and confirm Budget updates again.
 19. Optional saved-total check: append `YOU SAVED $4.25`, `SAVED TODAY 4.25`, and `TOTAL SAVED $4.25`; confirm those savings lines do not appear as receipt items or affect Budget spending.
 20. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-21. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
-22. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+21. Optional negative return/refund check: append `MILK -$1.99`, `EGGS $-2.49`, `BREAD (3.29)`, and `APPLES -1,25`; confirm those negative amount rows do not appear as receipt items or increase Budget spending.
+22. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+23. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ### Budget
 
@@ -329,6 +330,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Gallery/PDF picker paths work without the APK requesting broad storage/media-library permissions.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
+- Receipt return/refund rows with negative totals do not import as positive spending.
 - Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
 - Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections and reject non-finite values such as `NaN` or `Infinity`.
 - Pantry typed/OCR intake preserves gallon, quart, pint, and hyphenated package sizes such as `16-ounce` and `12-count`.

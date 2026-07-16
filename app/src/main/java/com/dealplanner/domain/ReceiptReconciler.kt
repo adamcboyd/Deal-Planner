@@ -149,6 +149,8 @@ class ReceiptReconciler {
      * - "2 @ 2.49  BROCCOLI  $4.98"
      */
     private fun parseReceiptLine(line: String): Triple<String, Double, Double?>? {
+        if (hasNegativeReceiptAmount(line)) return null
+
         // Pattern: optional qty, item name, price
         val itemFirstWeightedPattern = Regex(
             """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
@@ -198,6 +200,10 @@ class ReceiptReconciler {
         }
 
         return null
+    }
+
+    private fun hasNegativeReceiptAmount(line: String): Boolean {
+        return negativeReceiptAmountPattern.containsMatchIn(line)
     }
 
     private fun isSummaryOrTenderLine(itemName: String): Boolean {
@@ -527,6 +533,10 @@ class ReceiptReconciler {
         private const val RECEIPT_PRICE_PATTERN = """(?:\d+)?[.,]\d{2}"""
         private const val RECEIPT_PRICE_TOKEN_PATTERN = """(?:\$?$RECEIPT_PRICE_PATTERN|\$\d+)"""
         private const val QUANTITY_PRICE_SEPARATOR_PATTERN = """(?:@|x)"""
+        private const val RECEIPT_AMOUNT_PATTERN = """(?:\d+(?:[.,]\d{2})?|[.,]\d{2})"""
+        private val negativeReceiptAmountPattern = Regex(
+            """(?<![A-Za-z0-9])(?:-\s*\$?\s*$RECEIPT_AMOUNT_PATTERN|\$\s*-\s*$RECEIPT_AMOUNT_PATTERN|\(\s*\$?\s*$RECEIPT_AMOUNT_PATTERN\s*\))"""
+        )
         private val splitQuantityPattern = Regex(
             """(?i)^($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
         )

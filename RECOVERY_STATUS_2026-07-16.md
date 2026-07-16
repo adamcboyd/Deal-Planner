@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry label punctuation and AI brand normalization work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: sample transfer manifest-hash verification work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after receipt negative-return filtering work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: pantry label punctuation and AI brand normalization work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2253,3 +2253,27 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `232` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest app-code checkpoint after receipt negative-return filtering work:
+
+App-code checkpoint:
+
+- `ReceiptReconciler` now ignores receipt lines with negative amount forms such as `MILK -$1.99`, `EGGS $-2.49`, `APPLES -1,25`, and parenthesized return amounts like `BREAD (3.29)`.
+- This prevents returned/refunded grocery rows from being parsed as positive purchases and inflating Budget spending.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the negative return/refund receipt behavior.
+
+Focused app check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.domain.ReceiptReconcilerTest"
+```
+
+Result: `BUILD SUCCESSFUL`; targeted receipt reconciliation tests passed.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `233` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

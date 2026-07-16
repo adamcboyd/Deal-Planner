@@ -709,4 +709,25 @@ class ReceiptReconcilerTest {
         ).inOrder()
         assertThat(result.total).isEqualTo(4.78)
     }
+
+    @Test
+    fun `ignore negative return and refund item amount lines`() {
+        val ocrText = """
+            BLACK BEANS      $1.78
+            MILK             -$1.99
+            EGGS             $-2.49
+            BREAD            (3.29)
+            APPLES           -1,25
+            KROGER PASTA     $3.00
+            TOTAL            $4.78
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS      $1.78",
+            "KROGER PASTA     $3.00"
+        ).inOrder()
+        assertThat(result.total).isEqualTo(4.78)
+    }
 }
