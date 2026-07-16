@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.DealItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
+import com.dealplanner.ui.state.ManualInputClearDecision
+import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
 import com.dealplanner.util.toFlexibleDoubleOrNull
 import java.time.LocalDate
@@ -117,17 +119,15 @@ fun DealsScreen(viewModel: AppViewModel) {
     }
 
     LaunchedEffect(dealsScanStatus) {
-        val status = dealsScanStatus.orEmpty()
-        if (!clearFlyerTextOnSuccess) return@LaunchedEffect
-
-        when {
-            status.startsWith("Added ") && status.contains("flyer deal") -> {
+        when (ManualInputClearPolicy.forFlyerStatus(dealsScanStatus, clearFlyerTextOnSuccess)) {
+            ManualInputClearDecision.ClearText -> {
                 flyerText = ""
                 clearFlyerTextOnSuccess = false
             }
-            status.startsWith("No ") || status.startsWith("Could not") -> {
+            ManualInputClearDecision.StopWaiting -> {
                 clearFlyerTextOnSuccess = false
             }
+            ManualInputClearDecision.None -> Unit
         }
     }
 

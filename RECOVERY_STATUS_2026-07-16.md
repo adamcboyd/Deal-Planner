@@ -1843,3 +1843,29 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `185` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest continuation note after manual input clear policy extraction:
+
+Code checkpoint:
+
+- Added `ManualInputClearPolicy` as a pure UI-state helper for manual input retention/clear decisions.
+- Pantry barcode text now uses the shared policy: successful barcode import clears the field; `No barcode found.` stops waiting and keeps the entered text available for correction.
+- Deals pasted flyer text now uses the shared policy: successful import clears the field; no-deal or processing failures keep the pasted text available.
+- Receipts pasted receipt text now uses the shared policy: successful import clears the field; no-line-item or processing failures keep the pasted text available.
+- Added direct unit coverage for barcode, flyer, and receipt manual input clear/retain decisions.
+
+Targeted UI-state gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ui.state.*"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `193` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

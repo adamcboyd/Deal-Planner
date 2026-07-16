@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.PantryItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
+import com.dealplanner.ui.state.ManualInputClearDecision
+import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
 import com.dealplanner.util.toFlexibleDoubleOrNull
 import com.journeyapps.barcodescanner.ScanContract
@@ -145,14 +147,15 @@ fun PantryScreen(viewModel: AppViewModel) {
     }
 
     LaunchedEffect(pantryPhotoStatus) {
-        val status = pantryPhotoStatus.orEmpty()
-        val barcodeImportSucceeded = status.startsWith("Added ") || status.startsWith("Updated ")
-        if (clearBarcodeTextOnSuccess && barcodeImportSucceeded && status.contains("barcode", ignoreCase = true)) {
-            barcodeText = ""
-            clearBarcodeTextOnSuccess = false
-        }
-        if (clearBarcodeTextOnSuccess && status == "No barcode found.") {
-            clearBarcodeTextOnSuccess = false
+        when (ManualInputClearPolicy.forBarcodeStatus(pantryPhotoStatus, clearBarcodeTextOnSuccess)) {
+            ManualInputClearDecision.ClearText -> {
+                barcodeText = ""
+                clearBarcodeTextOnSuccess = false
+            }
+            ManualInputClearDecision.StopWaiting -> {
+                clearBarcodeTextOnSuccess = false
+            }
+            ManualInputClearDecision.None -> Unit
         }
     }
 

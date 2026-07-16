@@ -98,6 +98,8 @@ Deal_Planner/
             │   └── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
             ├── ocr/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
+            ├── ui/state/
+            │   └── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
             └── util/
                 ├── FlexibleDateParsingTest.kt ✅ Flexible date parsing tests
                 └── FlexibleNumberParsingTest.kt ✅ Flexible number parsing tests
@@ -406,6 +408,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Caps rendered flyer PDF page size before OCR processing
 - ✅ Shows clear status when camera permission is denied or capture/scan/gallery/PDF selection is canceled
 - ✅ Shows clear status when manual pantry, barcode, flyer text, or receipt text actions are blank
+- ✅ Keeps manual barcode, pasted flyer, and pasted receipt text available after failed imports while clearing only after successful imports
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
@@ -466,7 +469,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 185 unit tests
+- ✅ 193 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

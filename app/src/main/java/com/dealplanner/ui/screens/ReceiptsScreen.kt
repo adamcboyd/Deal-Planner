@@ -51,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.ReceiptItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
+import com.dealplanner.ui.state.ManualInputClearDecision
+import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
 import com.dealplanner.util.toFlexibleDoubleOrNull
 import java.time.LocalDate
@@ -145,17 +147,15 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
     }
 
     LaunchedEffect(receiptScanStatus) {
-        val status = receiptScanStatus.orEmpty()
-        if (!clearReceiptTextOnSuccess) return@LaunchedEffect
-
-        when {
-            status.startsWith("Added ") && status.contains("receipt item") -> {
+        when (ManualInputClearPolicy.forReceiptStatus(receiptScanStatus, clearReceiptTextOnSuccess)) {
+            ManualInputClearDecision.ClearText -> {
                 receiptText = ""
                 clearReceiptTextOnSuccess = false
             }
-            status.startsWith("No ") || status.startsWith("Could not") -> {
+            ManualInputClearDecision.StopWaiting -> {
                 clearReceiptTextOnSuccess = false
             }
+            ManualInputClearDecision.None -> Unit
         }
     }
 
