@@ -198,6 +198,63 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `match receipt line to fuller flyer deal name by shared food tokens`() {
+        val ocrText = "CHICKEN BREAST    $8.97"
+
+        val deals = listOf(
+            DealItem(
+                id = 22,
+                name = "Chicken Breast Boneless Skinless",
+                price = 2.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 2.99
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].matchedType).isEqualTo("deal")
+        assertThat(result.receiptItems[0].matchedItemId).isEqualTo(22)
+        assertThat(result.receiptItems[0].confidence).isAtLeast(0.7)
+    }
+
+    @Test
+    fun `unrelated receipt line does not attach to weakest available deal or pantry item`() {
+        val ocrText = "TOOTHPASTE    $3.49"
+        val deals = listOf(
+            DealItem(
+                id = 1,
+                name = "Chicken Breast",
+                price = 2.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 2.99
+            )
+        )
+        val pantry = listOf(
+            PantryItem(
+                id = 7,
+                item = "Black Beans",
+                qty = 2.0,
+                unit = "can"
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, pantry, "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].matchedType).isNull()
+        assertThat(result.receiptItems[0].matchedItemId).isNull()
+        assertThat(result.receiptItems[0].needsReview).isTrue()
+        assertThat(result.dealMatches).isEmpty()
+        assertThat(result.pantryUpdates).isEmpty()
+    }
+
+    @Test
     fun `detect price variance`() {
         val ocrText = """
             CHICKEN BREAST    $12.00

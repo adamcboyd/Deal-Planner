@@ -374,15 +374,22 @@ class ReceiptReconciler {
     private fun findBestMatch(query: String, candidates: List<String>): Pair<String, Double>? {
         if (candidates.isEmpty()) return null
 
-        val queryLower = query.lowercase()
+        val queryLower = query.normalizeForMatching()
+        val queryTokens = query.toMatchTokens()
         var bestMatch: String? = null
         var bestScore = 0.0
 
         candidates.forEach { candidate ->
-            val candidateLower = candidate.lowercase()
+            val candidateLower = candidate.normalizeForMatching()
             val distance = levenshteinDistance(queryLower, candidateLower)
             val maxLen = maxOf(queryLower.length, candidateLower.length)
-            val similarity = 1.0 - (distance.toDouble() / maxLen)
+            val editSimilarity = if (maxLen == 0) {
+                0.0
+            } else {
+                1.0 - (distance.toDouble() / maxLen)
+            }
+            val tokenSimilarity = tokenOverlapScore(queryTokens, candidate.toMatchTokens())
+            val similarity = maxOf(editSimilarity, tokenSimilarity)
 
             if (similarity > bestScore) {
                 bestScore = similarity
@@ -390,7 +397,35 @@ class ReceiptReconciler {
             }
         }
 
-        return if (bestMatch != null) Pair(bestMatch!!, bestScore) else null
+        return if (bestMatch != null && bestScore >= MIN_MATCH_CONFIDENCE) {
+            Pair(bestMatch!!, bestScore)
+        } else {
+            null
+        }
+    }
+
+    private fun String.normalizeForMatching(): String {
+        return lowercase()
+            .replace(Regex("""[^a-z0-9]+"""), " ")
+            .trim()
+            .replace(Regex("""\s+"""), " ")
+    }
+
+    private fun String.toMatchTokens(): Set<String> {
+        return normalizeForMatching()
+            .split(" ")
+            .filter { token ->
+                token.length >= 2 &&
+                    token !in receiptMatchStopWords &&
+                    token.toDoubleOrNull() == null
+            }
+            .toSet()
+    }
+
+    private fun tokenOverlapScore(queryTokens: Set<String>, candidateTokens: Set<String>): Double {
+        if (queryTokens.isEmpty() || candidateTokens.isEmpty()) return 0.0
+        val overlap = queryTokens.intersect(candidateTokens).size
+        return overlap.toDouble() / minOf(queryTokens.size, candidateTokens.size).toDouble()
     }
 
     /**
@@ -453,6 +488,26 @@ class ReceiptReconciler {
         )
         private val splitQuantityPattern = Regex(
             """(?i)^(\d+(?:[.,]\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
+        )
+        private const val MIN_MATCH_CONFIDENCE = 0.55
+        private val receiptMatchStopWords = setOf(
+            "lb",
+            "lbs",
+            "pound",
+            "pounds",
+            "oz",
+            "ounce",
+            "ounces",
+            "ct",
+            "count",
+            "ea",
+            "each",
+            "pkg",
+            "pack",
+            "bag",
+            "box",
+            "can",
+            "jar"
         )
     }
 }

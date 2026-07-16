@@ -708,6 +708,14 @@ Latest continuation gate after Gemini object-wrapped pantry field parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `131` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt weak-match rejection work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `133` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
