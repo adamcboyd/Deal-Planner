@@ -78,6 +78,14 @@ Latest continuation gate after camera permission/cancel status work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after phone image decode hardening:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -117,6 +125,7 @@ Verified by build/unit tests/code inspection:
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Camera permission denial and canceled camera/barcode actions now show visible status messages during phone testing.
+- Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.

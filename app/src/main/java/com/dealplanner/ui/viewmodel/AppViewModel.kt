@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
+import kotlin.math.roundToInt
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -631,10 +632,34 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val context = getApplication<Application>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val source = ImageDecoder.createSource(context.contentResolver, uri)
-            ImageDecoder.decodeBitmap(source)
+            ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                val largestDimension = maxOf(info.size.width, info.size.height)
+                if (largestDimension > MAX_INPUT_IMAGE_DIMENSION_PX) {
+                    val scale = MAX_INPUT_IMAGE_DIMENSION_PX.toDouble() / largestDimension.toDouble()
+                    decoder.setTargetSize(
+                        (info.size.width * scale).roundToInt().coerceAtLeast(1),
+                        (info.size.height * scale).roundToInt().coerceAtLeast(1)
+                    )
+                }
+            }
         } else {
             MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                .scaledToMaxDimension(MAX_INPUT_IMAGE_DIMENSION_PX)
         }
+    }
+
+    private fun Bitmap.scaledToMaxDimension(maxDimension: Int): Bitmap {
+        val largestDimension = maxOf(width, height)
+        if (largestDimension <= maxDimension) return this
+
+        val scale = maxDimension.toDouble() / largestDimension.toDouble()
+        return Bitmap.createScaledBitmap(
+            this,
+            (width * scale).roundToInt().coerceAtLeast(1),
+            (height * scale).roundToInt().coerceAtLeast(1),
+            true
+        )
     }
 
     private suspend fun renderPdfPages(uri: Uri): List<Bitmap> = withContext(Dispatchers.IO) {
@@ -731,4 +756,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val inserted: Int,
         val updated: Int
     )
+
+    private companion object {
+        private const val MAX_INPUT_IMAGE_DIMENSION_PX = 3072
+    }
 }
