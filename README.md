@@ -149,6 +149,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
      - 4 sample deals (pork, broccoli, mandarins, chicken)
      - Default budget ($292 food budget, $45 spent)
      - 7-day meal plan
+   - Re-tapping "Load Demo" resets the demo budget and meal settings to that baseline for repeatable phone testing.
 
 2. **Explore Features**:
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz") or barcode/code intake
@@ -325,6 +326,7 @@ As of the latest local pass:
 
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
+- Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.

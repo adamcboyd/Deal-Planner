@@ -100,7 +100,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Placeholder Gemini keys are treated as not configured.
-- Demo data loading exists.
+- Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 
 Not yet verified on a real phone:
 
@@ -148,6 +148,7 @@ gemini.model=gemini-3.5-flash
 6. Install or run the debug app.
 7. Test in this order:
    - Launch app and tap Load Demo.
+   - After receipt/budget tests, tap Load Demo again and confirm Budget returns to the `$292 / $45 spent` demo baseline.
    - Pantry typed entry.
    - Pantry photo.
    - Pantry gallery image.

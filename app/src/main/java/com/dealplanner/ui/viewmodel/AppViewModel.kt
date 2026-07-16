@@ -562,22 +562,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             )
             repository.insertDeals(demoDeals)
 
-            // Initialize params if not exists
-            if (repository.getParams() == null) {
-                repository.insertParams(Params())
-            }
-
-            // Initialize budget if not exists
-            if (repository.getBudget() == null) {
-                repository.insertBudget(
-                    BudgetState(
-                        startingBudget = 292.0,
-                        spentToDate = 45.0,
-                        dailyEnvelope = 10.0,
-                        breakfastAnchorCost = 0.55
-                    )
+            // Reset demo params and budget so Load Demo is a deterministic phone-test baseline.
+            repository.insertParams(Params())
+            repository.insertBudget(
+                BudgetState(
+                    startingBudget = 292.0,
+                    spentToDate = 45.0,
+                    dailyEnvelope = 10.0,
+                    breakfastAnchorCost = 0.55
                 )
-            }
+            )
+            updateBudgetAnalysis()
 
             // Generate meal plan
             generateMealPlan()

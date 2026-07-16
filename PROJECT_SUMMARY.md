@@ -171,7 +171,8 @@ Deal_Planner/
 - ✅ Seed function with:
   - 5 pantry anchors (rice, pasta, oats, beans, oil)
   - 4 sample deals (pork, chicken, broccoli, mandarins)
-  - Budget state ($292 food budget)
+  - Resettable budget state ($292 food budget, $45 spent)
+  - Resettable default meal params
   - Auto-generated 7-day meal plan
 
 ### 7. Unit Tests (60 Test Cases)
@@ -347,7 +348,7 @@ score = 0.40 × (discount% / 100)
 This is a **buildable, runnable MVP baseline** that:
 - ✅ Compiles without errors
 - ✅ Builds a debug APK for emulator/device install
-- ✅ Loads demo data
+- ✅ Loads repeatable demo data with reset budget and meal params
 - ✅ Parses pantry items
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
@@ -390,7 +391,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt reconciliation engine
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
-- ✅ Demo data + seed function
+- ✅ Repeatable demo data + seed function
 - ✅ 60 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
