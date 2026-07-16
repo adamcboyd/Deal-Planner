@@ -220,7 +220,15 @@ class GeminiPantryVisionClient(
     internal fun parseVisionResult(rawText: String): PantryVisionResult {
         val cleaned = rawText.extractJsonText()
 
-        val root = JsonParser.parseString(cleaned)
+        val root = try {
+            JsonParser.parseString(cleaned)
+        } catch (_: Exception) {
+            return PantryVisionResult(
+                items = emptyList(),
+                warnings = listOf("Gemini returned non-JSON pantry output."),
+                rawResponse = rawText
+            )
+        }
         val warnings = root
             .takeIf { it.isJsonObject }
             ?.asJsonObject

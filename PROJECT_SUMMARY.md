@@ -149,7 +149,7 @@ Deal_Planner/
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Concise Gemini API error summaries for Settings connection testing
-- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, and malformed string/list fields
+- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (167 Test Cases)
+### 7. Unit Tests (168 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -392,7 +392,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
-- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, and clamped confidence
+- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-JSON fallback, and clamped confidence
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 167 unit tests
+- ✅ 168 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

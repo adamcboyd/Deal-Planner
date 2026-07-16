@@ -783,4 +783,16 @@ class GeminiPantryVisionClientTest {
         assertThat(item.questions).containsExactly("What is the expiration date?")
         assertThat(result.warnings).containsExactly("label glare", "3")
     }
+
+    @Test
+    fun `parse pantry vision response returns empty result for non json text`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = "I cannot confidently identify pantry items in this image."
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).isEmpty()
+        assertThat(result.warnings).containsExactly("Gemini returned non-JSON pantry output.")
+        assertThat(result.rawResponse).isEqualTo(response)
+    }
 }
