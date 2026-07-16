@@ -1,5 +1,6 @@
 param(
     [switch]$RequirePhone,
+    [switch]$RequireGemini,
     [switch]$SkipNetwork,
     [string]$JavaHome = "C:\Program Files\Java\jdk-20",
     [string]$PackageName = "com.dealplanner",
@@ -356,7 +357,8 @@ if (Test-RealKey $localGeminiKey) {
 } elseif (Test-RealKey $envGeminiKey) {
     Add-Check $results "Gemini key" "OK" "GEMINI_API_KEY is set. Key value was not printed."
 } else {
-    Add-Check $results "Gemini key" "WARN" "No non-placeholder Gemini key found. Pantry photos will use OCR fallback."
+    $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+    Add-Check $results "Gemini key" $status "No non-placeholder Gemini key found. Pantry photos will use OCR fallback."
 }
 
 $model = if ($localGeminiModel) { $localGeminiModel } elseif ($envGeminiModel) { $envGeminiModel } else { "gemini-3.5-flash" }
@@ -365,12 +367,16 @@ Add-Check $results "Gemini model" "OK" "Build model setting resolves to $($model
 if ($apkInfo -and (Test-Path $localPropertiesPath)) {
     $localPropertiesInfo = Get-Item $localPropertiesPath
     if ($localPropertiesInfo.LastWriteTime -gt $apkInfo.LastWriteTime) {
-        Add-Check $results "Gemini APK freshness" "WARN" "local.properties is newer than app-debug.apk. Rebuild before AI phone testing so BuildConfig has the current key/model."
+        $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+        Add-Check $results "Gemini APK freshness" $status "local.properties is newer than app-debug.apk. Rebuild before AI phone testing so BuildConfig has the current key/model."
     } else {
         Add-Check $results "Gemini APK freshness" "OK" "app-debug.apk is newer than local.properties."
     }
 } elseif ($apkInfo -and ((Test-RealKey $envGeminiKey) -or -not [string]::IsNullOrWhiteSpace($envGeminiModel))) {
-    Add-Check $results "Gemini APK freshness" "WARN" "GEMINI_* environment values cannot be timestamp-checked against app-debug.apk. Rebuild before AI phone testing if they changed."
+    $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+    Add-Check $results "Gemini APK freshness" $status "GEMINI_* environment values cannot be timestamp-checked against app-debug.apk. Rebuild before AI phone testing if they changed."
+} elseif ($RequireGemini -and $apkInfo) {
+    Add-Check $results "Gemini APK freshness" "FAIL" "Gemini was required, but no local.properties or GEMINI_* configuration was available to verify against app-debug.apk."
 }
 
 if ($apkInfo) {
