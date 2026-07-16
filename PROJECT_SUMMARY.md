@@ -152,7 +152,7 @@ Deal_Planner/
 - ✅ Concise Gemini API error summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ Settings screen AI configuration status and Gemini connection test
-- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling
+- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling and hyphenated package-size multi-item splitting
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
 ### 4. Business Logic Engines
@@ -202,7 +202,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (178 Test Cases)
+### 7. Unit Tests (179 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest

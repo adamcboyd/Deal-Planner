@@ -58,6 +58,23 @@ class PantryOcrCandidateExtractorTest {
     }
 
     @Test
+    fun `multi item OCR recognizes hyphenated package sizes`() {
+        val text = """
+            Great Value Peanut Butter 16-ounce
+            Kroger Eggs 12-count
+            Nutrition Facts
+            Serving Size 2 tbsp
+        """.trimIndent()
+
+        val candidates = PantryOcrCandidateExtractor.extractCandidates(text)
+
+        assertThat(candidates).containsExactly(
+            "Great Value Peanut Butter 16-ounce",
+            "Kroger Eggs 12-count"
+        ).inOrder()
+    }
+
+    @Test
     fun `empty or ignored OCR lines return no candidates`() {
         val text = """
             Nutrition Facts

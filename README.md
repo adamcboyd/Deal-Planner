@@ -373,7 +373,7 @@ Run unit tests:
 
 Tests cover:
 - Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce, gallon/quart/pint, and hyphenated package labels such as `16-ounce` or `12-count`, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
-- Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products
+- Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products and hyphenated package-size lines such as `16-ounce` or `12-count`
 - Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
@@ -498,7 +498,7 @@ As of the latest local pass:
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
 - AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
 - AI pantry photo VERIFY notes include specific review prompts for missing brand, amount/unit, storage location, and best-by date details.
-- ML Kit pantry OCR fallback keeps single-label photos as one combined review item, avoids treating `NET WT` package-size lines as products, and splits clear multi-item OCR rows into separate VERIFY pantry items.
+- ML Kit pantry OCR fallback keeps single-label photos as one combined review item, avoids treating `NET WT` package-size lines as products, and splits clear multi-item OCR rows, including hyphenated package-size rows, into separate VERIFY pantry items.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

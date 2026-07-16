@@ -64,7 +64,7 @@ object PantryOcrCandidateExtractor {
     private const val MAX_SINGLE_LABEL_LINES = 8
 
     private val amountOrSizePattern = Regex(
-        """\b(?:\d+\s*/\s*\d+|(?:\d+)?[.,]\d+|\d+)\s*(?:fl\.?\s*)?(?:oz|ounce|ounces|lb|lbs|pound|pounds|g|gram|grams|kg|ml|l|gal|gallon|gallons|qt|quart|quarts|pt|pint|pints|ct|count|can|cans|jar|jars|box|boxes|bag|bags|bottle|bottles|carton|cartons|container|containers|cup|cups|pack|packs|pkg|package|packages|ea|each)\b""",
+        """\b(?:\d+\s*/\s*\d+|(?:\d+)?[.,]\d+|\d+)\s*-?\s*(?:fl\.?\s*)?(?:oz|ounce|ounces|lb|lbs|pound|pounds|g|gram|grams|kg|ml|l|gal|gallon|gallons|qt|quart|quarts|pt|pint|pints|ct|count|can|cans|jar|jars|box|boxes|bag|bags|bottle|bottles|carton|cartons|container|containers|cup|cups|pack|packs|pkg|package|packages|ea|each)\b""",
         RegexOption.IGNORE_CASE
     )
     private val dateCuePattern = Regex(

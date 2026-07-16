@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry hyphenated package-size validation; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry OCR hyphenated package-size splitting validation; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -220,7 +220,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: same as pantry photo, including common label-date handling.
 6. Optional multi-item OCR fallback:
-   - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`.
+   - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`, or hyphenated label rows such as `Great Value Peanut Butter 16-ounce` and `Kroger Eggs 12-count`.
    - Expected without Gemini or after AI fallback: the clear item lines import as separate VERIFY pantry rows instead of one combined row.
 7. Optional liquid-size check:
    - Enter or OCR `Kroger milk 1 gal fridge`, `chicken broth 1 quart pantry`, or `cream 1 pint fridge`.
@@ -325,7 +325,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
 - Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections and reject non-finite values such as `NaN` or `Infinity`.
 - Pantry typed/OCR intake preserves gallon, quart, pint, and hyphenated package sizes such as `16-ounce` and `12-count`.
-- Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows into separate VERIFY rows.
+- Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows, including `16-ounce` and `12-count` label rows, into separate VERIFY rows.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.
