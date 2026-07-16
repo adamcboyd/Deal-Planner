@@ -182,6 +182,14 @@ Latest continuation gate after shopping-list consolidation identity work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest phone preflight helper check:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1
+```
+
+Result: `0 failure(s), 3 warning(s)` for expected local conditions: uncommitted edits before commit, no connected/authorized phone, and no Gemini key configured. Open Food Facts barcode lookup endpoint was reachable.
+
 Additional check:
 
 ```powershell
@@ -205,9 +213,14 @@ Debug APK:
 Phone install helper:
 
 ```powershell
+.\scripts\phone-debug-preflight.ps1
+```
+
+```powershell
 .\scripts\phone-debug-install.ps1
 ```
 
+Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built.
 
 Phone test checklist:
@@ -221,6 +234,7 @@ Verified by build/unit tests/code inspection:
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
+- `scripts\phone-debug-preflight.ps1` reports repo, APK, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.

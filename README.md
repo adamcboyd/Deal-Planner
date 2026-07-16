@@ -140,6 +140,12 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 Command-line phone install helper:
 
 ```powershell
+.\scripts\phone-debug-preflight.ps1
+```
+
+This checks the repo state, debug APK, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
+
+```powershell
 .\scripts\phone-debug-install.ps1
 ```
 
@@ -172,7 +178,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
    - **Shopping**: See consolidated shopping list with PPU
-- **Menu**: Browse 7-day meal plan with freezer directives
+   - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
    - **Settings**: Configure dietary preferences and verify AI setup status
 

@@ -14,15 +14,17 @@ Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-20'
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\scripts\phone-debug-preflight.ps1
 adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Expected before install: `adb devices` shows exactly one authorized phone.
+Expected before install: preflight shows no failures, and `adb devices` shows exactly one authorized phone.
 
 If the APK is already built:
 
 ```powershell
+.\scripts\phone-debug-preflight.ps1
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
 
