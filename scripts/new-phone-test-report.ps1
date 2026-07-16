@@ -17,6 +17,7 @@ function Show-Usage {
     Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupStatus Failed -SetupFailure ""Phone preflight failed"""
     Write-Host ""
     Write-Host "Creates an ignored timestamped Markdown report for recording real-phone pass/fail evidence."
+    Write-Host "Includes repo/APK identity, Gemini readiness, lint snapshot, sample evidence, setup status, and device context."
     Write-Host "SetupStatus/SetupFailure are optional; start-phone-test-run.ps1 fills them automatically."
     Write-Host "Set ANDROID_SERIAL when more than one authorized device is connected."
 }
@@ -144,6 +145,43 @@ function Test-RealGeminiKey {
     )
 }
 
+function Get-LintSnapshot {
+    param([string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return [pscustomobject]@{
+            Summary = "not available. Run .\gradlew.bat lintDebug to generate app\build\reports\lint-results-debug.xml."
+            Groups = "not available"
+        }
+    }
+
+    try {
+        [xml]$lint = Get-Content -LiteralPath $Path
+        $issues = @($lint.issues.issue)
+        $errors = @($issues | Where-Object { $_.severity -eq "Error" }).Count
+        $warnings = @($issues | Where-Object { $_.severity -eq "Warning" }).Count
+        $groups = @(
+            $issues |
+                Group-Object id |
+                Sort-Object Name |
+                ForEach-Object { "$($_.Name): $($_.Count)" }
+        )
+        if ($groups.Count -eq 0) {
+            $groups = @("none")
+        }
+
+        return [pscustomobject]@{
+            Summary = "$errors error(s), $warnings warning(s)"
+            Groups = ($groups -join [Environment]::NewLine)
+        }
+    } catch {
+        return [pscustomobject]@{
+            Summary = "could not read lint report: $($_.Exception.Message)"
+            Groups = "not available"
+        }
+    }
+}
+
 if ($Help) {
     Show-Usage
     exit 0
@@ -200,6 +238,8 @@ $apkSourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
 $apkGeminiKey = Get-BuildConfigValue $buildConfigPath "GEMINI_API_KEY"
 $apkGeminiModel = Get-BuildConfigValue $buildConfigPath "GEMINI_MODEL"
 $apkGeminiConfigured = Test-RealGeminiKey $apkGeminiKey
+$lintReportPath = Join-Path $repoRoot "app\build\reports\lint-results-debug.xml"
+$lintSnapshot = Get-LintSnapshot $lintReportPath
 if ([string]::IsNullOrWhiteSpace($apkSourceBranch)) {
     $apkSourceBranch = "UNKNOWN"
 }
@@ -290,6 +330,7 @@ $apkLine
 - Gemini model setting: $($geminiModel.Trim())
 - APK Gemini configured: $apkGeminiConfigured
 - APK Gemini model: $($apkGeminiModel.Trim())
+- Lint snapshot: $($lintSnapshot.Summary)
 $sampleLine
 $sampleManifestLine
 $sampleDestinationLine
@@ -305,6 +346,15 @@ $sampleTransferReportLine
 
 ~~~text
 $status
+~~~
+
+## Lint Snapshot
+
+- Report: $lintReportPath
+- Summary: $($lintSnapshot.Summary)
+
+~~~text
+$($lintSnapshot.Groups)
 ~~~
 
 ## Device Snapshot

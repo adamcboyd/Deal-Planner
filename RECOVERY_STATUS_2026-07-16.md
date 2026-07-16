@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after monochrome launcher icon work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: richer pantry-label phone sample work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone report lint snapshot work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: monochrome launcher icon work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2327,30 +2327,6 @@ Full local gate:
 
 Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
 
-Latest resource checkpoint after monochrome launcher icon work:
-
-Resource checkpoint:
-
-- Added `app\src\main\res\drawable\ic_launcher_monochrome.xml`.
-- Wired the monochrome icon into `ic_launcher.xml` and `ic_launcher_round.xml` so Android launchers that support themed icons have a monochrome asset.
-- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the current launcher-icon checkpoint.
-
-Focused lint check:
-
-```powershell
-.\gradlew.bat lintDebug
-```
-
-Result: `BUILD SUCCESSFUL`; lint reported `0` errors with `19` warnings. The previous two `MonochromeLauncherIcon` warnings are gone; remaining warnings are dependency/SDK drift (`GradleDependency`, `OldTargetApi`, `ObsoleteSdkInt`).
-
-Full local gate:
-
-```powershell
-.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
-```
-
-Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
-
 Latest helper checkpoint after richer pantry-label phone sample work:
 
 Helper checkpoint:
@@ -2378,3 +2354,53 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest resource checkpoint after monochrome launcher icon work:
+
+Resource checkpoint:
+
+- Added `app\src\main\res\drawable\ic_launcher_monochrome.xml`.
+- Wired the monochrome icon into `ic_launcher.xml` and `ic_launcher_round.xml` so Android launchers that support themed icons have a monochrome asset.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the current launcher-icon checkpoint.
+
+Focused lint check:
+
+```powershell
+.\gradlew.bat lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; lint reported `0` errors with `19` warnings. The previous two `MonochromeLauncherIcon` warnings are gone; remaining warnings are dependency/SDK drift (`GradleDependency`, `OldTargetApi`, `ObsoleteSdkInt`).
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
+
+Latest helper checkpoint after phone report lint snapshot work:
+
+Helper checkpoint:
+
+- `scripts\new-phone-test-report.ps1` now reads `app\build\reports\lint-results-debug.xml` when available.
+- Generated phone-test reports now include a `Lint snapshot` Source Snapshot line and a dedicated `Lint Snapshot` section with the lint report path, error/warning count, and issue-id counts.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so phone-test evidence expectations include the lint snapshot.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-phone-test-report.ps1")); "new-phone-test-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -SetupStatus "Preflight only" -SetupFailure "Phone not connected and Gemini key not configured yet"
+```
+
+Result: parse check passed, help printed with lint snapshot coverage, and generated ignored report `phone-test-results\20260716-165231\PHONE_TEST_REPORT.md` included `Lint snapshot: 0 error(s), 19 warning(s)` plus a `Lint Snapshot` section listing `GradleDependency: 17`, `ObsoleteSdkInt: 1`, and `OldTargetApi: 1`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
