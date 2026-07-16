@@ -62,8 +62,9 @@ Verified by build/unit tests/code inspection:
 - Meal planning engine has unit tests.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
-- Pantry photo/gallery input exists.
-- Pantry items can be edited/reviewed after manual, OCR, or AI import.
+- Pantry photo/gallery/barcode/manual code input exists.
+- Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
+- Barcode/manual code pantry input creates VERIFY items with the barcode preserved in notes.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
@@ -87,6 +88,8 @@ Not yet verified on a real phone:
 - Camera capture UX.
 - Full-resolution app-cache camera URI behavior on the physical phone.
 - Gallery import UX.
+- Pantry barcode scanner UX.
+- Pantry manual barcode/code UX.
 - Flyer PDF picker UX.
 - Flyer pasted OCR text UX.
 - Store-aware flyer import UX.
@@ -129,6 +132,8 @@ gemini.model=gemini-3.5-flash
    - Pantry typed entry.
    - Pantry photo.
    - Pantry gallery image.
+   - Pantry barcode scan.
+   - Pantry manual barcode/code entry.
    - Pantry edit/review dialog for VERIFY items.
    - Deals flyer photo.
    - Deals gallery image.
@@ -151,4 +156,4 @@ gemini.model=gemini-3.5-flash
    - Review shopping list.
    - Review budget.
 
-After those pass, decide whether to polish current flows or add optional features such as barcode scanning, nutrition lookup, guided multi-photo flyer capture, and monetization/convenience features.
+After those pass, decide whether to polish current flows or add optional features such as barcode product lookup, nutrition lookup, guided multi-photo flyer capture, and monetization/convenience features.

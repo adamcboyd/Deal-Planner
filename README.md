@@ -12,7 +12,7 @@ Parameters → Deals + Pantry → Meals
 
 ### ✅ Complete Implementation
 
-- **Pantry Management**: Natural language input parser with duplicate detection
+- **Pantry Management**: Natural language input, barcode/code intake, and duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
 - **Deal Tracking**: Camera, gallery image, PDF, and pasted flyer OCR with regex parsing
 - **Receipt Tracking**: Camera/gallery/manual receipt OCR reconciliation
@@ -151,7 +151,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
      - 7-day meal plan
 
 2. **Explore Features**:
-   - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz")
+   - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz") or barcode/code intake
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
@@ -191,6 +191,16 @@ On the Pantry tab:
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
 4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
 5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status.
+
+### Adding Pantry Items From Barcodes
+
+On the Pantry tab:
+
+1. Tap **Scan** to scan a product barcode, or type/paste a code into **Barcode / UPC** and tap **Add Code**.
+2. Deal Planner creates a pantry item marked VERIFY with the barcode saved in notes.
+3. Tap the edit icon to fill in the product name, brand, package size, quantity, and expiration details.
+
+Barcode product lookup is not connected yet; barcode intake is a reviewable seeding path.
 
 ### Scanning Flyers
 
@@ -313,7 +323,9 @@ As of the latest local pass:
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
-- Pantry cards can be edited after manual, OCR, or AI import so VERIFY items can be corrected during phone testing.
+- Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
+- Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
+- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, package prices, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
@@ -342,13 +354,14 @@ As of the latest local pass:
 
 - [x] Camera/gallery pantry photo import
 - [x] Single-item pantry review/edit flow after OCR or AI import
+- [x] Barcode/manual code intake for pantry seeding
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Pasted flyer OCR text import
 - [x] Receipt photo/gallery/manual text import
 - [x] Deal review/edit flow after flyer OCR/PDF/text import
 - [x] Receipt review/edit flow after OCR import
-- [ ] Barcode scanning for pantry seeding
+- [ ] Barcode product lookup by verified UPC/EAN
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF
 - [ ] Weekly budget reports

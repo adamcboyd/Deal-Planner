@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,8 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.PantryItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -35,6 +38,7 @@ fun PantryScreen(viewModel: AppViewModel) {
     val pantryItems by viewModel.pantryItems.collectAsState()
     val pantryPhotoStatus by viewModel.pantryPhotoStatus.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    var barcodeText by remember { mutableStateOf("") }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -52,6 +56,32 @@ fun PantryScreen(viewModel: AppViewModel) {
     ) { uri ->
         if (uri != null) {
             viewModel.processPantryPhotoUri(uri)
+        }
+    }
+
+    val barcodeLauncher = rememberLauncherForActivityResult(
+        contract = ScanContract()
+    ) { result ->
+        val contents = result.contents?.trim().orEmpty()
+        if (contents.isNotBlank()) {
+            viewModel.addPantryBarcode(contents)
+        }
+    }
+
+    fun launchBarcodeScanner() {
+        val options = ScanOptions()
+            .setDesiredBarcodeFormats(ScanOptions.PRODUCT_CODE_TYPES)
+            .setPrompt("Scan pantry barcode")
+            .setBeepEnabled(false)
+            .setOrientationLocked(false)
+        barcodeLauncher.launch(options)
+    }
+
+    val barcodePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            launchBarcodeScanner()
         }
     }
 
@@ -128,6 +158,52 @@ fun PantryScreen(viewModel: AppViewModel) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Gallery")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = barcodeText,
+                    onValueChange = { barcodeText = it },
+                    label = { Text("Barcode / UPC") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+
+                            if (hasPermission) {
+                                launchBarcodeScanner()
+                            } else {
+                                barcodePermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Scan")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            if (barcodeText.isNotBlank()) {
+                                viewModel.addPantryBarcode(barcodeText)
+                                barcodeText = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Add Code")
                     }
                 }
                 if (pantryPhotoStatus != null) {

@@ -122,12 +122,13 @@ Deal_Planner/
 - ✅ Bitmap processing
 - ✅ URI support for image selection
 - ✅ Full-resolution app-cache camera capture
-- ✅ Pantry camera/gallery import
+- ✅ Pantry camera/gallery/barcode/manual code import
 - ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
+- ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
 ### 4. Business Logic Engines
 - ✅ **MealPlanningEngine**:
@@ -153,7 +154,7 @@ Deal_Planner/
 
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
-- ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
+- ✅ **PantryScreen**: Natural language input, barcode/manual code intake, photo/gallery import, VERIFY badges
 - ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, store-aware deal cards with scores, coupon flags
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
@@ -189,7 +190,7 @@ Deal_Planner/
 | Database | Room 2.6.1 |
 | OCR | ML Kit Text Recognition 16.0.0 |
 | AI Vision | Optional Gemini API |
-| Barcode | ZXing 3.5.2 |
+| Barcode | ZXing 3.5.2 + JourneyApps scanner |
 | Coroutines | Kotlinx Coroutines 1.7.3 |
 | Architecture | MVVM + Repository |
 | Testing | JUnit 4.13.2 + Truth 1.1.5 |
@@ -222,9 +223,9 @@ Deal_Planner/
 
 ### Adding Pantry Items
 1. Go to Pantry tab
-2. Type: "2 cans black beans 15oz"
-3. Tap Add
-4. Item parsed and stored
+2. Type: "2 cans black beans 15oz", scan a barcode, enter a UPC, or import a photo
+3. Tap Add, Scan, Add Code, Photo, or Gallery
+4. Item parsed or seeded as a VERIFY item and stored
 
 ### Viewing Deals
 1. Go to Deals tab
@@ -334,7 +335,7 @@ score = 0.40 × (discount% / 100)
 - ✅ Room (SQLite) for all data
 - ✅ App-cache photo capture so OCR photos do not clutter the camera roll
 - ✅ ML Kit on-device OCR
-- ✅ ZXing barcode support (stub ready)
+- ✅ ZXing barcode scan/manual-code pantry intake
 - ✅ Optional cloud AI for pantry photos, with on-device OCR fallback
 - ✅ Offline-first architecture
 - ✅ All data local
@@ -346,6 +347,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Builds a debug APK for emulator/device install
 - ✅ Loads demo data
 - ✅ Parses pantry items
+- ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
@@ -374,6 +376,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Room entities + DAOs + Database
 - ✅ Production-ready pantry parser
 - ✅ Pantry item review/edit flow
+- ✅ Barcode/manual code pantry intake
 - ✅ Production-ready deals parser
 - ✅ Deal review/edit flow
 - ✅ OCR integration (ML Kit)

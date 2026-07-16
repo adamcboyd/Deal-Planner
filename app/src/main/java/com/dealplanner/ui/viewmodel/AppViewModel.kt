@@ -91,6 +91,31 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun addPantryBarcode(barcode: String) {
+        viewModelScope.launch {
+            val cleanedBarcode = barcode.trim()
+            if (cleanedBarcode.isBlank()) {
+                _pantryPhotoStatus.value = "No barcode found."
+                return@launch
+            }
+
+            repository.insertPantryItem(
+                PantryItem(
+                    item = "Scanned barcode item",
+                    qty = 1.0,
+                    unit = "count",
+                    location = "pantry",
+                    notes = mergeNotes(
+                        "Barcode: $cleanedBarcode",
+                        "Product lookup not configured yet. Review item name, brand, size, and expiration."
+                    ),
+                    needsVerify = true
+                )
+            )
+            _pantryPhotoStatus.value = "Added barcode item with VERIFY checks"
+        }
+    }
+
     fun updatePantryItem(item: PantryItem) {
         viewModelScope.launch {
             repository.updatePantryItem(item)
