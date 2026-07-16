@@ -35,6 +35,20 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `model name is trimmed and accepts models prefix`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = " models/gemini-3.5-flash ")
+
+        assertThat(client.modelName).isEqualTo("gemini-3.5-flash")
+    }
+
+    @Test
+    fun `whitespace around real-looking key is configured`() {
+        val client = GeminiPantryVisionClient(apiKey = " test-real-key-for-unit-tests ", model = "gemini-3.5-flash")
+
+        assertThat(client.isConfigured()).isTrue()
+    }
+
+    @Test
     fun `connection test reports missing key without network`() = runTest {
         val client = GeminiPantryVisionClient(apiKey = "", model = "gemini-3.5-flash")
 

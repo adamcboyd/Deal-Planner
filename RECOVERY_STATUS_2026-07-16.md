@@ -62,6 +62,14 @@ Latest continuation gate after flyer no-dollar OCR parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after Gemini setup normalization work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -118,6 +126,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Placeholder Gemini keys are treated as not configured.
+- Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 
 Not yet verified on a real phone:
@@ -141,7 +150,8 @@ Current AI configuration:
 - `local.properties` was not present in the clean `Deal_Planner` folder.
 - `GEMINI_API_KEY` environment variable was not set in this shell.
 - Therefore Gemini Vision is not live-configured yet; the app will use ML Kit OCR fallback.
-- Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI documentation checked on 2026-07-16.
+- Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI model page checked on 2026-07-16.
+- Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`.
 - Live Gemini connection testing is now available from Settings after adding a real key.
 
 ## Important Cautions

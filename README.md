@@ -98,9 +98,11 @@ gemini.model=gemini-3.5-flash
 ```
 
 Do not commit `local.properties`; it is ignored by Git.
+Rebuild the debug APK after changing `local.properties` so the key/model values are compiled into `BuildConfig`.
 
 A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks.
+The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
 
 ### Build & Run
 
@@ -285,7 +287,7 @@ Tests cover:
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
-- Gemini configuration guardrails
+- Gemini configuration guardrails (placeholder keys, model fallback, whitespace/prefix normalization)
 
 ## Key Algorithms
 
@@ -348,6 +350,7 @@ As of the latest local pass:
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
+- Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

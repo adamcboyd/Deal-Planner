@@ -80,7 +80,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 5 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 7 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 12 test cases
@@ -127,6 +127,7 @@ Deal_Planner/
 - ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
+- ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -177,8 +178,8 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (63 Test Cases)
-- ✅ GeminiPantryVisionClientTest (5 tests)
+### 7. Unit Tests (65 Test Cases)
+- ✅ GeminiPantryVisionClientTest (7 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -359,6 +360,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
+- ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
@@ -398,7 +400,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
-- ✅ 63 unit tests
+- ✅ 65 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

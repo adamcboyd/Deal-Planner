@@ -47,7 +47,9 @@ class GeminiPantryVisionClient(
         val message: String
     )
 
-    val modelName: String = model.ifBlank { "gemini-3.5-flash" }
+    val modelName: String = model.trim()
+        .removePrefix("models/")
+        .ifBlank { DEFAULT_MODEL_NAME }
 
     fun isConfigured(): Boolean {
         val trimmedKey = apiKey.trim()
@@ -106,7 +108,7 @@ class GeminiPantryVisionClient(
             readTimeout = 60_000
             doOutput = true
             setRequestProperty("Content-Type", "application/json")
-            setRequestProperty("x-goog-api-key", apiKey)
+            setRequestProperty("x-goog-api-key", apiKey.trim())
         }
 
         return try {
@@ -258,6 +260,8 @@ class GeminiPantryVisionClient(
     }
 
     private companion object {
+        private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
+
         private val pantryPrompt = """
             You identify pantry, fridge, and freezer food items from a phone photo.
             Return only valid JSON with this exact shape:
