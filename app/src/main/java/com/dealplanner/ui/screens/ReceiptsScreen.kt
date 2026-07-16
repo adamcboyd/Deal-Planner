@@ -20,8 +20,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,7 +33,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,6 +50,8 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.ReceiptItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -197,6 +203,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
             items(receipts) { receipt ->
                 ReceiptItemCard(
                     receipt = receipt,
+                    onUpdate = { viewModel.updateReceipt(it) },
                     onDelete = { viewModel.deleteReceipt(receipt) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -208,8 +215,11 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
 @Composable
 fun ReceiptItemCard(
     receipt: ReceiptItem,
+    onUpdate: (ReceiptItem) -> Unit,
     onDelete: () -> Unit
 ) {
+    var showEditDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = if (receipt.needsReview) {
@@ -253,9 +263,187 @@ fun ReceiptItemCard(
                 )
             }
 
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+            Column(horizontalAlignment = Alignment.End) {
+                IconButton(onClick = { showEditDialog = true }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                }
             }
         }
+    }
+
+    if (showEditDialog) {
+        ReceiptItemEditDialog(
+            receipt = receipt,
+            onDismiss = { showEditDialog = false },
+            onSave = { updatedReceipt ->
+                onUpdate(updatedReceipt)
+                showEditDialog = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReceiptItemEditDialog(
+    receipt: ReceiptItem,
+    onDismiss: () -> Unit,
+    onSave: (ReceiptItem) -> Unit
+) {
+    var rawLine by remember(receipt.id) { mutableStateOf(receipt.rawLine) }
+    var qty by remember(receipt.id) { mutableStateOf(receipt.qty?.toString().orEmpty()) }
+    var totalCost by remember(receipt.id) { mutableStateOf(receipt.totalCost.toString()) }
+    var store by remember(receipt.id) { mutableStateOf(receipt.store.orEmpty()) }
+    var matchedType by remember(receipt.id) { mutableStateOf(receipt.matchedType.orEmpty()) }
+    var matchedItemId by remember(receipt.id) { mutableStateOf(receipt.matchedItemId?.toString().orEmpty()) }
+    var confidence by remember(receipt.id) { mutableStateOf(receipt.confidence.toString()) }
+    var date by remember(receipt.id) { mutableStateOf(receipt.date.toString()) }
+    var needsReview by remember(receipt.id) { mutableStateOf(receipt.needsReview) }
+    val parsedDate = date.toLocalDateOrNull()
+    val isDateValid = parsedDate != null
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Review Receipt Item") },
+        text = {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = rawLine,
+                        onValueChange = { rawLine = it },
+                        label = { Text("Receipt line") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = qty,
+                            onValueChange = { qty = it },
+                            label = { Text("Qty") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = totalCost,
+                            onValueChange = { totalCost = it },
+                            label = { Text("Total") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    OutlinedTextField(
+                        value = store,
+                        onValueChange = { store = it },
+                        label = { Text("Store") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = matchedType,
+                            onValueChange = { matchedType = it },
+                            label = { Text("Match type") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = matchedItemId,
+                            onValueChange = { matchedItemId = it },
+                            label = { Text("Match ID") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = confidence,
+                            onValueChange = { confidence = it },
+                            label = { Text("Confidence 0-1") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = date,
+                            onValueChange = { date = it },
+                            label = { Text("Date YYYY-MM-DD") },
+                            modifier = Modifier.weight(1f),
+                            isError = !isDateValid,
+                            singleLine = true
+                        )
+                    }
+                    if (!isDateValid) {
+                        Text(
+                            "Use YYYY-MM-DD.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Needs review", style = MaterialTheme.typography.bodyLarge)
+                        Switch(
+                            checked = needsReview,
+                            onCheckedChange = { needsReview = it }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = rawLine.isNotBlank() &&
+                    totalCost.toDoubleOrNull() != null &&
+                    isDateValid,
+                onClick = {
+                    onSave(
+                        receipt.copy(
+                            rawLine = rawLine.trim(),
+                            matchedItemId = matchedItemId.toLongOrNull(),
+                            matchedType = matchedType.trim().ifBlank { null },
+                            qty = qty.toDoubleOrNull(),
+                            totalCost = totalCost.toDoubleOrNull() ?: receipt.totalCost,
+                            date = parsedDate ?: receipt.date,
+                            confidence = confidence.toDoubleOrNull()?.coerceIn(0.0, 1.0) ?: receipt.confidence,
+                            store = store.trim().ifBlank { null },
+                            needsReview = needsReview
+                        )
+                    )
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+private fun String.toLocalDateOrNull(): LocalDate? {
+    if (isBlank()) return null
+    return try {
+        LocalDate.parse(trim())
+    } catch (_: DateTimeParseException) {
+        null
     }
 }

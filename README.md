@@ -222,6 +222,7 @@ On the Receipts tab:
 3. The app reconciles receipt lines against current deals and pantry items.
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Low-confidence matches are marked with a review warning.
+6. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
 
 ### Meal Planning
 
@@ -313,6 +314,7 @@ As of the latest local pass:
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
+- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions
@@ -332,6 +334,7 @@ As of the latest local pass:
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Receipt photo/gallery/manual text import
 - [x] Deal review/edit flow after flyer OCR/PDF import
+- [x] Receipt review/edit flow after OCR import
 - [ ] Barcode scanning for pantry seeding
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF

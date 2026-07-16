@@ -333,6 +333,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateReceipt(item: ReceiptItem) {
+        viewModelScope.launch {
+            repository.updateReceipt(item)
+            updateBudgetAnalysis()
+        }
+    }
+
     fun deleteReceipt(item: ReceiptItem) {
         viewModelScope.launch {
             repository.deleteReceipt(item)

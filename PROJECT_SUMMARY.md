@@ -156,6 +156,7 @@ Deal_Planner/
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
+- ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
@@ -233,6 +234,7 @@ Deal_Planner/
 2. Enter a store name
 3. Use Photo, Gallery, or pasted OCR text
 4. Receipt lines reconcile against pantry/deals and update budget spending
+5. Edit any receipt item that needs OCR, match, date, or total correction
 
 ### Generating Meal Plan
 1. Go to Menu tab
@@ -348,6 +350,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct flyer OCR/PDF deal output before using it in meal plans
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
+- ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Tracks budget
@@ -368,6 +371,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
 - ✅ Receipt reconciliation engine
+- ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
 - ✅ 44 unit tests
