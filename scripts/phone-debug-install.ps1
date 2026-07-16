@@ -157,7 +157,27 @@ function Assert-ApkIdentity {
         throw "app-debug.apk is missing required permission(s): $($missingPermissions -join ', ')"
     }
 
-    Write-Host "Verified APK identity and required permissions: $ExpectedPackageName / $ExpectedAppLabel"
+    $unneededStoragePermissions = @(
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.MANAGE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+    )
+    $presentStoragePermissions = @(
+        foreach ($permission in $unneededStoragePermissions) {
+            if ($permissions | Where-Object { $_ -match "name='$([regex]::Escape($permission))'" }) {
+                $permission
+            }
+        }
+    )
+
+    if ($presentStoragePermissions.Count -gt 0) {
+        throw "app-debug.apk unexpectedly requests broad storage/media permission(s): $($presentStoragePermissions -join ', ')"
+    }
+
+    Write-Host "Verified APK identity and scoped permissions: $ExpectedPackageName / $ExpectedAppLabel"
 }
 
 function Assert-ApkFreshForBuildInputs {

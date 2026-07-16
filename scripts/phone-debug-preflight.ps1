@@ -285,6 +285,28 @@ if ($apkInfo) {
             } else {
                 Add-Check $results "APK permissions" "FAIL" "Missing required permission(s): $($missingPermissions -join ', ')"
             }
+
+            $unneededStoragePermissions = @(
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.MANAGE_EXTERNAL_STORAGE",
+                "android.permission.READ_MEDIA_IMAGES",
+                "android.permission.READ_MEDIA_VIDEO",
+                "android.permission.READ_MEDIA_AUDIO"
+            )
+            $presentStoragePermissions = @(
+                foreach ($permission in $unneededStoragePermissions) {
+                    if ($apkAaptInfo.Permissions | Where-Object { $_ -match "name='$([regex]::Escape($permission))'" }) {
+                        $permission
+                    }
+                }
+            )
+
+            if ($presentStoragePermissions.Count -eq 0) {
+                Add-Check $results "APK storage permissions" "OK" "No broad storage/media permissions requested; picker imports use scoped URI grants."
+            } else {
+                Add-Check $results "APK storage permissions" "WARN" "Unexpected broad storage/media permission(s): $($presentStoragePermissions -join ', ')"
+            }
         } catch {
             Add-Check $results "APK identity" "WARN" "Could not inspect app-debug.apk with aapt: $($_.Exception.Message)"
         }
