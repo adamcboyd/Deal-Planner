@@ -30,6 +30,19 @@ class OpenFoodFactsBarcodeClientTest {
     }
 
     @Test
+    fun `normalize barcode accepts bare product code near label dates`() {
+        assertThat(client.normalizeBarcode("012345678905 Best By 20261231")).isEqualTo("012345678905")
+        assertThat(client.normalizeBarcode("Product 0 12345-67890 5 EXP 12-31-2026")).isEqualTo("012345678905")
+    }
+
+    @Test
+    fun `normalize barcode skips item number and accepts later bare product code`() {
+        val normalized = client.normalizeBarcode("Item #12345678 Product 0 12345-67890 5")
+
+        assertThat(normalized).isEqualTo("012345678905")
+    }
+
+    @Test
     fun `normalize barcode rejects label dates without barcode label`() {
         assertThat(client.normalizeBarcode("Best By 20261231")).isEmpty()
         assertThat(client.normalizeBarcode("Use By 12-31-2026")).isEmpty()

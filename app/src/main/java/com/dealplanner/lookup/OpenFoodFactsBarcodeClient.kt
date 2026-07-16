@@ -111,18 +111,18 @@ class OpenFoodFactsBarcodeClient(
             .firstOrNull { it.isProductBarcode() }
             ?.let { return it }
 
-        val digitRuns = productBarcodePattern.findAll(compact)
-            .map { it.value }
-            .filterNot { it.looksLikeCalendarDateCode() }
-            .toList()
-        if (digitRuns.isNotEmpty()) {
-            if (nonBarcodeNumberCuePattern.containsMatchIn(trimmed)) {
-                return ""
+        return barcodeCandidatePattern.findAll(trimmed)
+            .mapNotNull { match ->
+                val digits = match.value.filter { it.isDigit() }
+                when {
+                    !digits.isProductBarcode() -> null
+                    digits.looksLikeCalendarDateCode() -> null
+                    match.hasNonBarcodeCueBefore(trimmed) -> null
+                    else -> digits
+                }
             }
-            return digitRuns.first()
-        }
-
-        return ""
+            .firstOrNull()
+            .orEmpty()
     }
 
     private fun buildProductUrl(barcode: String): URL {
@@ -206,8 +206,15 @@ class OpenFoodFactsBarcodeClient(
         }
     }
 
+    private fun MatchResult.hasNonBarcodeCueBefore(input: String): Boolean {
+        val contextStart = (range.first - NON_BARCODE_CUE_CONTEXT_CHARS).coerceAtLeast(0)
+        val context = input.substring(contextStart, range.first)
+        return nonBarcodeNumberCuePattern.containsMatchIn(context)
+    }
+
     private companion object {
-        private val productBarcodePattern = Regex("""\d{8,14}""")
+        private const val NON_BARCODE_CUE_CONTEXT_CHARS = 16
+        private val barcodeCandidatePattern = Regex("""(?<!\d)(?:\d[\s-]*){8,14}(?![\s-]*\d)""")
         private val labeledBarcodePattern = Regex(
             """(?i)\b(?:upc|ean|gtin|barcode|bar\s*code)\b[^0-9]{0,20}((?:\d[\s-]*){8,14})"""
         )

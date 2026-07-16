@@ -680,6 +680,14 @@ Latest continuation gate after barcode date/item false-positive rejection work:
 
 Result: `BUILD SUCCESSFUL`, with `128` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after barcode valid-near-date regression work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `130` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -766,7 +774,7 @@ Verified by build/unit tests/code inspection:
 - Pantry item edit blocks invalid or negative quantities with visible validation instead of silently preserving the old quantity.
 - Barcode/manual code pantry input looks up product names, brands, and package quantities through Open Food Facts when network is available.
 - Barcode/manual code pantry input still creates VERIFY fallback items with the barcode preserved in notes when lookup misses or network is unavailable.
-- Barcode/manual code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text such as `UPC: 0 12345-67890 5`, prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers, and rejects non-code date, item, lot, SKU, or plain text with `No barcode found.`.
+- Barcode/manual code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text such as `UPC: 0 12345-67890 5`, prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers, accepts valid bare product codes near label dates, and rejects non-code date, item, lot, SKU, or plain text with `No barcode found.`.
 - Manual barcode/code text stays available for correction when no UPC/EAN/GTIN is found, and clears only after a successful barcode import.
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
