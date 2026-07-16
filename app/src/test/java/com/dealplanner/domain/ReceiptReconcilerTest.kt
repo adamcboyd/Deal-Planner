@@ -70,6 +70,19 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `normalize store names for imported receipt items`() {
+        val ocrText = "BLACK BEANS      $1.78"
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), " Kroger ")
+        val unknownResult = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "   ")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems.first().store).isEqualTo("Kroger")
+        assertThat(unknownResult.receiptItems).hasSize(1)
+        assertThat(unknownResult.receiptItems.first().store).isEqualTo("Unknown")
+    }
+
+    @Test
     fun `parse bundled demo receipt for phone checklist`() {
         val ocrText = java.io.File("src/main/assets/demo_receipt.txt").readText()
         val deals = listOf(

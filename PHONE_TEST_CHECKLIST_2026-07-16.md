@@ -111,9 +111,10 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 7. Edit one deal and save it.
 8. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
 9. Reopen edit, enter score `7`, and confirm Save disables with a 0-to-1 value message.
-10. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
-11. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-12. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+10. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
+11. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+12. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+13. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -127,10 +128,11 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 8. Edit one receipt line and confirm Budget updates.
 9. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
 10. Reopen edit, enter confidence `abc`, and confirm Save disables with a 0-to-1 value message.
-11. Delete one receipt line and confirm Budget updates again.
-12. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-13. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
-14. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+11. Optional store whitespace check: set store to ` Kroger `, import one receipt, and confirm the receipt line shows store `Kroger`.
+12. Delete one receipt line and confirm Budget updates again.
+13. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+14. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+15. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ### Budget
 

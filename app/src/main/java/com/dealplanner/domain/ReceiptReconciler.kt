@@ -1,6 +1,7 @@
 package com.dealplanner.domain
 
 import com.dealplanner.data.model.*
+import com.dealplanner.util.toStoreNameOrUnknown
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -40,6 +41,7 @@ class ReceiptReconciler {
         val pantryUpdates = mutableListOf<PantryItem>()
         val dealMatches = mutableListOf<DealMatch>()
         val warnings = mutableListOf<String>()
+        val normalizedStore = store.toStoreNameOrUnknown()
         var total = 0.0
 
         val lines = ocrText.lines().filter { it.trim().isNotEmpty() }
@@ -79,7 +81,7 @@ class ReceiptReconciler {
                     totalCost = price,
                     date = receiptDate,
                     confidence = confidence,
-                    store = store,
+                    store = normalizedStore,
                     needsReview = needsReview
                 )
 

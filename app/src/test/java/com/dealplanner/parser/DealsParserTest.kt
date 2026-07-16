@@ -37,6 +37,19 @@ class DealsParserTest {
     }
 
     @Test
+    fun `normalize store names for imported flyer deals`() {
+        val text = "Black Beans\n$0.99"
+
+        val result = parser.parse(text, " Kroger ")
+        val unknownResult = parser.parse(text, "   ")
+
+        assertThat(result.deals).hasSize(1)
+        assertThat(result.deals.first().store).isEqualTo("Kroger")
+        assertThat(unknownResult.deals).hasSize(1)
+        assertThat(unknownResult.deals.first().store).isEqualTo("Unknown")
+    }
+
+    @Test
     fun `parse slash style N for X deal`() {
         val text = """
             Kroger Pasta 16 oz

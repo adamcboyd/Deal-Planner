@@ -1,6 +1,7 @@
 package com.dealplanner.parser
 
 import com.dealplanner.data.model.DealItem
+import com.dealplanner.util.toStoreNameOrUnknown
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -71,6 +72,7 @@ class DealsParser {
     fun parse(ocrText: String, store: String = "Unknown"): ParseResult {
         val deals = mutableListOf<DealItem>()
         val warnings = mutableListOf<String>()
+        val normalizedStore = store.toStoreNameOrUnknown()
 
         val lines = ocrText.lines().map { it.trim() }.filter { it.isNotEmpty() }
 
@@ -89,7 +91,7 @@ class DealsParser {
             val fallbackName = findPreviousName(lines, i)
 
             // Try to parse deal from current line plus trailing flyer modifiers.
-            val dealResult = parseDealLine(combinedLine, fallbackName, store)
+            val dealResult = parseDealLine(combinedLine, fallbackName, normalizedStore)
 
             if (dealResult != null) {
                 deals.add(dealResult)
