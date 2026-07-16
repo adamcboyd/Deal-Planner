@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `0a7548c fix: handle camera permission request failures`
-- The branch may include later docs-only recovery commits, but `0a7548c` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `3ef066f feat: show source commit in app about`
+- The branch may include later docs-only recovery commits, but `3ef066f` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -1006,6 +1006,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 
 Result: both helpers printed usage/options successfully, including `-RequirePhone`, `-RequireGemini`, `-SkipNetwork`, `-SkipBuild`, and `-NoLaunch`.
 
+Latest continuation gate after Settings source-identity display work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat :app:generateDebugBuildConfig --rerun-tasks testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
+Generated debug `BuildConfig` source identity:
+
+```text
+GIT_BRANCH = codex/deal-planner-baseline
+GIT_SHA = 3ef066f
+GIT_DIRTY = false
+```
+
 Additional check:
 
 ```powershell
@@ -1051,7 +1069,7 @@ Verified by build/unit tests/code inspection:
 
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
-- Settings -> About Deal Planner displays the actual Gradle version, package name, and debug/release build identity from `BuildConfig`.
+- Settings -> About Deal Planner displays the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
@@ -1147,7 +1165,7 @@ Verified by build/unit tests/code inspection:
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal and leading-decimal values such as `0,5` or `.5`.
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
-- Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
+- Settings About displays version `1.0 (1)`, package `com.dealplanner`, debug/release build identity, and source identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
@@ -1285,7 +1303,7 @@ Optional before the phone test run:
    - Settings Test AI Connection before pantry AI photo testing.
    - Settings protein-per-meal comma-decimal and leading-decimal value such as `0,5` or `.5`.
    - Settings invalid protein-per-meal text such as `abc`; confirm Save is disabled and a visible format message appears.
-   - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, and debug build.
+   - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, debug build, and source `codex/deal-planner-baseline @ 3ef066f` without a dirty marker.
    - Generate meal plan.
    - Review shopping list.
    - After a generated plan exists, change pantry/deal/receipt/settings inputs and confirm Shopping refreshes without app relaunch.

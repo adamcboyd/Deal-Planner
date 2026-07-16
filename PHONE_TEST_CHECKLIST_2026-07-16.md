@@ -259,6 +259,7 @@ In `Settings` -> `About Deal Planner`, confirm:
 - Version shows the Gradle build version, currently `1.0 (1)`.
 - Package shows `com.dealplanner`.
 - Build shows `Debug` for the command-line debug APK.
+- Source shows the app-code branch and commit, currently `codex/deal-planner-baseline @ 3ef066f`, without a `(dirty)` marker for a clean debug APK.
 
 ## Cancel and Permission Tests
 

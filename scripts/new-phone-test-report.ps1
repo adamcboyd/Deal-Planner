@@ -224,6 +224,7 @@ $adbBlock
 - [ ] Menu tab opens.
 - [ ] Budget tab opens.
 - [ ] Settings tab opens.
+- [ ] Settings -> About shows version, package, debug build, source branch/commit, and no dirty marker for the expected APK.
 - [ ] Close/relaunch preserves generated Shopping list after a plan exists.
 - Notes:
 
