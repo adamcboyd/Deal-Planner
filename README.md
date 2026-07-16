@@ -136,6 +136,18 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 .\gradlew.bat testDebugUnitTest assembleDebug
 ```
 
+Command-line phone install helper:
+
+```powershell
+.\scripts\phone-debug-install.ps1
+```
+
+If the debug APK is already built and you only want to reinstall/launch on a connected phone:
+
+```powershell
+.\scripts\phone-debug-install.ps1 -SkipBuild
+```
+
 Debug APK output:
 
 ```text
@@ -329,6 +341,7 @@ As of the latest local pass:
 
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
+- `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.

@@ -126,6 +126,14 @@ Latest continuation gate after Deal Planner database naming cleanup:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after phone install helper work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -146,12 +154,21 @@ Debug APK:
 
 `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
+Phone install helper:
+
+```powershell
+.\scripts\phone-debug-install.ps1
+```
+
+Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built.
+
 ## Current Feature Status
 
 Verified by build/unit tests/code inspection:
 
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
+- `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
@@ -236,7 +253,12 @@ gemini.model=gemini-3.5-flash
 
 4. Connect Android phone with USB debugging enabled.
 5. Confirm `adb devices` shows the phone as `device`.
-6. Install or run the debug app.
+6. Install or run the debug app, or use:
+
+```powershell
+.\scripts\phone-debug-install.ps1
+```
+
 7. Test in this order:
    - Launch app and tap Load Demo.
    - After receipt/budget tests, tap Load Demo again and confirm Budget returns to the `$292 / $45 spent` demo baseline.

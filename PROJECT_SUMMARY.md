@@ -410,6 +410,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
+- ✅ PowerShell phone install/launch helper
 - ✅ 67 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
