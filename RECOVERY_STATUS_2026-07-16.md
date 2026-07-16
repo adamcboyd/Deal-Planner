@@ -780,6 +780,22 @@ Latest continuation gate after receipt leading-decimal price parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `139` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused flyer leading-decimal price parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.parser.DealsParserTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after flyer leading-decimal price parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `140` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -850,6 +866,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser handles BOGO second-item percent discounts such as `BOGO 50% off` as a 25% effective overall discount.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
+- Deals parser accepts leading-decimal flyer OCR prices such as `.99/lb`, `.99 lb`, `.89`, `2 for .99`, and `2/.99`.
 - Deals parser accepts comma-decimal flyer OCR prices such as `2,99/lb`, `2 for 5,00`, and `3 lb bag 2,99`.
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`, with exact unit coverage for the phone checklist `Roma Tomatoes` / `99c/lb` pasted-text test.
 - Meal planning engine has unit tests.

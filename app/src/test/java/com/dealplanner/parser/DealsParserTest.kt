@@ -373,6 +373,52 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse flyer prices when OCR omits leading zero`() {
+        val text = """
+            Chicken Thighs
+            .99/lb
+
+            Roma Tomatoes
+            .99 lb
+
+            Black Beans
+            .89
+
+            Kroger Pasta
+            2 for .99
+
+            Seltzer
+            2/.99
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(5)
+
+        val chicken = result.deals.first { it.name == "Chicken Thighs" }
+        assertThat(chicken.price).isEqualTo(0.99)
+        assertThat(chicken.unit).isEqualTo("lb")
+        assertThat(chicken.dealType).isEqualTo("per_pound")
+
+        val tomatoes = result.deals.first { it.name == "Roma Tomatoes" }
+        assertThat(tomatoes.price).isEqualTo(0.99)
+        assertThat(tomatoes.unit).isEqualTo("lb")
+        assertThat(tomatoes.dealType).isEqualTo("per_pound")
+
+        val beans = result.deals.first { it.name == "Black Beans" }
+        assertThat(beans.price).isEqualTo(0.89)
+        assertThat(beans.unit).isEqualTo("ea")
+
+        val pasta = result.deals.first { it.name == "Kroger Pasta" }
+        assertThat(pasta.price).isEqualTo(0.495)
+        assertThat(pasta.dealType).isEqualTo("n_for_x")
+
+        val seltzer = result.deals.first { it.name == "Seltzer" }
+        assertThat(seltzer.price).isEqualTo(0.495)
+        assertThat(seltzer.dealType).isEqualTo("n_for_x")
+    }
+
+    @Test
     fun `parse cent style flyer prices`() {
         val text = """
             Roma Tomatoes
