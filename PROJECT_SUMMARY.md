@@ -127,7 +127,7 @@ Deal_Planner/
   - Handles quantities (numeric, comma-decimal OCR, fractions, words)
   - Extracts brands, units, sizes, locations
   - Handles common label sizes including `16-ounce`, `12-count`, fluid-ounce, gallon, quart, and pint wording
-  - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, and exp, plus unpadded year-first and two-digit dash label dates)
+  - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, exp, and punctuated label cues like best by:, plus unpadded year-first and two-digit dash label dates)
   - Duplicate detection and merging
   - Confidence scoring
 
@@ -214,7 +214,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (231 Test Cases)
+### 7. Unit Tests (232 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -406,6 +406,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses pantry items
 - ✅ Parses pantry comma-decimal OCR quantities and sizes such as 1,5 lb and 5,3oz
 - ✅ Parses unpadded year-first and two-digit dash pantry/AI label dates such as `2026-7-1` and `12-31-26`
+- ✅ Trims punctuation from pantry label cues such as `net wt:`, `best by:`, `opened:`, and `exp:` so cue words do not leak into item names
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
@@ -417,7 +418,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-finite numeric fallback, non-JSON fallback, and clamped confidence
-- ✅ Normalizes saved AI pantry rows so raw plural units, fluid-ounce wording, whitespace, and refrigerator/cold-storage wording become canonical pantry values
+- ✅ Normalizes saved AI pantry rows so raw plural units, fluid-ounce wording, whitespace, punctuated Generic/unknown brand text, and refrigerator/cold-storage wording become canonical/reviewable pantry values
 - ✅ Maps missing, zero, or negative Gemini pantry amounts to reviewable quantity defaults instead of saving invalid pantry quantities
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
@@ -494,7 +495,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
-- ✅ 231 unit tests
+- ✅ 232 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

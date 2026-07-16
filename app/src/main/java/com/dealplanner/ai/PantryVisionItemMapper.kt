@@ -58,7 +58,10 @@ private fun String?.normalizedText(): String? {
 }
 
 private fun String?.normalizeBrand(): String? {
-    val cleaned = normalizedText() ?: return null
+    val cleaned = normalizedText()
+        ?.trim('.', ',', ';', ':')
+        ?.ifBlank { null }
+        ?: return null
     return when (cleaned.lowercase()) {
         "unknown", "generic" -> null
         else -> cleaned

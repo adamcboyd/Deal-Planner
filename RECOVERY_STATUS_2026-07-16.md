@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer manifest-hash verification work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: phone report setup-status work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry label punctuation and AI brand normalization work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: sample transfer manifest-hash verification work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2229,3 +2229,27 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest app-code checkpoint after pantry label punctuation and AI brand normalization work:
+
+App-code checkpoint:
+
+- `PantryPhraseParser` now trims colon and semicolon punctuation from parsed tokens, so common OCR/manual label cues such as `net wt:`, `best by:`, `opened:`, and `exp:` do not leak cue words into pantry item names.
+- `PantryVisionItemMapper` now treats punctuated Gemini brand text such as `Generic:` or `Unknown.` the same as missing/generic brand details, saving `Generic`, requiring VERIFY, and adding `Review brand.`.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated to record the punctuation-heavy label behavior and the AI review expectation.
+
+Focused app checks:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.parser.PantryPhraseParserTest" --tests "com.dealplanner.ai.PantryVisionItemMapperTest"
+```
+
+Result: `BUILD SUCCESSFUL`; targeted pantry parser and AI pantry mapping tests passed.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `232` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

@@ -179,9 +179,13 @@ class PantryVisionItemMapperTest {
     fun `generic or unknown vision brand requires review`() {
         val genericItem = completeVisionItem().copy(brand = "Generic")
         val unknownItem = completeVisionItem().copy(brand = "unknown")
+        val punctuatedGenericItem = completeVisionItem().copy(brand = "Generic:")
+        val punctuatedUnknownItem = completeVisionItem().copy(brand = "Unknown.")
 
         val genericPantryItem = genericItem.toPantryItem(warnings = emptyList())
         val unknownPantryItem = unknownItem.toPantryItem(warnings = emptyList())
+        val punctuatedGenericPantryItem = punctuatedGenericItem.toPantryItem(warnings = emptyList())
+        val punctuatedUnknownPantryItem = punctuatedUnknownItem.toPantryItem(warnings = emptyList())
 
         assertThat(genericPantryItem).isNotNull()
         assertThat(genericPantryItem!!.brand).isEqualTo("Generic")
@@ -192,6 +196,16 @@ class PantryVisionItemMapperTest {
         assertThat(unknownPantryItem!!.brand).isEqualTo("Generic")
         assertThat(unknownPantryItem.needsVerify).isTrue()
         assertThat(unknownPantryItem.notes).contains("Review brand.")
+
+        assertThat(punctuatedGenericPantryItem).isNotNull()
+        assertThat(punctuatedGenericPantryItem!!.brand).isEqualTo("Generic")
+        assertThat(punctuatedGenericPantryItem.needsVerify).isTrue()
+        assertThat(punctuatedGenericPantryItem.notes).contains("Review brand.")
+
+        assertThat(punctuatedUnknownPantryItem).isNotNull()
+        assertThat(punctuatedUnknownPantryItem!!.brand).isEqualTo("Generic")
+        assertThat(punctuatedUnknownPantryItem.needsVerify).isTrue()
+        assertThat(punctuatedUnknownPantryItem.notes).contains("Review brand.")
     }
 
     @Test

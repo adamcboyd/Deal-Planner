@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer manifest-hash verification work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry label punctuation and AI brand normalization work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -135,7 +135,8 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 11. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, `milk use by 12-31-26`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
 12. Optional missing-brand duplicate check: add `black beans 15oz pantry`, then add or OCR/import `Great Value black beans 15 oz pantry`; confirm the existing row updates instead of creating an unbranded duplicate. Add `Kroger black beans 15 oz pantry` and confirm it remains separate from the Great Value row.
 13. Optional hyphenated label-size check: enter `Great Value peanut butter 16-ounce pantry` and `Kroger eggs 12-count fridge`; confirm item names do not include `16-ounce` or `12-count`, sizes are captured as `16oz` and `12ct`, and storage is preserved.
-14. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
+14. Optional label-punctuation check: enter `Great Value black beans net wt: 15 oz pantry best by: 12/31/2026`, `milk opened: 2026-07-01 use by: 12/31/2026`, or `pasta exp: 12/31/2026`; confirm cue words such as `wt`, `by`, `opened`, and `exp` do not appear in the item name.
+15. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 
@@ -278,7 +279,7 @@ In `Settings`:
 9. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
 10. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
 11. If Gemini imports an item with a zero or negative amount, confirm it falls back to quantity 1.0, shows VERIFY, and notes include `Review amount/unit.`.
-12. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
+12. If Gemini imports an item with Generic or unknown brand details, including punctuated text such as `Generic:` or `Unknown.`, confirm the pantry item shows VERIFY and notes include `Review brand.`.
 13. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
 14. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
 15. Open at least one AI-imported pantry item in the edit dialog and confirm saved unit/location text is clean and canonical, such as plural cans saved as `can`, fluid ounces saved as `oz`, and refrigerator/cold-storage wording saved as `fridge`.

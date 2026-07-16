@@ -296,6 +296,25 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse label punctuation without leaking cue words into item name`() {
+        val beans = parser.parse("Great Value black beans net wt: 15 oz pantry best by: 12/31/2026")
+        val milk = parser.parse("milk opened: 2026-07-01 use by: 12/31/2026")
+        val pasta = parser.parse("pasta exp: 12/31/2026")
+
+        assertThat(beans.item.item).isEqualTo("black beans")
+        assertThat(beans.item.brand).isEqualTo("Great Value")
+        assertThat(beans.item.size).isEqualTo("15oz")
+        assertThat(beans.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        assertThat(milk.item.item).isEqualTo("milk")
+        assertThat(milk.item.opened).isEqualTo(LocalDate.of(2026, 7, 1))
+        assertThat(milk.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        assertThat(pasta.item.item).isEqualTo("pasta")
+        assertThat(pasta.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+    }
+
+    @Test
     fun `parse date label wording without leaking date into item name`() {
         val expirationDate = parser.parse("milk expiration date 12/31/2026")
         val bestByDate = parser.parse("yogurt best by date 2026-12-31")

@@ -219,17 +219,17 @@ class PantryPhraseParser {
     }
 
     private fun String.cleanToken(): String {
-        var token = trim('!', '?')
+        var token = trim('!', '?', ':', ';')
         while (
             token.length > 1 &&
-            token.first() in listOf(',', '.') &&
+            token.first() in listOf(',', '.', ':', ';') &&
             !token[1].isDigit()
         ) {
             token = token.drop(1)
         }
         while (
             token.length > 1 &&
-            token.last() in listOf(',', '.')
+            token.last() in listOf(',', '.', ':', ';')
         ) {
             token = token.dropLast(1)
         }

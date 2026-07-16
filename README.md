@@ -248,6 +248,7 @@ milk use by 12/31/2026
 milk use-by 12/31/2026
 milk use by 12-31-26
 pasta exp 12/31/2026
+Great Value black beans net wt: 15 oz pantry best by: 12/31/2026
 milk expiration date 12/31/2026
 yogurt best-by 2026-12-31
 yogurt best by date 2026-12-31
@@ -260,7 +261,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, two-digit dash dates such as `MM-DD-YY`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, and `best by date`)
+- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, two-digit dash dates such as `MM-DD-YY`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, `best by date`, and punctuated label cues such as `best by:` or `exp:`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
@@ -372,7 +373,7 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce, gallon/quart/pint, and hyphenated package labels such as `16-ounce` or `12-count`, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
+- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce, gallon/quart/pint, and hyphenated package labels such as `16-ounce` or `12-count`, net-weight label wording, punctuated label cues such as `net wt:` or `best by:`, comma-decimal and leading-decimal OCR quantities/sizes)
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products, hyphenated package-size lines such as `16-ounce` or `12-count`, and wrapped date/opened continuation lines
 - Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
@@ -457,6 +458,7 @@ As of the latest local pass:
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
 - Meal planning only uses recognized meal-side grocery deals for vegetable slots; household/non-food flyer deals such as detergent stay out of meals and Shopping totals.
 - Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, package `net wt` labels, common expiration label cues such as `expiration date`, `best by date`, `best if used by`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
+- Pantry parser trims label punctuation on cue words, so OCR/manual text such as `net wt:`, `best by:`, `opened:`, or `exp:` does not leak cue words into item names.
 - Pantry parser handles common package sizes such as `1 gal`, `1 quart`, `1 pint`, `16-ounce`, and `12-count`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
@@ -506,7 +508,7 @@ As of the latest local pass:
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and unpadded `2026-7-1` before saving review items.
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
 - AI pantry photo items with an unknown or non-positive amount require review instead of being treated as fully verified.
-- AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
+- AI pantry photo items with a Generic or unknown brand, including punctuated model text such as `Generic:` or `Unknown.`, require review so missing label brand details stay visible.
 - AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
 - AI pantry photo VERIFY notes include specific review prompts for missing brand, amount/unit, storage location, and best-by date details.
 - ML Kit pantry OCR fallback keeps single-label photos as one combined review item, avoids treating `NET WT` package-size lines as products, and splits clear multi-item OCR rows, including hyphenated package-size rows and wrapped date/opened continuations, into separate VERIFY pantry items.
