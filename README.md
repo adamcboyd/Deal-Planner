@@ -318,7 +318,7 @@ Tests cover:
 - Shopping list consolidation with persisted and pre-database deal identities
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split quantities, dollar/no-dollar OCR prices, discount/coupon line filtering)
-- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, malformed string/list fields)
+- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, quantity/storage aliases, malformed string/list fields)
 
 ## Key Algorithms
 
@@ -393,7 +393,7 @@ As of the latest local pass:
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, quantity/storage aliases such as `amount: "2 cans"`, malformed string/list fields, and confidence clamping.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

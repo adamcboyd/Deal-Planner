@@ -235,25 +235,45 @@ class GeminiPantryVisionClient(
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
-        val product = firstStringOrNull("product", "item", "product_name", "name")
+        val product = firstStringOrNull("product", "item", "product_name", "name", "food", "food_name")
         if (product.isNullOrBlank()) return null
+        val quantity = firstQuantityParts("quantity", "qty", "amount", "count")
+        val explicitUnit = firstStringOrNull("unit", "units", "item_unit", "itemUnit", "package_unit", "packageUnit")
 
         return PantryVisionItem(
-            brand = getStringOrNull("brand"),
+            brand = firstStringOrNull("brand", "brand_name", "brandName"),
             product = product,
-            quantity = get("quantity")?.asDoubleOrNull(),
-            unit = getStringOrNull("unit"),
-            size = getStringOrNull("size"),
-            location = getStringOrNull("location"),
+            quantity = quantity.value,
+            unit = (explicitUnit ?: quantity.unit).normalizePantryUnit(),
+            size = firstStringOrNull("size", "package_size", "packageSize", "net_weight", "netWeight"),
+            location = firstStringOrNull(
+                "location",
+                "storage_location",
+                "storageLocation",
+                "storage",
+                "place"
+            ).normalizeStorageLocation(),
             expirationDate = firstStringOrNull(
                 "expirationDate",
                 "expiration_date",
+                "expiration",
+                "expiryDate",
+                "expiry_date",
+                "expiry",
                 "bestBy",
                 "best_by",
                 "bestByDate",
-                "best_by_date"
+                "best_by_date",
+                "bestBefore",
+                "best_before",
+                "bestBeforeDate",
+                "best_before_date",
+                "useBy",
+                "use_by",
+                "useByDate",
+                "use_by_date"
             ),
-            openedDate = firstStringOrNull("openedDate", "opened_date"),
+            openedDate = firstStringOrNull("openedDate", "opened_date", "opened", "openedOn", "opened_on", "openDate", "open_date"),
             confidence = (get("confidence")?.asDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
             questions = get("questions")?.toStringList().orEmpty()
         )
@@ -308,11 +328,89 @@ class GeminiPantryVisionClient(
         return names.firstNotNullOfOrNull { name -> getStringOrNull(name) }
     }
 
+    private fun JsonObject.firstQuantityParts(vararg names: String): QuantityParts {
+        return names.firstNotNullOfOrNull { name ->
+            get(name)
+                ?.toQuantityParts()
+                ?.takeIf { it.value != null || it.unit != null }
+        } ?: QuantityParts()
+    }
+
     private fun JsonElement.asDoubleOrNull(): Double? {
         return try {
             if (isJsonNull) null else asDouble
         } catch (_: Exception) {
             null
+        }
+    }
+
+    private fun JsonElement.toQuantityParts(): QuantityParts? {
+        if (isJsonNull || !isJsonPrimitive) return null
+
+        asDoubleOrNull()?.let { value -> return QuantityParts(value = value) }
+        val text = try {
+            asString.trim()
+        } catch (_: Exception) {
+            return null
+        }
+        if (text.isBlank()) return null
+
+        val match = quantityPattern.find(text) ?: return null
+        val value = match.groupValues[1].toQuantityDoubleOrNull() ?: return null
+        val unit = match.groupValues.getOrNull(2)?.ifBlank { null }
+        return QuantityParts(value = value, unit = unit)
+    }
+
+    private fun String.toQuantityDoubleOrNull(): Double? {
+        val compact = replace(" ", "")
+        val fractionParts = compact.split('/').takeIf { it.size == 2 }
+        if (fractionParts != null) {
+            val numerator = fractionParts[0].toDoubleOrNull()
+            val denominator = fractionParts[1].toDoubleOrNull()
+            if (numerator != null && denominator != null && denominator != 0.0) {
+                return numerator / denominator
+            }
+        }
+        return compact.toDoubleOrNull()
+    }
+
+    private fun String?.normalizePantryUnit(): String? {
+        val normalized = this
+            ?.trim()
+            ?.lowercase()
+            ?.trim('.', ',', ';', ':')
+            ?.ifBlank { null }
+            ?: return null
+
+        return when (normalized) {
+            "cans" -> "can"
+            "jars" -> "jar"
+            "boxes" -> "box"
+            "bags" -> "bag"
+            "bottles" -> "bottle"
+            "containers" -> "container"
+            "cups" -> "cup"
+            "lbs", "pound", "pounds" -> "lb"
+            "ounces", "ounce" -> "oz"
+            "grams", "gram" -> "g"
+            "kilograms", "kilogram" -> "kg"
+            "ct", "each", "ea", "item", "items", "counts" -> "count"
+            else -> normalized
+        }
+    }
+
+    private fun String?.normalizeStorageLocation(): String? {
+        val normalized = this
+            ?.trim()
+            ?.lowercase()
+            ?.trim('.', ',', ';', ':')
+            ?.ifBlank { null }
+            ?: return null
+
+        return when (normalized) {
+            "refrigerator", "refrigerated" -> "fridge"
+            "deep freezer" -> "freezer"
+            else -> normalized
         }
     }
 
@@ -333,6 +431,7 @@ class GeminiPantryVisionClient(
 
     private companion object {
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
+        private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:\.\d+)?)\s*([A-Za-z]+)?""")
 
         private val pantryPrompt = """
             You identify pantry, fridge, and freezer food items from a phone photo.
@@ -359,4 +458,9 @@ class GeminiPantryVisionClient(
             Prefer one row per visible food item.
         """.trimIndent()
     }
+
+    private data class QuantityParts(
+        val value: Double? = null,
+        val unit: String? = null
+    )
 }

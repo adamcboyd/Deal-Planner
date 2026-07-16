@@ -206,6 +206,42 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with quantity and storage aliases`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "brand_name": "Kroger",
+                  "food_name": "black beans",
+                  "amount": "2 cans",
+                  "package_size": "15 oz",
+                  "storage_location": "pantry",
+                  "best_before_date": "2027-02-03",
+                  "opened_on": "2026-07-16",
+                  "confidence": "0.82"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.brand).isEqualTo("Kroger")
+        assertThat(item.product).isEqualTo("black beans")
+        assertThat(item.quantity).isEqualTo(2.0)
+        assertThat(item.unit).isEqualTo("can")
+        assertThat(item.size).isEqualTo("15 oz")
+        assertThat(item.location).isEqualTo("pantry")
+        assertThat(item.expirationDate).isEqualTo("2027-02-03")
+        assertThat(item.openedDate).isEqualTo("2026-07-16")
+        assertThat(item.confidence).isEqualTo(0.82)
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
