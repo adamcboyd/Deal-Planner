@@ -206,6 +206,20 @@ function Assert-ApkFreshForGeminiConfig {
     }
 }
 
+function Assert-InstalledPackage {
+    param(
+        [string]$DeviceSerial,
+        [string]$ExpectedPackageName
+    )
+
+    $packagePath = @(& adb -s $DeviceSerial shell pm path $ExpectedPackageName 2>$null)
+    if ($LASTEXITCODE -ne 0 -or -not ($packagePath | Where-Object { $_ -match "^package:" })) {
+        throw "Install finished, but $ExpectedPackageName was not found on device $DeviceSerial."
+    }
+
+    Write-Host "Verified installed package on device: $ExpectedPackageName"
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -266,6 +280,8 @@ if ($env:ANDROID_SERIAL) {
 Invoke-Checked "Install Deal Planner debug APK on $deviceSerial" {
     adb -s $deviceSerial install -r $apkPath
 }
+
+Assert-InstalledPackage -DeviceSerial $deviceSerial -ExpectedPackageName $PackageName
 
 if (-not $NoLaunch) {
     Invoke-Checked "Launch Deal Planner on $deviceSerial" {
