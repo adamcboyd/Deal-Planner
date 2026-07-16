@@ -672,10 +672,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 val maxPages = minOf(renderer.pageCount, 12)
                 (0 until maxPages).map { pageIndex ->
                     renderer.openPage(pageIndex).use { page ->
-                        val scale = 2
+                        val scale = minOf(
+                            PDF_RENDER_SCALE.toDouble(),
+                            MAX_INPUT_IMAGE_DIMENSION_PX.toDouble() / maxOf(page.width, page.height).toDouble()
+                        )
                         val bitmap = Bitmap.createBitmap(
-                            page.width * scale,
-                            page.height * scale,
+                            (page.width * scale).roundToInt().coerceAtLeast(1),
+                            (page.height * scale).roundToInt().coerceAtLeast(1),
                             Bitmap.Config.ARGB_8888
                         )
                         Canvas(bitmap).drawColor(Color.WHITE)
@@ -759,5 +762,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private companion object {
         private const val MAX_INPUT_IMAGE_DIMENSION_PX = 3072
+        private const val PDF_RENDER_SCALE = 2
     }
 }

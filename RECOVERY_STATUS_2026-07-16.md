@@ -86,6 +86,14 @@ Latest continuation gate after phone image decode hardening:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after flyer PDF render cap work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -127,6 +135,7 @@ Verified by build/unit tests/code inspection:
 - Camera permission denial and canceled camera/barcode actions now show visible status messages during phone testing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Flyer photo/gallery/PDF/manual text input exists.
+- Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Receipt photo/gallery/manual text input exists.

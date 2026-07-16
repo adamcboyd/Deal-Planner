@@ -124,6 +124,7 @@ Deal_Planner/
 - ✅ URI support for image selection
 - ✅ Full-resolution app-cache camera capture
 - ✅ Software bitmap decode and max-size cap for camera/gallery OCR inputs
+- ✅ Bounded flyer PDF page rendering for OCR reliability
 - ✅ Camera permission/cancel status feedback for phone testing
 - ✅ Pantry camera/gallery/barcode/manual code import
 - ✅ Flyer camera/gallery/PDF/manual text import
@@ -365,6 +366,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
+- ✅ Caps rendered flyer PDF page size before OCR processing
 - ✅ Shows clear status when camera permission is denied or capture/scan is canceled
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
