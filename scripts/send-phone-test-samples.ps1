@@ -254,6 +254,13 @@ $deviceSerial = Get-AdbDeviceSerial
 $sampleItem = Get-Item -LiteralPath $sampleDir
 $remoteRootClean = $RemoteRoot.TrimEnd("/")
 $remoteSessionDir = "$remoteRootClean/$($sampleItem.Name)"
+$transferReportFileName = "PHONE_SAMPLE_TRANSFER.md"
+$filesToCopy = @(
+    Get-ChildItem -LiteralPath $sampleDir -File |
+        Where-Object { $_.Name -ne $transferReportFileName } |
+        Sort-Object Name
+)
+$verifiedFiles = [System.Collections.Generic.List[object]]::new()
 
 Write-Host "Deal Planner phone test sample transfer"
 Write-Host "Repo: $repoRoot"
@@ -264,7 +271,7 @@ Write-Host ""
 
 Invoke-AdbChecked "Create Android sample folder" $deviceSerial @("shell", "mkdir", "-p", $remoteSessionDir)
 
-foreach ($file in (Get-ChildItem -LiteralPath $sampleDir -File | Sort-Object Name)) {
+foreach ($file in $filesToCopy) {
     $remotePath = "$remoteSessionDir/$($file.Name)"
     Invoke-AdbChecked "Copy $($file.Name)" $deviceSerial @("push", $file.FullName, $remotePath)
 
@@ -273,13 +280,40 @@ foreach ($file in (Get-ChildItem -LiteralPath $sampleDir -File | Sort-Object Nam
         throw "Remote size mismatch for $($file.Name): local $($file.Length) byte(s), remote $remoteSize byte(s)."
     }
     Write-Host "Verified remote size for $($file.Name): $remoteSize byte(s)."
+    $verifiedFiles.Add([pscustomobject]@{
+        Name = $file.Name
+        LocalBytes = $file.Length
+        RemoteBytes = $remoteSize
+    }) | Out-Null
 
     Invoke-MediaScan $deviceSerial $remotePath
 }
+
+$verifiedRows = foreach ($verifiedFile in $verifiedFiles) {
+    "- $($verifiedFile.Name): local $($verifiedFile.LocalBytes) byte(s), remote $($verifiedFile.RemoteBytes) byte(s)"
+}
+$transferReportPath = Join-Path $sampleDir $transferReportFileName
+$transferReport = @"
+# Deal Planner Phone Sample Transfer
+
+- Created: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+- Device serial: $deviceSerial
+- Local samples: $sampleDir
+- Android destination: $remoteSessionDir
+- Remote file sizes verified: true
+- Android media scans requested: true
+
+## Verified Files
+
+$($verifiedRows -join [Environment]::NewLine)
+"@
+$transferReport | Set-Content -LiteralPath $transferReportPath -Encoding UTF8
 
 Write-Host ""
 Write-Host "Copied phone test samples to:"
 Write-Host "  $remoteSessionDir"
 Write-Host "Remote file sizes were verified, and Android media scan broadcasts were requested for picker visibility."
+Write-Host "Wrote local transfer report:"
+Write-Host "  $transferReportPath"
 Write-Host ""
 Write-Host "On the phone, open Files or the Android picker at Downloads > DealPlannerPhoneTestSamples > $($sampleItem.Name)."

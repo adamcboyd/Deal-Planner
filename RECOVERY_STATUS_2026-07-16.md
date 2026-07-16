@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer manifest requirement work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: report sample-manifest evidence work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer receipt/report work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: sample transfer manifest requirement work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2112,6 +2112,36 @@ powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw
 ```
 
 Result: help printed successfully, PowerShell parse check passed, and the transfer helper accepted the manifest-backed local sample folder before stopping at the expected no connected/authorized Android phone condition.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after sample transfer receipt/report work:
+
+Helper checkpoint:
+
+- `scripts\send-phone-test-samples.ps1` now writes ignored `PHONE_SAMPLE_TRANSFER.md` evidence inside the transferred sample folder after remote byte-size verification succeeds.
+- The transfer receipt records the device serial, local sample folder, Android destination, remote byte-size verification status, media-scan request status, and each verified file size.
+- `scripts\new-phone-test-report.ps1` now includes the expected Android sample destination and latest transfer receipt path/status in the report Source Snapshot.
+- Generated phone reports now include a checkbox for confirming `PHONE_SAMPLE_TRANSFER.md` captured destination and byte-size evidence.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so the real-phone run expects transfer receipt evidence when sample transfer is used.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\send-phone-test-samples.ps1')); 'send-phone-test-samples.ps1 parsed'"
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\new-phone-test-report.ps1')); 'new-phone-test-report.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\send-phone-test-samples.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1
+.\scripts\send-phone-test-samples.ps1 -SamplesDir phone-test-samples\20260716-152321
+```
+
+Result: PowerShell parse checks passed for both helper scripts, transfer helper help printed successfully, generated ignored report `phone-test-results\20260716-154217\PHONE_TEST_REPORT.md` includes the sample Android destination and missing-transfer-receipt status, and the transfer helper accepted the manifest-backed local sample folder before stopping at the expected no connected/authorized Android phone condition.
 
 Full local gate:
 

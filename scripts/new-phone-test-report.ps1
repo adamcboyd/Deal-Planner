@@ -221,6 +221,7 @@ $latestSampleDir = if (Test-Path $sampleRoot) {
 } else {
     $null
 }
+$sampleRemoteRoot = "/sdcard/Download/DealPlannerPhoneTestSamples"
 if ($latestSampleDir) {
     $sampleLine = "- Phone test samples: $($latestSampleDir.FullName)"
     $sampleManifestPath = Join-Path $latestSampleDir.FullName "SAMPLE_MANIFEST.md"
@@ -229,9 +230,25 @@ if ($latestSampleDir) {
     } else {
         $sampleManifestLine = "- Phone test sample manifest: missing. Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly"
     }
+    $sampleTransferReportPath = Join-Path $latestSampleDir.FullName "PHONE_SAMPLE_TRANSFER.md"
+    $sampleAndroidDestination = "$sampleRemoteRoot/$($latestSampleDir.Name)"
+    if (Test-Path $sampleTransferReportPath) {
+        $destinationLine = Get-Content -LiteralPath $sampleTransferReportPath |
+            Where-Object { $_ -match "^- Android destination:\s*(.+)$" } |
+            Select-Object -First 1
+        if ($destinationLine -match "^- Android destination:\s*(.+)$") {
+            $sampleAndroidDestination = $Matches[1].Trim()
+        }
+        $sampleTransferReportLine = "- Phone test sample transfer report: $sampleTransferReportPath"
+    } else {
+        $sampleTransferReportLine = "- Phone test sample transfer report: not generated yet. Run .\scripts\send-phone-test-samples.ps1 after USB debugging is authorized."
+    }
+    $sampleDestinationLine = "- Phone test sample Android destination: $sampleAndroidDestination"
 } else {
     $sampleLine = "- Phone test samples: not generated yet. Run .\scripts\new-phone-test-samples.ps1"
     $sampleManifestLine = "- Phone test sample manifest: not generated yet."
+    $sampleDestinationLine = "- Phone test sample Android destination: not available yet."
+    $sampleTransferReportLine = "- Phone test sample transfer report: not generated yet."
 }
 
 if ([string]::IsNullOrWhiteSpace($adb.Devices)) {
@@ -260,6 +277,8 @@ $apkLine
 - APK Gemini model: $($apkGeminiModel.Trim())
 $sampleLine
 $sampleManifestLine
+$sampleDestinationLine
+$sampleTransferReportLine
 - Checklist: PHONE_TEST_CHECKLIST_2026-07-16.md
 
 ## Git Status
@@ -312,6 +331,7 @@ $adbBlock
 - [ ] Generated sample folder was copied or otherwise available on the phone, if used.
 - [ ] Generated sample manifest was present or verified before transfer, if generated samples were used.
 - [ ] Sample transfer helper verified remote byte sizes and requested Android media scans, if used.
+- [ ] PHONE_SAMPLE_TRANSFER.md recorded the Android destination and verified byte sizes, if sample transfer was used.
 - [ ] Generated sample PNG files were available for pantry/flyer/receipt gallery checks, if used.
 - [ ] Budget settings save valid comma/leading-decimal values and block invalid text.
 - Notes:
