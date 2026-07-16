@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after receipt negative-return filtering work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after flexible review date input work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -129,14 +129,15 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 5. In the edit dialog, enter quantity `1,5`, save, and confirm it is accepted as 1.5.
 6. Reopen edit, enter quantity `.5` or `,5`, save, and confirm it is accepted as 0.5.
 7. Reopen edit, enter quantity `abc`, and confirm Save disables with a non-negative number message.
-8. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
-9. Confirm opened date and best-by date stay separate on the pantry item.
-10. Optional year-first pantry date check: enter `Kroger yogurt opened 2026-7-1 best by 2026-12-31`, then confirm the opened date is July 1, 2026.
-11. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, `milk use by 12-31-26`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
-12. Optional missing-brand duplicate check: add `black beans 15oz pantry`, then add or OCR/import `Great Value black beans 15 oz pantry`; confirm the existing row updates instead of creating an unbranded duplicate. Add `Kroger black beans 15 oz pantry` and confirm it remains separate from the Great Value row.
-13. Optional hyphenated label-size check: enter `Great Value peanut butter 16-ounce pantry` and `Kroger eggs 12-count fridge`; confirm item names do not include `16-ounce` or `12-count`, sizes are captured as `16oz` and `12ct`, and storage is preserved.
-14. Optional label-punctuation check: enter `Great Value black beans net wt: 15 oz pantry best by: 12/31/2026`, `milk opened: 2026-07-01 use by: 12/31/2026`, or `pasta exp: 12/31/2026`; confirm cue words such as `wt`, `by`, `opened`, and `exp` do not appear in the item name.
-15. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
+8. Reopen edit, enter best-by `12/31/2026` or `12-31-26`, save, and confirm it is accepted as December 31, 2026.
+9. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
+10. Confirm opened date and best-by date stay separate on the pantry item.
+11. Optional year-first pantry date check: enter `Kroger yogurt opened 2026-7-1 best by 2026-12-31`, then confirm the opened date is July 1, 2026.
+12. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, `milk use by 12-31-26`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
+13. Optional missing-brand duplicate check: add `black beans 15oz pantry`, then add or OCR/import `Great Value black beans 15 oz pantry`; confirm the existing row updates instead of creating an unbranded duplicate. Add `Kroger black beans 15 oz pantry` and confirm it remains separate from the Great Value row.
+14. Optional hyphenated label-size check: enter `Great Value peanut butter 16-ounce pantry` and `Kroger eggs 12-count fridge`; confirm item names do not include `16-ounce` or `12-count`, sizes are captured as `16oz` and `12ct`, and storage is preserved.
+15. Optional label-punctuation check: enter `Great Value black beans net wt: 15 oz pantry best by: 12/31/2026`, `milk opened: 2026-07-01 use by: 12/31/2026`, or `pasta exp: 12/31/2026`; confirm cue words such as `wt`, `by`, `opened`, and `exp` do not appear in the item name.
+16. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 
@@ -150,16 +151,17 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 8. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
 9. Reopen edit, enter price `.99` or `,99`, save, and confirm it is accepted as 0.99.
 10. Reopen edit, enter score `7`, and confirm Save disables with a 0-to-1 value message.
-11. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
-12. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
-13. Optional each-price check: paste `Kroger Milk` / `$3.99 each`, `Store Yogurt` / `$1.25 per ea`, and `Black Beans` / `88c each`; confirm imported item names do not include `each` or `ea`.
-14. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
-15. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
-16. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
-17. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
-18. Optional household/non-food meal-side check: paste `Tide Laundry Detergent $9.99` as a deal, generate or refresh the meal plan, and confirm detergent does not appear in `Menu` meals or `Shopping` totals.
-19. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-20. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+11. Reopen edit, enter valid-until `12/31/2026` or `12-31-26`, save, and confirm it is accepted as December 31, 2026.
+12. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
+13. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+14. Optional each-price check: paste `Kroger Milk` / `$3.99 each`, `Store Yogurt` / `$1.25 per ea`, and `Black Beans` / `88c each`; confirm imported item names do not include `each` or `ea`.
+15. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
+16. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
+17. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
+18. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
+19. Optional household/non-food meal-side check: paste `Tide Laundry Detergent $9.99` as a deal, generate or refresh the meal plan, and confirm detergent does not appear in `Menu` meals or `Shopping` totals.
+20. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+21. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -174,18 +176,19 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 9. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
 10. Reopen edit, enter total `.89` or `,89`, save, and confirm it is accepted as 0.89.
 11. Reopen edit, enter confidence `abc`, and confirm Save disables with a 0-to-1 value message.
-12. Optional store whitespace check: set store to ` Kroger `, import one receipt, and confirm the receipt line shows store `Kroger`.
-13. Optional whole-dollar receipt check: paste `RICE 5 LB $3`, `2 @ $1 BLACK BEANS $2`, and `BANANAS 1 lb @ $1/lb $1`; confirm the rows import with totals 3.00, 2.00, and 1.00.
-14. Optional item-first quantity check: paste `BLACK BEANS 2 @ 0.89 1.78` and `KROGER PASTA 3 @ 1,00 3,00`; confirm quantities import as 2 and 3 instead of blank.
-15. Optional `x` separator quantity check: paste `BLACK BEANS 1.78`, `2 x 0.89`, `3 X 1.00 KROGER PASTA 3.00`, and `APPLES 1,25 lb x 1,99/lb 2,49`; confirm quantities import as 2, 3, and 1.25.
-16. Optional year-first date check: paste `Transaction Date: 2025/10/27` above `BLACK BEANS $1.78`; confirm the imported receipt row uses October 27, 2025.
-17. Optional repeated pantry-match check: with Black Beans already in Pantry, paste two Black Beans receipt rows with quantities `2 @ $0.89` and `1 @ $0.89`; confirm Pantry quantity increases by 3 total, not only the last row.
-18. Delete one receipt line and confirm Budget updates again.
-19. Optional saved-total check: append `YOU SAVED $4.25`, `SAVED TODAY 4.25`, and `TOTAL SAVED $4.25`; confirm those savings lines do not appear as receipt items or affect Budget spending.
-20. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-21. Optional negative return/refund check: append `MILK -$1.99`, `EGGS $-2.49`, `BREAD (3.29)`, and `APPLES -1,25`; confirm those negative amount rows do not appear as receipt items or increase Budget spending.
-22. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
-23. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+12. Reopen edit, enter date `10/27/2025` or `10-27-25`, save, and confirm it is accepted as October 27, 2025.
+13. Optional store whitespace check: set store to ` Kroger `, import one receipt, and confirm the receipt line shows store `Kroger`.
+14. Optional whole-dollar receipt check: paste `RICE 5 LB $3`, `2 @ $1 BLACK BEANS $2`, and `BANANAS 1 lb @ $1/lb $1`; confirm the rows import with totals 3.00, 2.00, and 1.00.
+15. Optional item-first quantity check: paste `BLACK BEANS 2 @ 0.89 1.78` and `KROGER PASTA 3 @ 1,00 3,00`; confirm quantities import as 2 and 3 instead of blank.
+16. Optional `x` separator quantity check: paste `BLACK BEANS 1.78`, `2 x 0.89`, `3 X 1.00 KROGER PASTA 3.00`, and `APPLES 1,25 lb x 1,99/lb 2,49`; confirm quantities import as 2, 3, and 1.25.
+17. Optional year-first date check: paste `Transaction Date: 2025/10/27` above `BLACK BEANS $1.78`; confirm the imported receipt row uses October 27, 2025.
+18. Optional repeated pantry-match check: with Black Beans already in Pantry, paste two Black Beans receipt rows with quantities `2 @ $0.89` and `1 @ $0.89`; confirm Pantry quantity increases by 3 total, not only the last row.
+19. Delete one receipt line and confirm Budget updates again.
+20. Optional saved-total check: append `YOU SAVED $4.25`, `SAVED TODAY 4.25`, and `TOTAL SAVED $4.25`; confirm those savings lines do not appear as receipt items or affect Budget spending.
+21. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+22. Optional negative return/refund check: append `MILK -$1.99`, `EGGS $-2.49`, `BREAD (3.29)`, and `APPLES -1,25`; confirm those negative amount rows do not appear as receipt items or increase Budget spending.
+23. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+24. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ### Budget
 
@@ -333,6 +336,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Receipt return/refund rows with negative totals do not import as positive spending.
 - Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
 - Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections and reject non-finite values such as `NaN` or `Infinity`.
+- Pantry, deal, and receipt review dialogs accept common date corrections such as `12/31/2026` and `12-31-26`.
 - Pantry typed/OCR intake preserves gallon, quart, pint, and hyphenated package sizes such as `16-ounce` and `12-count`.
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows, including `16-ounce` and `12-count` label rows, into separate VERIFY rows with wrapped date/opened lines attached to the matching item.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.

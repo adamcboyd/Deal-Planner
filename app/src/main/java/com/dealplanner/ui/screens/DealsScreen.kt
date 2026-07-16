@@ -28,8 +28,7 @@ import com.dealplanner.ui.state.DealItemInputValidator
 import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
+import com.dealplanner.util.toFlexibleLocalDateOrNull
 
 @Composable
 fun DealsScreen(viewModel: AppViewModel) {
@@ -630,11 +629,4 @@ fun DealItemEditDialog(
     )
 }
 
-private fun String.toLocalDateOrNull(): LocalDate? {
-    if (isBlank()) return null
-    return try {
-        LocalDate.parse(trim())
-    } catch (_: DateTimeParseException) {
-        null
-    }
-}
+private fun String.toLocalDateOrNull() = toFlexibleLocalDateOrNull()

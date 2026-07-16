@@ -275,7 +275,7 @@ On the Pantry tab:
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate. If OCR sees at least two complete item lines, Deal Planner imports those as separate reviewable items instead of collapsing the whole photo into one pantry row.
 4. Missing brand, amount/unit, location, or expiration information is marked with a VERIFY badge and notes such as `Review brand.`, `Review amount/unit.`, `Review pantry/fridge/freezer location.`, or `Review expiration or best-by date.`.
-5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`.
+5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`; best-by date corrections accept common label formats such as `2026-12-31`, `12/31/2026`, or `12-31-26`.
 
 ### Adding Pantry Items From Barcodes
 
@@ -314,7 +314,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 The built-in demo flyer covers the same formats.
 Blank pasted flyer text shows `No flyer text found.` instead of failing silently.
 
-Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot, comma, and leading-decimal text such as `2.99`, `2,99`, or `.99`.
+Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot, comma, and leading-decimal text such as `2.99`, `2,99`, or `.99`; valid-until date corrections accept common date formats such as `2026-12-31`, `12/31/2026`, or `12-31-26`.
 
 ### Processing Receipts
 
@@ -326,7 +326,7 @@ On the Receipts tab:
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending; repeated pantry-matched rows on the same receipt accumulate into one pantry quantity update.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
 6. Low-confidence matches are marked with a review warning.
-7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot, comma, and leading-decimal text such as `1.78`, `1,78`, or `.89`.
+7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot, comma, and leading-decimal text such as `1.78`, `1,78`, or `.89`; date corrections accept common formats such as `2025-10-27`, `10/27/2025`, or `10-27-25`.
 8. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, saved-total, reward, refund, return, and negative amount lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
@@ -383,7 +383,7 @@ Tests cover:
 - Settings protein-per-meal validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Pantry edit quantity validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Deal edit validation for price, PPU, discount, score, confidence, and limit text including 0-to-1 and 0-to-100 bounds
-- Receipt edit validation for optional quantity, total, match ID, confidence, and date text including comma-decimal and leading-decimal corrections
+- Receipt edit validation for optional quantity, total, match ID, confidence, flexible date text, and comma-decimal/leading-decimal corrections
 - Receipt edit/delete adjustment deltas for Budget spending and pantry-matched receipt quantities
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields, while rejecting non-finite values such as NaN or Infinity
@@ -465,7 +465,7 @@ As of the latest local pass:
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows; missing, Generic, or unknown brands can merge into a known-brand row when item, size, and location match, while different known brands stay separate.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, accepts valid bare product codes near label dates, and rejects non-code date, item, lot, SKU, or plain text.
-- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections.
+- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections plus common best-by date formats.
 - Pantry edit quantity blocks invalid or negative values with visible validation instead of silently preserving the old quantity.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
@@ -473,7 +473,7 @@ As of the latest local pass:
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings text does not become a fake item price.
 - Deals parser accepts flyer prices when OCR drops dollar signs, drops leading zeroes such as `.99/lb`, drops price/unit slashes, uses comma decimals, or uses explicit whole-dollar prices such as `$3/lb`, `$1/ea`, `$3.99 each`, `$1.25 per ea`, and `Milk $3`, including cent-style prices such as `99c/lb`, `99c lb`, `88c`, and `88c each`; it also preserves comma-decimal package sizes such as `5,3 oz` without confusing loose per-pound prices for sizes.
-- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal and leading-decimal price, PPU, discount, score, and confidence corrections with visible validation for invalid numeric values.
+- Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal and leading-decimal price, PPU, discount, score, confidence, and flexible valid-until date corrections with visible validation for invalid values.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Gallery and PDF imports use picker-scoped URI grants instead of broad storage/media permissions.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
@@ -491,7 +491,7 @@ As of the latest local pass:
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, puts the quantity before or after the item name, omits leading zeroes in prices such as `.89`, uses comma decimals, or returns explicit whole-dollar prices such as `$3`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, saved-total, coupon, discount, reward, refund, return, negative amount rows such as `MILK -$1.99`, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
-- Receipt cards can be edited after photo, gallery, PDF, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
+- Receipt cards can be edited after photo, gallery, PDF, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, confidence, and flexible date corrections with visible validation for invalid values.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.

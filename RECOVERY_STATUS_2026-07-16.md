@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after receipt negative-return filtering work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: pantry label punctuation and AI brand normalization work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after flexible review date input work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: receipt negative-return filtering work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2269,6 +2269,30 @@ Focused app check:
 ```
 
 Result: `BUILD SUCCESSFUL`; targeted receipt reconciliation tests passed.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `233` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest app-code checkpoint after flexible review date input work:
+
+App-code checkpoint:
+
+- Pantry, Deal, and Receipt review/edit date parsing now uses the shared flexible date parser.
+- Pantry best-by, deal valid-until, and receipt date corrections accept common formats such as `12/31/2026`, `12-31-26`, and year-first slash text.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the flexible review-date behavior for phone testing.
+
+Focused app check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ui.state.ReceiptItemInputValidatorTest"
+```
+
+Result: `BUILD SUCCESSFUL`; targeted receipt edit validation tests passed.
 
 Full local gate:
 

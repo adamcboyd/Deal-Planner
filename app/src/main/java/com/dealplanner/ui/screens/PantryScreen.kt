@@ -29,10 +29,9 @@ import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.state.PantryItemInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
+import com.dealplanner.util.toFlexibleLocalDateOrNull
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -556,11 +555,4 @@ fun PantryItemEditDialog(
     )
 }
 
-private fun String.toLocalDateOrNull(): LocalDate? {
-    if (isBlank()) return null
-    return try {
-        LocalDate.parse(trim())
-    } catch (_: DateTimeParseException) {
-        null
-    }
-}
+private fun String.toLocalDateOrNull() = toFlexibleLocalDateOrNull()

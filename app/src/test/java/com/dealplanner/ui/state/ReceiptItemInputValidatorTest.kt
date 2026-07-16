@@ -73,13 +73,22 @@ class ReceiptItemInputValidatorTest {
     }
 
     @Test
-    fun `date accepts only iso local dates`() {
-        val valid = ReceiptItemInputValidator.validateDate("2025-10-27")
-        assertThat(valid.isValid).isTrue()
-        assertThat(valid.parsedValue).isEqualTo(LocalDate.of(2025, 10, 27))
+    fun `date accepts flexible local date formats`() {
+        val iso = ReceiptItemInputValidator.validateDate("2025-10-27")
+        val slash = ReceiptItemInputValidator.validateDate("10/27/2025")
+        val shortDash = ReceiptItemInputValidator.validateDate("10-27-25")
+        val yearFirstSlash = ReceiptItemInputValidator.validateDate("2025/10/27")
+
+        assertThat(iso.isValid).isTrue()
+        assertThat(iso.parsedValue).isEqualTo(LocalDate.of(2025, 10, 27))
+        assertThat(slash.isValid).isTrue()
+        assertThat(slash.parsedValue).isEqualTo(LocalDate.of(2025, 10, 27))
+        assertThat(shortDash.isValid).isTrue()
+        assertThat(shortDash.parsedValue).isEqualTo(LocalDate.of(2025, 10, 27))
+        assertThat(yearFirstSlash.isValid).isTrue()
+        assertThat(yearFirstSlash.parsedValue).isEqualTo(LocalDate.of(2025, 10, 27))
 
         assertThat(ReceiptItemInputValidator.validateDate("").isValid).isFalse()
-        assertThat(ReceiptItemInputValidator.validateDate("10/27/2025").isValid).isFalse()
         assertThat(ReceiptItemInputValidator.validateDate("abc").isValid).isFalse()
     }
 

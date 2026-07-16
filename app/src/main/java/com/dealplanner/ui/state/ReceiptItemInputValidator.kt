@@ -1,14 +1,14 @@
 package com.dealplanner.ui.state
 
 import com.dealplanner.util.toFlexibleDoubleOrNull
+import com.dealplanner.util.toFlexibleLocalDateOrNull
 import java.time.LocalDate
-import java.time.format.DateTimeParseException
 
 object ReceiptItemInputValidator {
     const val QUANTITY_TOTAL_ERROR = "Use non-negative quantity and total values, or leave quantity blank."
     const val MATCH_ID_ERROR = "Use a whole-number match ID or leave blank."
     const val CONFIDENCE_ERROR = "Use a confidence value from 0 to 1."
-    const val DATE_ERROR = "Use YYYY-MM-DD."
+    const val DATE_ERROR = "Use YYYY-MM-DD, M/D/YYYY, or M-D-YY."
 
     fun validateOptionalQuantity(value: String): NumericInputValidation {
         if (value.isBlank()) {
@@ -62,14 +62,7 @@ object ReceiptItemInputValidator {
         )
     }
 
-    private fun String.toLocalDateOrNull(): LocalDate? {
-        if (isBlank()) return null
-        return try {
-            LocalDate.parse(trim())
-        } catch (_: DateTimeParseException) {
-            null
-        }
-    }
+    private fun String.toLocalDateOrNull(): LocalDate? = toFlexibleLocalDateOrNull()
 }
 
 data class LongInputValidation(

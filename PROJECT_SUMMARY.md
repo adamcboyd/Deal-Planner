@@ -195,11 +195,11 @@ Deal_Planner/
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, barcode/manual code intake, photo/gallery import, VERIFY badges
-- ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
+- ✅ **Pantry Review Dialog**: Edit imported pantry items, flexible best-by date text, and clear/keep verification flags
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, processing status, failed-parse text retention, store-aware deal cards with scores, coupon flags
-- ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
+- ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, confidence, and flexible valid-until date text
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/PDF/manual text import, processing status, failed-parse text retention, review flags, budget updates
-- ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
+- ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, flexible date text, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
@@ -413,7 +413,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Maps barcode lookup found/not-found/error results into reviewable pantry rows and phone-visible add/update status messages
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
 - ✅ Imports pantry items from camera/gallery photos
-- ✅ Lets users correct pantry OCR/AI output and verification status
+- ✅ Lets users correct pantry OCR/AI output, common best-by date formats, and verification status
 - ✅ Validates pantry edit quantities with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
@@ -432,17 +432,17 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Validates Settings protein-per-meal values with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
-- ✅ Validates deal edit price, PPU, discount, score, confidence, and limit values with flexible decimal input and bounded score/percent ranges
+- ✅ Validates deal edit price, PPU, discount, score, confidence, limit, and valid-until date values with flexible decimal/date input and bounded score/percent ranges
 - ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c, plus comma-decimal package sizes such as 5,3 oz
 - ✅ Ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings do not import as fake deals
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, each/ea prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos, PDFs, or pasted OCR text
-- ✅ Lets users correct receipt OCR/reconciliation output and review status
+- ✅ Lets users correct receipt OCR/reconciliation output, common receipt date formats, and review status
 - ✅ Parses the bundled demo receipt used by the phone test checklist
 - ✅ Applies receipt header dates including year-first slash/dash OCR formats such as `Transaction Date: 2025/10/27`
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items, including `@` and `x` quantity separators
 - ✅ Parses receipt OCR item totals and inline quantity lines before or after the item name, with or without dollar signs and with comma decimals
-- ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields while rejecting non-finite values
+- ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields while rejecting non-finite values, and accepts common date corrections in pantry, deal, and receipt review dialogs
 - ✅ Ignores receipt subtotal, tax, total, savings, saved-total, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Ignores receipt return/refund rows with negative totals so they do not import as positive grocery spending
 - ✅ Rounds receipt totals to cents before applying budget updates
