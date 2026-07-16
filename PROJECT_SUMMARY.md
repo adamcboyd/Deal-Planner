@@ -99,7 +99,8 @@ Deal_Planner/
             ├── ocr/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
             ├── ui/state/
-            │   └── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
+            │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
+            │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
             └── util/
                 ├── FlexibleDateParsingTest.kt ✅ Flexible date parsing tests
                 └── FlexibleNumberParsingTest.kt ✅ Flexible number parsing tests
@@ -411,6 +412,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Keeps manual barcode, pasted flyer, and pasted receipt text available after failed imports while clearing only after successful imports
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
+- ✅ Validates Settings protein-per-meal values with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
 - ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c, plus comma-decimal package sizes such as 5,3 oz
@@ -469,7 +471,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 193 unit tests
+- ✅ 197 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

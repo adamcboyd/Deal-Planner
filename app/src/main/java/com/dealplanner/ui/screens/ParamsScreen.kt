@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dealplanner.BuildConfig
 import com.dealplanner.data.model.Params
+import com.dealplanner.ui.state.SettingsInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleDoubleOrNull
 
 @Composable
 fun ParamsScreen(viewModel: AppViewModel) {
@@ -22,8 +22,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
     var breakfastAnchor by remember { mutableStateOf(params?.breakfastAnchor ?: true) }
     var proteinPerMeal by remember { mutableStateOf(params?.proteinPerMealLb?.toString() ?: "0.5") }
     var settingsEdited by remember { mutableStateOf(false) }
-    val parsedProteinPerMeal = proteinPerMeal.toFlexibleDoubleOrNull()
-    val isProteinPerMealValid = parsedProteinPerMeal != null && parsedProteinPerMeal >= 0.0
+    val proteinValidation = SettingsInputValidator.validateProteinPerMeal(proteinPerMeal)
 
     LaunchedEffect(params) {
         params?.let {
@@ -147,16 +146,12 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         },
                         label = { Text("Pounds") },
                         modifier = Modifier.fillMaxWidth(),
-                        isError = !isProteinPerMealValid
+                        isError = !proteinValidation.isValid
                     )
                     Text(
-                        if (isProteinPerMealValid) {
-                            "Default: 0.5 lb per meal"
-                        } else {
-                            "Use a non-negative number like 0.5 or 0,5."
-                        },
+                        proteinValidation.message,
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isProteinPerMealValid) {
+                        color = if (proteinValidation.isValid) {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         } else {
                             MaterialTheme.colorScheme.error
@@ -170,7 +165,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
         item {
             Button(
                 onClick = {
-                    val proteinValue = parsedProteinPerMeal ?: return@Button
+                    val proteinValue = proteinValidation.parsedValue ?: return@Button
                     val updatedParams = Params(
                         gerdFriendly = gerdFriendly,
                         avoidPeppers = avoidPeppers,
@@ -181,7 +176,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
                     settingsEdited = false
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = isProteinPerMealValid
+                enabled = proteinValidation.isValid
             ) {
                 Text("Save Settings")
             }
