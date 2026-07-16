@@ -100,9 +100,11 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 
 1. Manual barcode/code:
    - Enter a UPC-like code in `Barcode / UPC`.
+   - Also test a pasted label form such as `UPC: 0 12345-67890 5`.
    - Tap `Add Code`.
    - Expected with network/product match: item appears with product name, brand when available, package quantity when available, VERIFY status, barcode in notes, and `Product lookup: Open Food Facts`.
    - Expected without network/product match: item appears as `Scanned barcode item` with VERIFY status and barcode in notes.
+   - Expected with text that has no 8-14 digit product code: visible `No barcode found.` status and no junk barcode item.
 2. Barcode scanner:
    - Tap `Scan`.
    - Allow camera permission.

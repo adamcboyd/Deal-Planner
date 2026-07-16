@@ -16,6 +16,20 @@ class OpenFoodFactsBarcodeClientTest {
     }
 
     @Test
+    fun `normalize barcode extracts UPC from pasted label text`() {
+        val normalized = client.normalizeBarcode("UPC: 0 12345-67890 5")
+
+        assertThat(normalized).isEqualTo("012345678905")
+    }
+
+    @Test
+    fun `normalize barcode returns blank for text without product code`() {
+        val normalized = client.normalizeBarcode("not a product barcode")
+
+        assertThat(normalized).isEmpty()
+    }
+
+    @Test
     fun `parse found product response`() {
         val response = """
             {

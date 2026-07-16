@@ -222,10 +222,11 @@ On the Pantry tab:
 On the Pantry tab:
 
 1. Tap **Scan** to scan a product barcode, or type/paste a code into **Barcode / UPC** and tap **Add Code**.
-2. Deal Planner looks up the code with Open Food Facts when the phone has network access.
+2. Deal Planner accepts plain UPC/EAN/GTIN digits or pasted label text such as `UPC: 0 12345-67890 5`, then looks up the cleaned code with Open Food Facts when the phone has network access.
 3. If a product is found, Deal Planner creates a VERIFY pantry item with the product name, brand, package quantity, barcode, and lookup source in notes.
 4. If lookup misses or the phone is offline, Deal Planner still creates a reviewable barcode item with the code saved in notes.
-5. Re-scanning the same barcode merges quantity into the same pantry row. Different barcodes stay separate until reviewed.
+5. If the text does not contain an 8-14 digit product barcode, Deal Planner shows `No barcode found.` instead of creating a junk pantry row.
+6. Re-scanning the same barcode merges quantity into the same pantry row. Different barcodes stay separate until reviewed.
 6. Tap the edit icon to fill in or correct the product name, brand, package size, quantity, location, and expiration details.
 
 ### Scanning Flyers
@@ -305,7 +306,7 @@ Run unit tests:
 Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
 - Pantry duplicate detection/merging, including barcode-specific matching
-- Open Food Facts barcode response parsing and barcode normalization
+- Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text
 - Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices, slash-style multi-buy prices)
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
@@ -363,6 +364,7 @@ As of the latest local pass:
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
+- Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text and rejects non-code text.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.

@@ -93,8 +93,22 @@ class OpenFoodFactsBarcodeClient(
 
     internal fun normalizeBarcode(rawBarcode: String): String {
         val trimmed = rawBarcode.trim()
+        if (trimmed.isBlank()) return ""
+
         val compact = trimmed.replace(Regex("""[\s-]+"""), "")
-        return compact.ifBlank { trimmed }.uppercase()
+        if (compact.isProductBarcode()) {
+            return compact
+        }
+
+        val digitRuns = productBarcodePattern.findAll(compact)
+            .map { it.value }
+            .toList()
+        if (digitRuns.isNotEmpty()) {
+            return digitRuns.first()
+        }
+
+        val digitsOnly = trimmed.filter { it.isDigit() }
+        return if (digitsOnly.isProductBarcode()) digitsOnly else ""
     }
 
     private fun buildProductUrl(barcode: String): URL {
@@ -159,5 +173,13 @@ class OpenFoodFactsBarcodeClient(
             isJsonPrimitive -> listOfNotNull(asString.trim().ifBlank { null })
             else -> emptyList()
         }
+    }
+
+    private fun String.isProductBarcode(): Boolean {
+        return all { it.isDigit() } && length in 8..14
+    }
+
+    private companion object {
+        private val productBarcodePattern = Regex("""\d{8,14}""")
     }
 }
