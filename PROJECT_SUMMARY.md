@@ -411,6 +411,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Generates deterministic meal plans from the same pantry/deals/settings inputs
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
 - ✅ Shows meal-generation status and planner warnings
+- ✅ Refreshes the visible shopping list after pantry/deals/receipts/settings changes once meal plans exist
 - ✅ Tracks budget
 - ✅ Creates shopping lists
 - ✅ Keeps different shopping-list deal identities separate before and after Room assigns ids

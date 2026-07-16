@@ -102,6 +102,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
             val result = pantryParser.parse(cleanedPhrase)
             upsertPantryItem(result.item)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -118,6 +119,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val lookupResult = barcodeLookupClient.lookupBarcode(cleanedBarcode)
             val item = lookupResult.toPantryItem(cleanedBarcode)
             val mergedExisting = upsertPantryItem(item)
+            refreshShoppingListFromCurrentInputs()
             _pantryPhotoStatus.value = barcodeStatusMessage(lookupResult, mergedExisting)
         }
     }
@@ -125,12 +127,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun updatePantryItem(item: PantryItem) {
         viewModelScope.launch {
             repository.updatePantryItem(item)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
     fun deletePantryItem(item: PantryItem) {
         viewModelScope.launch {
             repository.deletePantryItem(item)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -181,6 +185,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
                 if (items.isNotEmpty()) {
                     val upsertResult = upsertPantryItems(items)
+                    refreshShoppingListFromCurrentInputs()
                     _pantryPhotoStatus.value = buildString {
                         append("Added/updated ${items.size} photo item")
                         if (items.size != 1) append("s")
@@ -238,15 +243,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if (result.item.bestBy == null) questions.add("What is the expiration or best-by date?")
 
         val importedItem = result.item.copy(
-                brand = result.item.brand ?: "Generic",
-                needsVerify = true,
-                notes = mergeNotes(
-                    result.item.notes,
-                    "Photo OCR import",
-                    questions.joinToString(" ")
-                )
+            brand = result.item.brand ?: "Generic",
+            needsVerify = true,
+            notes = mergeNotes(
+                result.item.notes,
+                "Photo OCR import",
+                questions.joinToString(" ")
             )
+        )
         val mergedExisting = upsertPantryItem(importedItem)
+        refreshShoppingListFromCurrentInputs()
 
         _pantryPhotoStatus.value = if (mergedExisting) {
             "Updated photo item with VERIFY checks"
@@ -270,6 +276,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 _dealsScanStatus.value = "No deals found. Try clearer flyer text."
             } else {
                 repository.insertDeals(result.deals)
+                refreshShoppingListFromCurrentInputs()
                 _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
             }
         }
@@ -278,12 +285,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun updateDeal(deal: DealItem) {
         viewModelScope.launch {
             repository.updateDeal(deal)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
     fun deleteDeal(deal: DealItem) {
         viewModelScope.launch {
             repository.deleteDeal(deal)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -337,6 +346,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 _dealsScanStatus.value = "No deals found. Try a flatter, closer flyer photo."
             } else {
                 repository.insertDeals(result.deals)
+                refreshShoppingListFromCurrentInputs()
                 _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
             }
         } catch (e: Exception) {
@@ -358,6 +368,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 _dealsScanStatus.value = "No deals found in that PDF. Try flyer photos instead."
             } else {
                 repository.insertDeals(result.deals)
+                refreshShoppingListFromCurrentInputs()
                 _dealsScanStatus.value = "Added ${result.deals.size} PDF deal${if (result.deals.size == 1) "" else "s"}"
             }
         } catch (e: Exception) {
@@ -474,6 +485,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 updatePantryForReceiptChange(existing, item)
             }
             updateBudgetAnalysis()
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -483,6 +495,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             updateBudgetForReceiptDelta(-item.totalCost)
             applyPantryReceiptDelta(item, -1.0)
             updateBudgetAnalysis()
+            refreshShoppingListFromCurrentInputs()
         }
     }
 
@@ -526,6 +539,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 repository.updateBudget(updatedBudget)
                 updateBudgetAnalysis()
             }
+            refreshShoppingListFromCurrentInputs()
 
             _receiptScanStatus.value = buildString {
                 append("Added ${result.receiptItems.size} receipt item")
@@ -580,6 +594,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun updateParams(params: Params) {
         viewModelScope.launch {
             repository.updateParams(params)
+            refreshShoppingListFromCurrentInputs()
         }
     }
 

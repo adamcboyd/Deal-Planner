@@ -600,6 +600,14 @@ Latest continuation gate after GitHub sync preflight work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after live Shopping refresh work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -677,6 +685,7 @@ Verified by build/unit tests/code inspection:
 - Menu Generate shows visible meal-plan generation status and any rules-engine warnings, such as missing protein deals or pantry starch anchors.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
 - Shopping list estimated costs use planned quantities and normalized price-per-unit values instead of multiplying sticker price by planned quantity in the UI.
+- After saved meal plans exist, Pantry, Deals, Receipts, and Settings input changes rederive the visible Shopping list from current inputs.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
@@ -842,6 +851,7 @@ Optional if anything fails on the phone:
    - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, and debug build.
    - Generate meal plan.
    - Review shopping list.
+   - After a generated plan exists, change pantry/deal/receipt/settings inputs and confirm Shopping refreshes without app relaunch.
    - Review budget.
 
 After those pass, decide whether to polish current flows or add optional features such as nutrition lookup, guided multi-photo flyer capture, price history, and monetization/convenience features.

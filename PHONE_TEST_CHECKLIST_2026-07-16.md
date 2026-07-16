@@ -81,6 +81,7 @@ Do not commit `local.properties`.
    - Menu has a generated 7-day plan and visible generation status.
 5. Close and relaunch Deal Planner.
 6. Confirm the `Shopping` tab still has the generated list without tapping `Generate` again.
+7. After a generated plan exists, edit or add a pantry/deal/receipt/settings input and confirm `Shopping` rederives from the current inputs without needing an app relaunch.
 
 ## Deterministic Text Tests
 
