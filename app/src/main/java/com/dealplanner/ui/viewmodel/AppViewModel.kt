@@ -47,6 +47,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val textRecognitionHelper = TextRecognitionHelper()
     private val pantryVisionClient = GeminiPantryVisionClient()
 
+    val aiVisionConfigured: Boolean = pantryVisionClient.isConfigured()
+    val aiVisionModel: String = pantryVisionClient.modelName
+
     // Flows
     val pantryItems = repository.allPantryItems.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val deals = repository.allDeals.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

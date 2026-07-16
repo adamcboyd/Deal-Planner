@@ -6,10 +6,10 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 41
+- **Total Kotlin Files**: 42
 - **Configuration Files**: 15
-- **Test Files**: 5 (comprehensive unit tests)
-- **Lines of Code**: ~3,800+
+- **Test Files**: 6 (comprehensive unit tests)
+- **Lines of Code**: ~3,900+
 
 ## 📁 Complete File Structure
 
@@ -76,8 +76,10 @@ Deal_Planner/
         │           ├── ic_launcher.xml             ✅ Adaptive icon
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
+            ├── ai/
+            │   └── GeminiPantryVisionClientTest.kt ✅ 4 test cases
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 11 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ 14 test cases
             │   └── DealsParserTest.kt         ✅ 8 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
@@ -118,6 +120,7 @@ Deal_Planner/
 - ✅ Flyer camera/gallery/PDF import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
+- ✅ Settings screen AI configuration status
 - ✅ ML Kit OCR fallback when Gemini is not configured
 
 ### 4. Business Logic Engines
@@ -150,7 +153,7 @@ Deal_Planner/
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
-- ✅ **ParamsScreen**: Dietary preferences, meal settings
+- ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status
 - ✅ Material 3 theming with dark/light support
 
 ### 6. Demo Data
@@ -160,7 +163,8 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (40 Test Cases)
+### 7. Unit Tests (44 Test Cases)
+- ✅ GeminiPantryVisionClientTest (4 tests)
 - ✅ PantryPhraseParserTest (14 tests)
 - ✅ DealsParserTest (8 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -240,7 +244,8 @@ Deal_Planner/
 1. Go to Settings tab
 2. Toggle GERD-friendly, avoid peppers
 3. Adjust protein per meal
-4. Save settings
+4. Check AI Pantry Photo Status
+5. Save settings
 
 ## 🧪 Testing
 
@@ -330,6 +335,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses pantry items
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
+- ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Scores deals
@@ -352,7 +358,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt reconciliation engine
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 40 unit tests
+- ✅ 44 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

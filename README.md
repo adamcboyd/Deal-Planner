@@ -100,6 +100,7 @@ gemini.model=gemini-3.5-flash
 Do not commit `local.properties`; it is ignored by Git.
 
 A non-secret template is included at `local.properties.example`.
+The Settings tab shows whether Gemini Vision is configured and which model the build is using.
 
 ### Build & Run
 
@@ -157,7 +158,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Shopping**: See consolidated shopping list with PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
-   - **Settings**: Configure dietary preferences
+   - **Settings**: Configure dietary preferences and verify AI setup status
 
 ## Usage Guide
 
@@ -237,6 +238,14 @@ The Budget tab shows:
 - Surplus/deficit warnings
 - Smart suggestions (stock up, pull from freezer, etc.)
 
+### Checking AI Setup
+
+The Settings tab includes **AI Pantry Photo Status**:
+
+- If Gemini is configured, it shows the model used for pantry photo recognition.
+- If Gemini is not configured, it states that pantry photos will use on-device OCR fallback.
+- Placeholder keys such as `YOUR_GEMINI_API_KEY` are treated as not configured.
+
 ## Testing
 
 Run unit tests:
@@ -251,6 +260,7 @@ Tests cover:
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit)
 - Receipt reconciliation (fuzzy matching, VPP)
+- Gemini configuration guardrails
 
 ## Key Algorithms
 

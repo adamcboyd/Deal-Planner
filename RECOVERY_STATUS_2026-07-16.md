@@ -66,6 +66,8 @@ Verified by build/unit tests/code inspection:
 - Receipt photo/gallery/manual text input exists.
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
+- Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
+- Placeholder Gemini keys are treated as not configured.
 - Demo data loading exists.
 
 Not yet verified on a real phone:
@@ -117,6 +119,7 @@ gemini.model=gemini-3.5-flash
    - Receipts photo.
    - Receipts gallery image.
    - Receipts pasted OCR text.
+   - Settings AI status before and after adding a real Gemini key.
    - Generate meal plan.
    - Review shopping list.
    - Review budget.

@@ -42,7 +42,14 @@ class GeminiPantryVisionClient(
         val rawResponse: String
     )
 
-    fun isConfigured(): Boolean = apiKey.isNotBlank()
+    val modelName: String = model.ifBlank { "gemini-3.5-flash" }
+
+    fun isConfigured(): Boolean {
+        val trimmedKey = apiKey.trim()
+        return trimmedKey.isNotBlank() &&
+            !trimmedKey.equals("YOUR_GEMINI_API_KEY", ignoreCase = true) &&
+            !trimmedKey.startsWith("YOUR_", ignoreCase = true)
+    }
 
     suspend fun analyzePantryPhoto(bitmap: Bitmap): PantryVisionResult = withContext(Dispatchers.IO) {
         if (!isConfigured()) {
@@ -51,7 +58,7 @@ class GeminiPantryVisionClient(
 
         val base64Image = bitmap.toJpegBase64()
         val requestBody = buildRequest(base64Image).toString()
-        val endpoint = URL("https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent")
+        val endpoint = URL("https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent")
         val connection = (endpoint.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 30_000
@@ -96,8 +103,8 @@ class GeminiPantryVisionClient(
 
         val content = JsonObject().apply {
             add("parts", JsonArray().apply {
-                add(promptPart)
                 add(imagePart)
+                add(promptPart)
             })
         }
 

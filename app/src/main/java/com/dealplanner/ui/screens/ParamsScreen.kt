@@ -155,6 +155,44 @@ fun ParamsScreen(viewModel: AppViewModel) {
             }
         }
 
+        // AI status
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "AI Pantry Photo Status",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        if (viewModel.aiVisionConfigured) {
+                            "Gemini Vision is configured."
+                        } else {
+                            "Gemini Vision is not configured. Pantry photos will use on-device OCR fallback."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (viewModel.aiVisionConfigured) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        "Model: ${viewModel.aiVisionModel}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        "Add a real key in local.properties to enable AI item recognition. Keys are never shown in the app.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
         // About section
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
