@@ -87,6 +87,7 @@ Deal_Planner/
             │   ├── GeminiPantryVisionClientTest.kt ✅ AI response/client parsing tests
             │   └── PantryVisionItemMapperTest.kt ✅ AI-to-pantry mapping tests
             ├── lookup/
+            │   ├── BarcodePantryMapperTest.kt ✅ Barcode pantry-row/status mapping tests
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ Barcode lookup/normalization tests
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ Pantry parser tests
@@ -390,6 +391,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
+- ✅ Maps barcode lookup found/not-found/error results into reviewable pantry rows and phone-visible add/update status messages
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
@@ -464,7 +466,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 181 unit tests
+- ✅ 185 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

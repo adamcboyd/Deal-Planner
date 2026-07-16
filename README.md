@@ -376,6 +376,7 @@ Tests cover:
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products, hyphenated package-size lines such as `16-ounce` or `12-count`, and wrapped date/opened continuation lines
 - Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
+- Barcode lookup result mapping into reviewable pantry rows and phone-visible add/update status messages
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields, while rejecting non-finite values such as NaN or Infinity
 - Meal planning (GERD-filtering, anchors)

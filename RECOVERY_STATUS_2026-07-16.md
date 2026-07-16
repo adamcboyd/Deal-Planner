@@ -1818,3 +1818,28 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `181` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest continuation note after barcode pantry mapper extraction:
+
+Code checkpoint:
+
+- Added `BarcodePantryMapper` as a pure mapping layer for Open Food Facts barcode lookup results.
+- `AppViewModel` now uses the mapper for manual barcode/scanner pantry rows and phone-visible add/update status messages.
+- Added direct unit coverage for found, not-found, and error barcode lookup results mapping into reviewable pantry rows.
+- Added direct unit coverage for the add/update status strings shown after barcode intake.
+
+Targeted lookup gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.lookup.*"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `185` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
