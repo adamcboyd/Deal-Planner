@@ -195,7 +195,7 @@ class DealsParser {
 
         // 3. N for $X: 2 for $5
         nForXPattern.find(line)?.let { match ->
-            val n = match.groupValues[1].toInt()
+            val n = match.groupValues[1].toPositiveDealCountOrNull() ?: return null
             val totalPrice = match.groupValues[2].toPriceDouble()
             price = totalPrice / n
             unit = "ea"
@@ -222,7 +222,7 @@ class DealsParser {
 
         // 4. Slash N for X: 2/$5 or 10 / $10
         slashNForXPattern.find(line)?.let { match ->
-            val n = match.groupValues[1].toInt()
+            val n = match.groupValues[1].toPositiveDealCountOrNull() ?: return null
             val totalPrice = match.groupValues[2].toPriceDouble()
             price = totalPrice / n
             unit = "ea"
@@ -584,7 +584,11 @@ class DealsParser {
     }
 
     private fun String.toDealCount(): Int? {
-        return toIntOrNull() ?: dealCountWords[lowercase()]
+        return toPositiveDealCountOrNull() ?: dealCountWords[lowercase()]
+    }
+
+    private fun String.toPositiveDealCountOrNull(): Int? {
+        return toIntOrNull()?.takeIf { it > 0 }
     }
 
     private fun String.toPriceDouble(): Double {

@@ -115,6 +115,27 @@ class DealsParserTest {
     }
 
     @Test
+    fun `ignore impossible or unsafe multibuy counts`() {
+        val text = """
+            Kroger Pasta
+            0 for ${'$'}5
+
+            Black Beans
+            999999999999999999999999999999 for ${'$'}5
+
+            Seltzer
+            999999999999999999999999999999/${'$'}5
+
+            Bagels
+            Buy 0 Get 1 Free
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).isEmpty()
+    }
+
+    @Test
     fun `ignore flyer dates that look like slash multi-buy prices`() {
         val text = """
             Kroger Weekly Ad

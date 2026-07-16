@@ -302,13 +302,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             _dealsScanStatus.value = "Processing flyer text..."
-            val result = dealsParser.parse(cleanedText, store.ifBlank { "Unknown" })
-            if (result.deals.isEmpty()) {
-                _dealsScanStatus.value = "No deals found. Try clearer flyer text."
-            } else {
-                repository.insertDeals(result.deals)
-                refreshShoppingListFromCurrentInputs()
-                _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
+            try {
+                val result = dealsParser.parse(cleanedText, store.ifBlank { "Unknown" })
+                if (result.deals.isEmpty()) {
+                    _dealsScanStatus.value = "No deals found. Try clearer flyer text."
+                } else {
+                    repository.insertDeals(result.deals)
+                    refreshShoppingListFromCurrentInputs()
+                    _dealsScanStatus.value = "Added ${result.deals.size} flyer deal${if (result.deals.size == 1) "" else "s"}"
+                }
+            } catch (e: Exception) {
+                _dealsScanStatus.value = "Could not process that flyer text."
             }
         }
     }

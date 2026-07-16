@@ -375,7 +375,7 @@ Tests cover:
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
-- Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal flyer OCR prices, slash/no-slash per-pound prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
+- Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal flyer OCR prices, slash/no-slash per-pound prices, slash-style multi-buy prices, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
@@ -454,6 +454,7 @@ As of the latest local pass:
 - Pantry edit quantity blocks invalid or negative values with visible validation instead of silently preserving the old quantity.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
+- Deals parser ignores impossible or unsafe multibuy counts such as `0 for $5` and oversized OCR counts instead of importing invalid deals.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs, drops leading zeroes such as `.99/lb`, drops price/unit slashes, or uses comma decimals, including cent-style prices such as `99c/lb`, `99c lb`, and `88c`.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal and leading-decimal price, PPU, discount, score, and confidence corrections with visible validation for invalid numeric values.

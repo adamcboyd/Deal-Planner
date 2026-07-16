@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `0e596dc feat: add receipt PDF import`
-- The branch may include later helper/docs recovery commits, but `0e596dc` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after flyer multibuy hardening; confirm the exact commit with `git log -1 --oneline`.
+- The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
@@ -1166,6 +1166,17 @@ Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 er
 
 Generated debug `BuildConfig` source identity is intentionally commit-dependent. Use `.\scripts\phone-debug-preflight.ps1` (`APK source identity`), `.\scripts\new-phone-test-report.ps1` (Source Snapshot), or Settings -> About in the installed app to read the current APK branch/commit/dirty state after each clean rebuild.
 
+Latest continuation gate after unsafe flyer multibuy parsing hardening:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.DealsParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed, then the full Gradle gate passed. The flyer parser now ignores impossible or unsafe multibuy counts such as `0 for $5` and oversized OCR counts instead of importing bad deals or throwing, and pasted flyer processing now reports `Could not process that flyer text.` if an unexpected parser error occurs.
+
 Additional check:
 
 ```powershell
@@ -1242,6 +1253,7 @@ Verified by build/unit tests/code inspection:
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
+- Deals parser ignores impossible or unsafe multibuy counts such as `0 for $5` and oversized OCR counts instead of importing invalid deals.
 - Deals parser handles word-number buy-get flyer promos such as `Buy One Get One Free` and `Buy Two Get One Free`.
 - Deals parser handles buy-get percent-off promos such as `Buy One Get One 50% off` as a 25% effective overall discount and `Buy Two Get One 50% off` as about 16.7%.
 - Deals parser handles BOGO flyer shorthand such as `BOGO Free` and `B1G1` without merging the next flyer item or treating `B1G1` as a package size.
@@ -1280,7 +1292,7 @@ Verified by build/unit tests/code inspection:
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
 - ML Kit pantry OCR fallback preserves single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Flyer photo/gallery/PDF/manual text input exists.
-- Flyer pasted-text import shows processing status, keeps pasted text available when parsing finds no deals, and clears it only after successful deal import.
+- Flyer pasted-text import shows processing status, keeps pasted text available when parsing finds no deals or processing fails, and clears it only after successful deal import.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`, and flyer store names are trimmed with blank values defaulted to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
