@@ -330,26 +330,110 @@ class PantryPhraseParser {
      * Used for duplicate detection and merging.
      */
     fun areDuplicates(item1: PantryItem, item2: PantryItem): Boolean {
-        val nameMatch = item1.item.lowercase() == item2.item.lowercase()
-        val sizeMatch = item1.size?.lowercase() == item2.size?.lowercase()
-        val brandMatch = item1.brand?.lowercase() == item2.brand?.lowercase()
+        val item1Barcode = extractBarcode(item1.notes)
+        val item2Barcode = extractBarcode(item2.notes)
+        if (item1Barcode != null || item2Barcode != null) {
+            return item1Barcode != null && item1Barcode == item2Barcode
+        }
 
-        return nameMatch && sizeMatch && brandMatch
+        return duplicateKey(item1) == duplicateKey(item2)
+    }
+
+    fun mergeDuplicateItems(existing: PantryItem, incoming: PantryItem): PantryItem {
+        return existing.copy(
+            item = chooseKnownValue(existing.item, incoming.item) ?: existing.item,
+            form = existing.form ?: incoming.form,
+            qty = existing.qty + incoming.qty,
+            unit = existing.unit ?: incoming.unit,
+            size = existing.size ?: incoming.size,
+            brand = chooseKnownValue(existing.brand, incoming.brand),
+            location = existing.location ?: incoming.location,
+            opened = existing.opened ?: incoming.opened,
+            bestBy = existing.bestBy ?: incoming.bestBy,
+            notes = listOfNotNull(existing.notes, incoming.notes)
+                .flatMap { it.split(";") }
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .distinct()
+                .joinToString("; ")
+                .ifBlank { null },
+            needsVerify = existing.needsVerify || incoming.needsVerify
+        )
     }
 
     /**
      * Merges duplicate pantry items by summing quantities.
      */
     fun mergeDuplicates(items: List<PantryItem>): List<PantryItem> {
-        val grouped = items.groupBy { Triple(it.item.lowercase(), it.size?.lowercase(), it.brand?.lowercase()) }
+        val grouped = items.groupBy { mergeKey(it) }
 
         return grouped.map { (_, group) ->
-            val first = group.first()
-            first.copy(
-                qty = group.sumOf { it.qty },
-                needsVerify = group.any { it.needsVerify },
-                notes = group.mapNotNull { it.notes }.distinct().joinToString("; ").ifBlank { null }
-            )
+            group.drop(1).fold(group.first()) { merged, item ->
+                mergeDuplicateItems(merged, item)
+            }
         }
     }
+
+    private fun mergeKey(item: PantryItem): PantryMergeKey {
+        return extractBarcode(item.notes)?.let { barcode ->
+            PantryMergeKey(barcode = barcode, duplicateKey = null)
+        } ?: PantryMergeKey(barcode = null, duplicateKey = duplicateKey(item))
+    }
+
+    private fun duplicateKey(item: PantryItem): PantryDuplicateKey {
+        return PantryDuplicateKey(
+            item = normalizeKeyText(item.item),
+            size = normalizeKeyText(item.size),
+            brand = normalizeBrand(item.brand),
+            location = normalizeKeyText(item.location ?: "pantry")
+        )
+    }
+
+    private fun normalizeKeyText(value: String?): String? {
+        return value
+            ?.lowercase()
+            ?.replace(Regex("""[^a-z0-9]+"""), "")
+            ?.ifBlank { null }
+    }
+
+    private fun normalizeBrand(value: String?): String? {
+        val normalized = normalizeKeyText(value)
+        return if (normalized == "generic" || normalized == "unknown") null else normalized
+    }
+
+    private fun extractBarcode(notes: String?): String? {
+        return notes
+            ?.split(";")
+            ?.map { it.trim() }
+            ?.firstNotNullOfOrNull { note ->
+                Regex("""(?i)^barcode:\s*([A-Za-z0-9-]+)""")
+                    .find(note)
+                    ?.groupValues
+                    ?.getOrNull(1)
+                    ?.uppercase()
+            }
+    }
+
+    private fun chooseKnownValue(existing: String?, incoming: String?): String? {
+        val cleanedExisting = existing?.trim()?.ifBlank { null }
+        val cleanedIncoming = incoming?.trim()?.ifBlank { null }
+        return when {
+            cleanedExisting.isNullOrBlank() -> cleanedIncoming
+            cleanedExisting.equals("unknown", ignoreCase = true) -> cleanedIncoming ?: cleanedExisting
+            cleanedExisting.equals("generic", ignoreCase = true) && !cleanedIncoming.equals("generic", ignoreCase = true) -> cleanedIncoming ?: cleanedExisting
+            else -> cleanedExisting
+        }
+    }
+
+    private data class PantryDuplicateKey(
+        val item: String?,
+        val size: String?,
+        val brand: String?,
+        val location: String?
+    )
+
+    private data class PantryMergeKey(
+        val barcode: String?,
+        val duplicateKey: PantryDuplicateKey?
+    )
 }

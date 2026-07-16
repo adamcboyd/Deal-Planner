@@ -30,6 +30,14 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`.
 
+Latest continuation gate after pantry duplicate upsert work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -65,6 +73,8 @@ Verified by build/unit tests/code inspection:
 - Pantry photo/gallery/barcode/manual code input exists.
 - Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
 - Barcode/manual code pantry input creates VERIFY items with the barcode preserved in notes.
+- Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
+- Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
@@ -134,6 +144,8 @@ gemini.model=gemini-3.5-flash
    - Pantry gallery image.
    - Pantry barcode scan.
    - Pantry manual barcode/code entry.
+   - Pantry duplicate check: add the same typed/photo item twice and confirm quantity merges.
+   - Pantry barcode duplicate check: add the same UPC twice and confirm quantity merges, then add a different UPC and confirm it remains separate.
    - Pantry edit/review dialog for VERIFY items.
    - Deals flyer photo.
    - Deals gallery image.

@@ -182,6 +182,8 @@ The parser handles:
 - Dates (opened, best by)
 - Forms (canned, frozen, fresh)
 
+Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
+
 ### Adding Pantry Items From Photos
 
 On the Pantry tab:
@@ -276,6 +278,7 @@ Run unit tests:
 
 Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
+- Pantry duplicate detection/merging, including barcode-specific matching
 - Deal regex patterns (all deal types)
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit)
@@ -324,6 +327,7 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
+- Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, package prices, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.

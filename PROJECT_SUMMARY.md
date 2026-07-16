@@ -82,7 +82,7 @@ Deal_Planner/
             ├── ai/
             │   └── GeminiPantryVisionClientTest.kt ✅ 5 test cases
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 14 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 11 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
@@ -173,9 +173,9 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (53 Test Cases)
+### 7. Unit Tests (58 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
-- ✅ PantryPhraseParserTest (14 tests)
+- ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (11 tests)
 - ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (8 tests)
@@ -226,6 +226,7 @@ Deal_Planner/
 2. Type: "2 cans black beans 15oz", scan a barcode, enter a UPC, or import a photo
 3. Tap Add, Scan, Add Code, Photo, or Gallery
 4. Item parsed or seeded as a VERIFY item and stored
+5. Safe duplicates merge quantities instead of creating repeated rows; barcode items merge only when the barcode matches
 
 ### Viewing Deals
 1. Go to Deals tab
@@ -348,6 +349,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Loads demo data
 - ✅ Parses pantry items
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
+- ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
@@ -387,7 +389,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 53 unit tests
+- ✅ 58 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

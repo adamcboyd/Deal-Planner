@@ -133,6 +133,73 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `duplicate detection normalizes package size and generic brand`() {
+        val typedItem = parser.parse("black beans 15oz").item
+        val photoItem = parser.parse("black beans 15 oz").item.copy(brand = "Generic")
+
+        assertThat(parser.areDuplicates(typedItem, photoItem)).isTrue()
+    }
+
+    @Test
+    fun `duplicate detection keeps different locations separate`() {
+        val pantryItem = parser.parse("1 lb ground beef in fridge").item
+        val freezerItem = parser.parse("1 lb ground beef in freezer").item
+
+        assertThat(parser.areDuplicates(pantryItem, freezerItem)).isFalse()
+    }
+
+    @Test
+    fun `duplicate detection matches same barcode only`() {
+        val firstScan = parser.parse("scanned barcode item").item.copy(
+            notes = "Barcode: 012345678905; Product lookup not configured yet."
+        )
+        val sameScan = parser.parse("scanned barcode item").item.copy(
+            notes = "Barcode: 012345678905"
+        )
+        val differentScan = parser.parse("scanned barcode item").item.copy(
+            notes = "Barcode: 999999999999"
+        )
+
+        assertThat(parser.areDuplicates(firstScan, sameScan)).isTrue()
+        assertThat(parser.areDuplicates(firstScan, differentScan)).isFalse()
+    }
+
+    @Test
+    fun `merge duplicates keeps different barcodes separate`() {
+        val firstScan = parser.parse("scanned barcode item").item.copy(
+            notes = "Barcode: 012345678905"
+        )
+        val differentScan = parser.parse("scanned barcode item").item.copy(
+            notes = "Barcode: 999999999999"
+        )
+
+        val merged = parser.mergeDuplicates(listOf(firstScan, differentScan))
+
+        assertThat(merged).hasSize(2)
+    }
+
+    @Test
+    fun `merge duplicate items sums quantity and preserves review notes`() {
+        val existing = parser.parse("2 cans black beans 15oz").item.copy(
+            id = 42,
+            notes = "Photo OCR import",
+            needsVerify = true
+        )
+        val incoming = parser.parse("3 cans black beans 15 oz").item.copy(
+            brand = "Generic",
+            notes = "What is the expiration or best-by date?"
+        )
+
+        val merged = parser.mergeDuplicateItems(existing, incoming)
+
+        assertThat(merged.id).isEqualTo(42)
+        assertThat(merged.qty).isEqualTo(5.0)
+        assertThat(merged.notes).contains("Photo OCR import")
+        assertThat(merged.notes).contains("What is the expiration or best-by date?")
+        assertThat(merged.needsVerify).isTrue()
+    }
+
+    @Test
     fun `low confidence for unclear input`() {
         val result = parser.parse("xyz")
 

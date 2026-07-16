@@ -87,7 +87,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun addPantryPhrase(phrase: String) {
         viewModelScope.launch {
             val result = pantryParser.parse(phrase)
-            repository.insertPantryItem(result.item)
+            upsertPantryItem(result.item)
         }
     }
 
@@ -99,7 +99,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 return@launch
             }
 
-            repository.insertPantryItem(
+            val mergedExisting = upsertPantryItem(
                 PantryItem(
                     item = "Scanned barcode item",
                     qty = 1.0,
@@ -112,7 +112,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     needsVerify = true
                 )
             )
-            _pantryPhotoStatus.value = "Added barcode item with VERIFY checks"
+            _pantryPhotoStatus.value = if (mergedExisting) {
+                "Updated barcode item quantity with VERIFY checks"
+            } else {
+                "Added barcode item with VERIFY checks"
+            }
         }
     }
 
@@ -150,11 +154,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 val items = result.items.mapNotNull { it.toPantryItem(result.warnings) }
 
                 if (items.isNotEmpty()) {
-                    repository.insertPantryItems(items)
+                    val upsertResult = upsertPantryItems(items)
                     _pantryPhotoStatus.value = buildString {
-                        append("Added ${items.size} photo item")
+                        append("Added/updated ${items.size} photo item")
                         if (items.size != 1) append("s")
                         if (items.any { it.needsVerify }) append(" with VERIFY checks")
+                        if (upsertResult.updated > 0) {
+                            append(" (${upsertResult.updated} merged)")
+                        }
                     }
                     true
                 } else {
@@ -204,8 +211,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if (result.item.size == null && result.item.unit == null) questions.add("How much is there?")
         if (result.item.bestBy == null) questions.add("What is the expiration or best-by date?")
 
-        repository.insertPantryItem(
-            result.item.copy(
+        val importedItem = result.item.copy(
                 brand = result.item.brand ?: "Generic",
                 needsVerify = true,
                 notes = mergeNotes(
@@ -214,9 +220,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     questions.joinToString(" ")
                 )
             )
-        )
+        val mergedExisting = upsertPantryItem(importedItem)
 
-        _pantryPhotoStatus.value = "Added photo item with VERIFY checks"
+        _pantryPhotoStatus.value = if (mergedExisting) {
+            "Updated photo item with VERIFY checks"
+        } else {
+            "Added photo item with VERIFY checks"
+        }
     }
 
     // Deals operations
@@ -656,6 +666,32 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private suspend fun upsertPantryItem(item: PantryItem): Boolean {
+        val existing = repository.getAllPantryItems()
+            .firstOrNull { pantryParser.areDuplicates(it, item) }
+
+        return if (existing == null) {
+            repository.insertPantryItem(item)
+            false
+        } else {
+            repository.updatePantryItem(pantryParser.mergeDuplicateItems(existing, item))
+            true
+        }
+    }
+
+    private suspend fun upsertPantryItems(items: List<PantryItem>): PantryUpsertResult {
+        var inserted = 0
+        var updated = 0
+        items.forEach { item ->
+            if (upsertPantryItem(item)) {
+                updated++
+            } else {
+                inserted++
+            }
+        }
+        return PantryUpsertResult(inserted = inserted, updated = updated)
+    }
+
     private fun mergeNotes(vararg values: String?): String? {
         return values
             .mapNotNull { it?.trim()?.ifBlank { null } }
@@ -663,4 +699,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             .joinToString("; ")
             .ifBlank { null }
     }
+
+    private data class PantryUpsertResult(
+        val inserted: Int,
+        val updated: Int
+    )
 }
