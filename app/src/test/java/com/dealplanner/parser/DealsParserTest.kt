@@ -389,6 +389,33 @@ class DealsParserTest {
     }
 
     @Test
+    fun `ignore savings-only flyer dollar callouts`() {
+        val text = """
+            Milk
+            ${'$'}3
+            Save ${'$'}1 when you buy 2
+
+            Chicken Breast
+            ${'$'}2.99/lb
+            You save ${'$'}1/lb with card
+
+            Kroger Pasta
+            10 for ${'$'}10
+            Savings ${'$'}2 with digital coupon
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(3)
+        assertThat(result.deals.map { it.name }).containsExactly(
+            "Milk",
+            "Chicken Breast",
+            "Kroger Pasta"
+        )
+        assertThat(result.deals.map { it.price }).containsExactly(3.0, 2.99, 1.0).inOrder()
+    }
+
+    @Test
     fun `parse flyer prices when OCR drops dollar signs`() {
         val text = """
             Chicken Breast

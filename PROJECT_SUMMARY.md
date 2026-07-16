@@ -8,7 +8,7 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 - **Total Kotlin Files**: 47
 - **Configuration Files**: 15
-- **Test Files**: 8 (comprehensive unit tests)
+- **Test Files**: 11 (comprehensive unit tests)
 - **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
@@ -84,18 +84,22 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 21 test cases
+            │   ├── GeminiPantryVisionClientTest.kt ✅ AI response/client parsing tests
+            │   └── PantryVisionItemMapperTest.kt ✅ AI-to-pantry mapping tests
             ├── lookup/
-            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 8 test cases
+            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ Barcode lookup/normalization tests
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
-            │   └── DealsParserTest.kt         ✅ 21 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ Pantry parser tests
+            │   └── DealsParserTest.kt         ✅ Flyer parser tests
             ├── domain/
-            │   ├── MealPlanningEngineTest.kt  ✅ 9 test cases
-            │   ├── BudgetEngineTest.kt        ✅ 10 test cases
-            │   └── ReceiptReconcilerTest.kt   ✅ 19 test cases
+            │   ├── MealPlanningEngineTest.kt  ✅ Meal planning tests
+            │   ├── BudgetEngineTest.kt        ✅ Budget tests
+            │   └── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
+            ├── ocr/
+            │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
             └── util/
-                └── FlexibleNumberParsingTest.kt ✅ 3 test cases
+                ├── FlexibleDateParsingTest.kt ✅ Flexible date parsing tests
+                └── FlexibleNumberParsingTest.kt ✅ Flexible number parsing tests
 ```
 
 ## 🎯 Core Features Implemented
@@ -120,6 +124,7 @@ Deal_Planner/
   - Cent-style prices such as 99c/lb and 88c
   - Plain package prices such as 3 lb bag $2.99
   - Dollar/no-dollar/comma-decimal flyer OCR price parsing
+  - Savings-only flyer callout filtering so coupon savings do not become fake deals
   - N for $X pattern
   - Buy N Get M with numeric or word numbers, buy-get percent-off promos, plus BOGO/B1G1/BOGO-percent shorthand patterns
   - Percent off pattern
@@ -195,15 +200,18 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (117 Test Cases)
-- ✅ GeminiPantryVisionClientTest (21 tests)
-- ✅ OpenFoodFactsBarcodeClientTest (8 tests)
-- ✅ PantryPhraseParserTest (26 tests)
-- ✅ DealsParserTest (21 tests)
-- ✅ MealPlanningEngineTest (9 tests)
-- ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (19 tests)
-- ✅ FlexibleNumberParsingTest (3 tests)
+### 7. Unit Tests (159 Test Cases)
+- ✅ GeminiPantryVisionClientTest
+- ✅ PantryVisionItemMapperTest
+- ✅ OpenFoodFactsBarcodeClientTest
+- ✅ PantryOcrCandidateExtractorTest
+- ✅ PantryPhraseParserTest
+- ✅ DealsParserTest
+- ✅ MealPlanningEngineTest
+- ✅ BudgetEngineTest
+- ✅ ReceiptReconcilerTest
+- ✅ FlexibleDateParsingTest
+- ✅ FlexibleNumberParsingTest
 
 ## 🔧 Technology Stack
 
@@ -395,6 +403,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
 - ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c
+- ✅ Ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings do not import as fake deals
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
@@ -445,7 +454,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 117 unit tests
+- ✅ 159 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

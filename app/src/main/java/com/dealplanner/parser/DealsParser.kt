@@ -401,6 +401,7 @@ class DealsParser {
     private fun isFlyerMetadataLine(line: String): Boolean {
         val normalized = line.lowercase().trim()
         return flyerDatePattern.containsMatchIn(normalized) ||
+            savingsOnlyPattern.containsMatchIn(normalized) ||
             flyerMetadataPrefixes.any { normalized.startsWith(it) }
     }
 
@@ -428,6 +429,9 @@ class DealsParser {
             val nextLine = lines.getOrNull(index + 1)
 
             when {
+                isFlyerMetadataLine(line) -> {
+                    index++
+                }
                 isModifierLine(line) -> {
                     modifierLines.add(line)
                     index++
@@ -613,6 +617,7 @@ class DealsParser {
             "ten" to 10
         )
         private val flyerDatePattern = Regex("""\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b""")
+        private val savingsOnlyPattern = Regex("""^(?:save|savings|you\s+save)\s+\$?(?:\d+(?:[.,]\d{2})?|[.,]\d{2})\b""")
         private val flyerMetadataPrefixes = listOf(
             "valid ",
             "valid:",
