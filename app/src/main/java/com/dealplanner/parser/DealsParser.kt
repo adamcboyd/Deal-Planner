@@ -21,9 +21,9 @@ class DealsParser {
         val warnings: List<String>
     )
 
-    private val pricePerPoundPattern = Regex("""\$?($DECIMAL_PRICE_PATTERN)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
-    private val loosePricePerPoundPattern = Regex("""\$?($DECIMAL_PRICE_PATTERN)\s+(?:per\s+)?(?:lb|lbs|pound|pounds)\b""", RegexOption.IGNORE_CASE)
-    private val pricePerUnitPattern = Regex("""\$?($DECIMAL_PRICE_PATTERN)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
+    private val pricePerPoundPattern = Regex("""($UNIT_PRICE_PATTERN)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
+    private val loosePricePerPoundPattern = Regex("""($UNIT_PRICE_PATTERN)\s+(?:per\s+)?(?:lb|lbs|pound|pounds)\b""", RegexOption.IGNORE_CASE)
+    private val pricePerUnitPattern = Regex("""($UNIT_PRICE_PATTERN)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val centsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
     private val looseCentsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s+(?:per\s+)?(?:lb|lbs|pound|pounds)\b""", RegexOption.IGNORE_CASE)
     private val centsPricePerUnitPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
@@ -44,7 +44,7 @@ class DealsParser {
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
     private val packagePricePattern = Regex("""(?<![\d.,])\$?($DECIMAL_PRICE_PATTERN)(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
     private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
-    private val priceTextPattern = Regex("""\$?$DECIMAL_PRICE_PATTERN(?:\s*(?:/|per\s+)?\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
+    private val priceTextPattern = Regex("""$UNIT_PRICE_PATTERN(?:\s*(?:/|per\s+)?\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
 
     private val couponKeywords = listOf("coupon", "digital coupon", "member price", "clip", "app only")
     private val packageWords = Regex("""\b(bag|can|box|bottle|jar|pack|family|fresh|wild|caught|boneless|skinless|extra|virgin|with)\b""", RegexOption.IGNORE_CASE)
@@ -592,11 +592,12 @@ class DealsParser {
     }
 
     private fun String.toPriceDouble(): Double {
-        return replace(',', '.').toDouble()
+        return removePrefix("$").replace(',', '.').toDouble()
     }
 
     private companion object {
         private const val DECIMAL_PRICE_PATTERN = """(?:\d+)?[.,]\d{2}"""
+        private const val UNIT_PRICE_PATTERN = """(?:\$?$DECIMAL_PRICE_PATTERN|\$\d+)"""
         private const val PACKAGE_PRICE_PATTERN = """(?:\d+(?:[.,]\d{2})?|[.,]\d{2})"""
         private val dealCountWords = mapOf(
             "one" to 1,

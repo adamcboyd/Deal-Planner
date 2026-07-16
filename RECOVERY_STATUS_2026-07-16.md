@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after explicit whole-dollar receipt price parsing work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after explicit whole-dollar flyer unit price parsing work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1198,6 +1198,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Receipt OCR parsing now accepts explicit whole-dollar prices such as `$3`, including inline quantity, split quantity, and weighted produce rows, while no-dollar bare integers such as package-size text remain ignored.
 
+Latest focused flyer parser check after explicit whole-dollar unit price parsing:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.DealsParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed, then the full Gradle gate passed. Flyer OCR parsing now accepts explicit whole-dollar unit prices such as `$3/lb`, `$4 per pound`, and `$1/ea`, while bare package-size text such as `5 lb bag` is not imported as a deal.
+
 Additional check:
 
 ```powershell
@@ -1283,6 +1294,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Deals parser accepts leading-decimal flyer OCR prices such as `.99/lb`, `.99 lb`, `.89`, `2 for .99`, and `2/.99`.
 - Deals parser accepts comma-decimal flyer OCR prices such as `2,99/lb`, `2 for 5,00`, and `3 lb bag 2,99`.
+- Deals parser accepts explicit whole-dollar unit prices such as `$3/lb`, `$4 per pound`, and `$1/ea`, without treating bare package-size text as a price.
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`, with exact unit coverage for the phone checklist `Roma Tomatoes` / `99c/lb` pasted-text test.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.

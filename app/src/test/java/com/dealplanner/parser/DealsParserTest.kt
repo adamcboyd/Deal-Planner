@@ -26,6 +26,42 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse explicit whole dollar unit flyer prices`() {
+        val text = """
+            Chicken Drumsticks
+            ${'$'}3/lb
+
+            Ground Turkey
+            ${'$'}4 per pound
+
+            Paper Towels
+            ${'$'}1/ea
+
+            Flour
+            5 lb bag
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(3)
+
+        val chicken = result.deals.first { it.name == "Chicken Drumsticks" }
+        assertThat(chicken.price).isEqualTo(3.0)
+        assertThat(chicken.unit).isEqualTo("lb")
+        assertThat(chicken.dealType).isEqualTo("per_pound")
+
+        val turkey = result.deals.first { it.name == "Ground Turkey" }
+        assertThat(turkey.price).isEqualTo(4.0)
+        assertThat(turkey.unit).isEqualTo("lb")
+        assertThat(turkey.dealType).isEqualTo("per_pound")
+
+        val towels = result.deals.first { it.name == "Paper Towels" }
+        assertThat(towels.price).isEqualTo(1.0)
+        assertThat(towels.unit).isEqualTo("ea")
+        assertThat(towels.dealType).isEqualTo("per_unit")
+    }
+
+    @Test
     fun `parse per pound flyer prices when OCR drops slash`() {
         val text = """
             Chicken Breast
