@@ -161,13 +161,13 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected: different barcode stays as a separate reviewable row.
 4. Pantry photo:
    - Tap `Photo`.
-   - Take a clear label/photo.
+   - Take a clear label/photo, ideally one with a best-by date such as `12/31/2026`.
    - Expected without Gemini: ML Kit OCR fallback creates a VERIFY item or gives a visible recovery message.
-   - Expected with Gemini: AI item recognition creates one or more VERIFY items when details are uncertain.
+   - Expected with Gemini: AI item recognition creates one or more VERIFY items when details are uncertain and preserves common label dates when visible.
 5. Pantry gallery:
    - Tap `Gallery`.
    - Pick a pantry image.
-   - Expected: same as pantry photo.
+   - Expected: same as pantry photo, including common label-date handling.
 
 ### Flyer Inputs
 

@@ -21,12 +21,12 @@ import com.dealplanner.lookup.OpenFoodFactsBarcodeClient.BarcodeLookupResult
 import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
+import com.dealplanner.util.toFlexibleLocalDateOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.format.DateTimeParseException
 import kotlin.math.roundToInt
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
@@ -869,11 +869,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun parseDateOrNull(value: String?): LocalDate? {
         if (value.isNullOrBlank()) return null
-        return try {
-            LocalDate.parse(value)
-        } catch (_: DateTimeParseException) {
-            null
-        }
+        return value.toFlexibleLocalDateOrNull()
     }
 
     private suspend fun upsertPantryItem(item: PantryItem): Boolean {

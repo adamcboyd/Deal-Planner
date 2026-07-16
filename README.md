@@ -444,6 +444,7 @@ As of the latest local pass:
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
+- AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31` before saving review items.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

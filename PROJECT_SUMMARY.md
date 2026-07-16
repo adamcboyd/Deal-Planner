@@ -431,7 +431,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Production-ready deals parser
 - ✅ Deal review/edit flow with numeric validation
 - ✅ OCR integration (ML Kit)
-- ✅ Optional Gemini Vision integration
+- ✅ Optional Gemini Vision integration with flexible label-date handling
 - ✅ Settings save feedback and protein input validation
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
