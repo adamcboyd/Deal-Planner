@@ -249,6 +249,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 - `3 lb bag $2.99`, `3 lb bag 2.99`, or standalone package prices after an item name
 - `2 for $10`, `10 for 10`, `2/$5`, or `10 / $10` (N for X)
 - `Buy 2 Get 1 Free` (buy N get M)
+- `BOGO Free` or `B1G1` (buy-one-get-one shorthand)
 - `25% off` (percent off)
 - `Member Price` (coupon flag)
 - `Limit 2` (purchase limits)
@@ -312,7 +313,7 @@ Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text
-- Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices, slash-style multi-buy prices)
+- Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices, slash-style multi-buy prices, BOGO/B1G1 shorthand)
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
@@ -371,7 +372,7 @@ As of the latest local pass:
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text and rejects non-code text.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
-- Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M including `BOGO Free` and `B1G1`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs, including cent-style prices such as `99c/lb` and `88c`.
