@@ -151,7 +151,7 @@ class PantryPhraseParserTest {
     @Test
     fun `duplicate detection matches same barcode only`() {
         val firstScan = parser.parse("scanned barcode item").item.copy(
-            notes = "Barcode: 012345678905; Product lookup not configured yet."
+            notes = "Barcode: 012345678905; Product lookup: Open Food Facts"
         )
         val sameScan = parser.parse("scanned barcode item").item.copy(
             notes = "Barcode: 012345678905"

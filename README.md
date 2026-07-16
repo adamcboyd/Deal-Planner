@@ -12,7 +12,7 @@ Parameters → Deals + Pantry → Meals
 
 ### ✅ Complete Implementation
 
-- **Pantry Management**: Natural language input, barcode/code intake, and duplicate detection
+- **Pantry Management**: Natural language input, barcode/code lookup/intake, and duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
 - **Deal Tracking**: Camera, gallery image, PDF, and pasted flyer OCR with regex parsing
 - **Receipt Tracking**: Camera/gallery/manual receipt OCR reconciliation
@@ -64,6 +64,7 @@ app/
 │   │   │   ├── database/       # AppDatabase + Converters
 │   │   │   └── repository/     # Repository pattern
 │   │   ├── ocr/                # ML Kit Text Recognition
+│   │   ├── lookup/             # Barcode product lookup
 │   │   ├── parser/             # Pantry + Deals parsers
 │   │   ├── domain/             # Business logic engines
 │   │   ├── ui/
@@ -214,10 +215,11 @@ On the Pantry tab:
 On the Pantry tab:
 
 1. Tap **Scan** to scan a product barcode, or type/paste a code into **Barcode / UPC** and tap **Add Code**.
-2. Deal Planner creates a pantry item marked VERIFY with the barcode saved in notes.
-3. Tap the edit icon to fill in the product name, brand, package size, quantity, and expiration details.
-
-Barcode product lookup is not connected yet; barcode intake is a reviewable seeding path.
+2. Deal Planner looks up the code with Open Food Facts when the phone has network access.
+3. If a product is found, Deal Planner creates a VERIFY pantry item with the product name, brand, package quantity, barcode, and lookup source in notes.
+4. If lookup misses or the phone is offline, Deal Planner still creates a reviewable barcode item with the code saved in notes.
+5. Re-scanning the same barcode merges quantity into the same pantry row. Different barcodes stay separate until reviewed.
+6. Tap the edit icon to fill in or correct the product name, brand, package size, quantity, location, and expiration details.
 
 ### Scanning Flyers
 
@@ -295,6 +297,7 @@ Run unit tests:
 Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
 - Pantry duplicate detection/merging, including barcode-specific matching
+- Open Food Facts barcode response parsing and barcode normalization
 - Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices)
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
@@ -392,7 +395,7 @@ As of the latest local pass:
 - [x] Receipt photo/gallery/manual text import
 - [x] Deal review/edit flow after flyer OCR/PDF/text import
 - [x] Receipt review/edit flow after OCR import
-- [ ] Barcode product lookup by verified UPC/EAN
+- [x] Barcode product lookup by verified UPC/EAN
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF
 - [ ] Weekly budget reports

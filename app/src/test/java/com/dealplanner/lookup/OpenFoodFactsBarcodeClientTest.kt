@@ -1,0 +1,101 @@
+package com.dealplanner.lookup
+
+import com.dealplanner.lookup.OpenFoodFactsBarcodeClient.BarcodeLookupResult
+import com.google.common.truth.Truth.assertThat
+import org.junit.Test
+
+class OpenFoodFactsBarcodeClientTest {
+
+    private val client = OpenFoodFactsBarcodeClient()
+
+    @Test
+    fun `normalize barcode removes separators and preserves leading zero`() {
+        val normalized = client.normalizeBarcode("  0 12345-67890 5 ")
+
+        assertThat(normalized).isEqualTo("012345678905")
+    }
+
+    @Test
+    fun `parse found product response`() {
+        val response = """
+            {
+              "code": "3017624010701",
+              "status": "success",
+              "result": {
+                "id": "product_found"
+              },
+              "product": {
+                "code": "3017624010701",
+                "product_name": "Nutella",
+                "product_name_en": "Nutella Hazelnut Spread",
+                "generic_name": "Chocolate spread",
+                "brands": "Ferrero, Nutella",
+                "quantity": "400.0 g",
+                "categories_tags": ["en:breakfasts", "en:spreads"]
+              }
+            }
+        """.trimIndent()
+
+        val result = client.parseProductResponse(response, "fallback")
+
+        assertThat(result).isInstanceOf(BarcodeLookupResult.Found::class.java)
+        val product = (result as BarcodeLookupResult.Found).product
+        assertThat(product.barcode).isEqualTo("3017624010701")
+        assertThat(product.name).isEqualTo("Nutella Hazelnut Spread")
+        assertThat(product.brand).isEqualTo("Ferrero")
+        assertThat(product.quantity).isEqualTo("400 g")
+        assertThat(product.categoryTags).containsExactly("en:breakfasts", "en:spreads").inOrder()
+    }
+
+    @Test
+    fun `parse found product response falls back to product name`() {
+        val response = """
+            {
+              "code": "012345678905",
+              "status": "success",
+              "result": {
+                "id": "product_found"
+              },
+              "product": {
+                "product_name": "Black Beans",
+                "brands": "",
+                "quantity": "15 oz"
+              }
+            }
+        """.trimIndent()
+
+        val result = client.parseProductResponse(response, "012345678905")
+
+        assertThat(result).isInstanceOf(BarcodeLookupResult.Found::class.java)
+        val product = (result as BarcodeLookupResult.Found).product
+        assertThat(product.barcode).isEqualTo("012345678905")
+        assertThat(product.name).isEqualTo("Black Beans")
+        assertThat(product.brand).isNull()
+        assertThat(product.quantity).isEqualTo("15 oz")
+    }
+
+    @Test
+    fun `parse product not found response`() {
+        val response = """
+            {
+              "code": "0000000000000",
+              "status": "success",
+              "result": {
+                "id": "product_not_found"
+              },
+              "product": {}
+            }
+        """.trimIndent()
+
+        val result = client.parseProductResponse(response, "0000000000000")
+
+        assertThat(result).isEqualTo(BarcodeLookupResult.NotFound)
+    }
+
+    @Test
+    fun `parse malformed product response returns error`() {
+        val result = client.parseProductResponse("not json", "012345678905")
+
+        assertThat(result).isInstanceOf(BarcodeLookupResult.Error::class.java)
+    }
+}

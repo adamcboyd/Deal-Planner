@@ -99,18 +99,24 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 1. Manual barcode/code:
    - Enter a UPC-like code in `Barcode / UPC`.
    - Tap `Add Code`.
-   - Expected: item appears as `Scanned barcode item` with VERIFY status and barcode in notes.
+   - Expected with network/product match: item appears with product name, brand when available, package quantity when available, VERIFY status, barcode in notes, and `Product lookup: Open Food Facts`.
+   - Expected without network/product match: item appears as `Scanned barcode item` with VERIFY status and barcode in notes.
 2. Barcode scanner:
    - Tap `Scan`.
    - Allow camera permission.
    - Scan a pantry barcode.
-   - Expected: item appears with VERIFY status.
-3. Pantry photo:
+   - Expected: same lookup/fallback behavior as manual barcode entry.
+3. Barcode duplicate check:
+   - Add or scan the same barcode twice.
+   - Expected: the same pantry row quantity increments instead of creating duplicate rows.
+   - Add or scan a different barcode.
+   - Expected: different barcode stays as a separate reviewable row.
+4. Pantry photo:
    - Tap `Photo`.
    - Take a clear label/photo.
    - Expected without Gemini: ML Kit OCR fallback creates a VERIFY item or gives a visible recovery message.
    - Expected with Gemini: AI item recognition creates one or more VERIFY items when details are uncertain.
-4. Pantry gallery:
+5. Pantry gallery:
    - Tap `Gallery`.
    - Pick a pantry image.
    - Expected: same as pantry photo.
@@ -175,6 +181,7 @@ Verify these show visible status messages instead of silent failures:
 - Demo data loads repeatably.
 - Manual pantry, deals, and receipt text paths work.
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
+- Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget updates after receipt import/edit/delete.
 - Menu generation and Shopping list generation work from current pantry/deals/settings.
 - Gemini no-key fallback is clear.

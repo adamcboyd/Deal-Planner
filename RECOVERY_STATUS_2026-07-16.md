@@ -150,6 +150,14 @@ Latest continuation gate after malformed Gemini pantry response hardening:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest continuation gate after Open Food Facts barcode lookup work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -200,7 +208,9 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
 - Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
-- Barcode/manual code pantry input creates VERIFY items with the barcode preserved in notes.
+- Barcode/manual code pantry input looks up product names, brands, and package quantities through Open Food Facts when network is available.
+- Barcode/manual code pantry input still creates VERIFY fallback items with the barcode preserved in notes when lookup misses or network is unavailable.
+- Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
@@ -236,6 +246,7 @@ Not yet verified on a real phone:
 - Gallery import UX.
 - Pantry barcode scanner UX.
 - Pantry manual barcode/code UX.
+- Open Food Facts barcode lookup on the physical phone/network.
 - Flyer PDF picker UX.
 - Flyer pasted OCR text UX.
 - Store-aware flyer import UX.
@@ -319,4 +330,4 @@ gemini.model=gemini-3.5-flash
    - Review shopping list.
    - Review budget.
 
-After those pass, decide whether to polish current flows or add optional features such as barcode product lookup, nutrition lookup, guided multi-photo flyer capture, and monetization/convenience features.
+After those pass, decide whether to polish current flows or add optional features such as nutrition lookup, guided multi-photo flyer capture, price history, and monetization/convenience features.

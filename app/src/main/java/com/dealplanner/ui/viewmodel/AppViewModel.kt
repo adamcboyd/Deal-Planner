@@ -16,6 +16,8 @@ import com.dealplanner.data.database.AppDatabase
 import com.dealplanner.data.model.*
 import com.dealplanner.data.repository.AppRepository
 import com.dealplanner.domain.*
+import com.dealplanner.lookup.OpenFoodFactsBarcodeClient
+import com.dealplanner.lookup.OpenFoodFactsBarcodeClient.BarcodeLookupResult
 import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
@@ -47,6 +49,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val receiptReconciler = ReceiptReconciler()
     private val textRecognitionHelper = TextRecognitionHelper()
     private val pantryVisionClient = GeminiPantryVisionClient()
+    private val barcodeLookupClient = OpenFoodFactsBarcodeClient()
 
     val aiVisionConfigured: Boolean = pantryVisionClient.isConfigured()
     val aiVisionModel: String = pantryVisionClient.modelName
@@ -94,30 +97,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addPantryBarcode(barcode: String) {
         viewModelScope.launch {
-            val cleanedBarcode = barcode.trim()
+            val cleanedBarcode = barcodeLookupClient.normalizeBarcode(barcode)
             if (cleanedBarcode.isBlank()) {
                 _pantryPhotoStatus.value = "No barcode found."
                 return@launch
             }
 
-            val mergedExisting = upsertPantryItem(
-                PantryItem(
-                    item = "Scanned barcode item",
-                    qty = 1.0,
-                    unit = "count",
-                    location = "pantry",
-                    notes = mergeNotes(
-                        "Barcode: $cleanedBarcode",
-                        "Product lookup not configured yet. Review item name, brand, size, and expiration."
-                    ),
-                    needsVerify = true
-                )
-            )
-            _pantryPhotoStatus.value = if (mergedExisting) {
-                "Updated barcode item quantity with VERIFY checks"
-            } else {
-                "Added barcode item with VERIFY checks"
-            }
+            _pantryPhotoStatus.value = "Looking up barcode..."
+
+            val lookupResult = barcodeLookupClient.lookupBarcode(cleanedBarcode)
+            val item = lookupResult.toPantryItem(cleanedBarcode)
+            val mergedExisting = upsertPantryItem(item)
+            _pantryPhotoStatus.value = barcodeStatusMessage(lookupResult, mergedExisting)
         }
     }
 
@@ -738,6 +729,68 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             notes = mergeNotes("AI photo import", questionNotes, warningNotes),
             needsVerify = confidence < 0.85 || questions.isNotEmpty() || missingBrand || missingAmount || missingDate
         )
+    }
+
+    private fun BarcodeLookupResult.toPantryItem(barcode: String): PantryItem {
+        return when (this) {
+            is BarcodeLookupResult.Found -> PantryItem(
+                item = product.name,
+                qty = 1.0,
+                unit = "count",
+                size = product.quantity,
+                brand = product.brand,
+                location = "pantry",
+                notes = mergeNotes(
+                    "Barcode: ${product.barcode}",
+                    "Product lookup: Open Food Facts",
+                    "Review quantity, location, and expiration."
+                ),
+                needsVerify = true
+            )
+            BarcodeLookupResult.NotFound -> fallbackBarcodePantryItem(
+                barcode = barcode,
+                lookupNote = "Product lookup did not find this code."
+            )
+            is BarcodeLookupResult.Error -> fallbackBarcodePantryItem(
+                barcode = barcode,
+                lookupNote = "Product lookup unavailable. ${message.trim()}".trim()
+            )
+        }
+    }
+
+    private fun fallbackBarcodePantryItem(barcode: String, lookupNote: String): PantryItem {
+        return PantryItem(
+            item = "Scanned barcode item",
+            qty = 1.0,
+            unit = "count",
+            location = "pantry",
+            notes = mergeNotes(
+                "Barcode: $barcode",
+                lookupNote,
+                "Review item name, brand, size, and expiration."
+            ),
+            needsVerify = true
+        )
+    }
+
+    private fun barcodeStatusMessage(
+        lookupResult: BarcodeLookupResult,
+        mergedExisting: Boolean
+    ): String {
+        return when (lookupResult) {
+            is BarcodeLookupResult.Found -> {
+                val action = if (mergedExisting) "Updated" else "Added"
+                "$action ${lookupResult.product.name} from barcode lookup with VERIFY checks"
+            }
+            BarcodeLookupResult.NotFound -> {
+                val action = if (mergedExisting) "Updated" else "Added"
+                "$action barcode item with VERIFY checks; no product lookup match found."
+            }
+            is BarcodeLookupResult.Error -> {
+                val action = if (mergedExisting) "Updated" else "Added"
+                "$action barcode item with VERIFY checks; product lookup unavailable."
+            }
+        }
     }
 
     private fun parseDateOrNull(value: String?): LocalDate? {

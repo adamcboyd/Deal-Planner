@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 43
+- **Total Kotlin Files**: 38
 - **Configuration Files**: 15
-- **Test Files**: 6 (comprehensive unit tests)
+- **Test Files**: 7 (comprehensive unit tests)
 - **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
@@ -43,6 +43,8 @@ Deal_Planner/
         │   │   │   └── repository/    ✅ AppRepository
         │   │   ├── ocr/
         │   │   │   └── TextRecognitionHelper.kt  ✅ ML Kit integration
+        │   │   ├── lookup/
+        │   │   │   └── OpenFoodFactsBarcodeClient.kt ✅ Barcode product lookup
         │   │   ├── parser/
         │   │   │   ├── PantryPhraseParser.kt     ✅ NLP parser
         │   │   │   └── DealsParser.kt            ✅ Regex-based parser
@@ -81,6 +83,8 @@ Deal_Planner/
         └── test/java/com/dealplanner/
             ├── ai/
             │   └── GeminiPantryVisionClientTest.kt ✅ 10 test cases
+            ├── lookup/
+            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 5 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 12 test cases
@@ -128,6 +132,7 @@ Deal_Planner/
 - ✅ Bounded flyer PDF page rendering for OCR reliability
 - ✅ Camera/gallery/PDF permission and cancel status feedback for phone testing
 - ✅ Pantry camera/gallery/barcode/manual code import
+- ✅ Open Food Facts product lookup for barcode/manual code intake with reviewable fallback
 - ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
@@ -183,8 +188,9 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (68 Test Cases)
+### 7. Unit Tests (73 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
+- ✅ OpenFoodFactsBarcodeClientTest (5 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (5 tests)
@@ -361,6 +367,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Loads repeatable demo data with reset budget and meal params
 - ✅ Parses pantry items
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
+- ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output and verification status
@@ -399,7 +406,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Room entities + DAOs + Database
 - ✅ Production-ready pantry parser
 - ✅ Pantry item review/edit flow
-- ✅ Barcode/manual code pantry intake
+- ✅ Barcode/manual code pantry lookup and intake
 - ✅ Production-ready deals parser
 - ✅ Deal review/edit flow
 - ✅ OCR integration (ML Kit)
@@ -411,7 +418,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
-- ✅ 68 unit tests
+- ✅ 73 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
