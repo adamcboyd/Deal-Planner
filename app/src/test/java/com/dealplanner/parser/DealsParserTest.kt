@@ -37,6 +37,29 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse slash style N for X deal`() {
+        val text = """
+            Kroger Pasta 16 oz
+            2/$5
+
+            Black Beans
+            10 / $10
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(2)
+
+        val pasta = result.deals.first { it.name == "Kroger Pasta 16 oz" }
+        assertThat(pasta.price).isEqualTo(2.5)
+        assertThat(pasta.dealType).isEqualTo("n_for_x")
+
+        val beans = result.deals.first { it.name == "Black Beans" }
+        assertThat(beans.price).isEqualTo(1.0)
+        assertThat(beans.dealType).isEqualTo("n_for_x")
+    }
+
+    @Test
     fun `parse buy N get M deal`() {
         val text = "Olive Oil\nBuy 2 Get 1 Free"
         val result = parser.parse(text, "Kroger")

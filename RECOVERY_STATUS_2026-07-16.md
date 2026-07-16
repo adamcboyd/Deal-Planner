@@ -198,6 +198,14 @@ Latest continuation gate after receipt discount/refund filtering work:
 
 Result: `BUILD SUCCESSFUL`, with `78` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after slash-style flyer multi-buy parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `79` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -257,6 +265,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses the phone-checklist `best by 2026-12-31` ISO date format without treating the date as part of the item name.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
+- Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.

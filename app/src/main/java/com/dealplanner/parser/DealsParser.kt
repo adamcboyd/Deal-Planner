@@ -23,6 +23,7 @@ class DealsParser {
     private val pricePerPoundPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
     private val pricePerUnitPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
+    private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val buyNGetMPattern = Regex("""buy\s*(\d+)\s*get\s*(\d+)(?:\s*free)?""", RegexOption.IGNORE_CASE)
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
@@ -155,7 +156,22 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
-        // 4. Buy N Get M: Buy 2 Get 1
+        // 4. Slash N for X: 2/$5 or 10 / $10
+        slashNForXPattern.find(line)?.let { match ->
+            val n = match.groupValues[1].toInt()
+            val totalPrice = match.groupValues[2].toDouble()
+            price = totalPrice / n
+            unit = "ea"
+            dealType = "n_for_x"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
+        // 5. Buy N Get M: Buy 2 Get 1
         buyNGetMPattern.find(line)?.let { match ->
             val buyN = match.groupValues[1].toInt()
             val getM = match.groupValues[2].toInt()
@@ -178,7 +194,7 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
-        // 5. Percent off: 25% off
+        // 6. Percent off: 25% off
         percentOffPattern.find(line)?.let { match ->
             discountPercent = match.groupValues[1].toDouble()
             dealType = "percent_off"
@@ -197,7 +213,7 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
-        // 6. Plain package price: Yellow Onions 3 lb bag $2.99 or Black Beans $0.89
+        // 7. Plain package price: Yellow Onions 3 lb bag $2.99 or Black Beans $0.89
         packagePricePattern.find(line)?.let { match ->
             price = match.groupValues[1].toDouble()
             unit = "ea"
@@ -230,6 +246,7 @@ class DealsParser {
         return pricePerPoundPattern.containsMatchIn(line) ||
             pricePerUnitPattern.containsMatchIn(line) ||
             nForXPattern.containsMatchIn(line) ||
+            slashNForXPattern.containsMatchIn(line) ||
             buyNGetMPattern.containsMatchIn(line) ||
             percentOffPattern.containsMatchIn(line) ||
             packagePricePattern.containsMatchIn(line)

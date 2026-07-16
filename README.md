@@ -241,7 +241,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 - `$3.99/lb` or `3.99/lb` (per pound)
 - `3 lb bag $2.99`, `3 lb bag 2.99`, or standalone package prices after an item name
-- `2 for $10` or `10 for 10` (N for X)
+- `2 for $10`, `10 for 10`, `2/$5`, or `10 / $10` (N for X)
 - `Buy 2 Get 1 Free` (buy N get M)
 - `25% off` (percent off)
 - `Member Price` (coupon flag)
@@ -305,7 +305,7 @@ Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization
-- Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices)
+- Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices, slash-style multi-buy prices)
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
@@ -363,7 +363,7 @@ As of the latest local pass:
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing.
-- Deals parser handles price/lb, package prices, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
