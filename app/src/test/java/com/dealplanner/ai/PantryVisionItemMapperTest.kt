@@ -81,4 +81,26 @@ class PantryVisionItemMapperTest {
         assertThat(pantryItem.location).isEqualTo("pantry")
         assertThat(pantryItem.needsVerify).isTrue()
     }
+
+    @Test
+    fun `unknown amount unit requires review`() {
+        val item = GeminiPantryVisionClient.PantryVisionItem(
+            brand = "Kroger",
+            product = "rolled oats",
+            quantity = 1.0,
+            unit = "unknown",
+            size = null,
+            location = "pantry",
+            expirationDate = "2026-12-31",
+            openedDate = null,
+            confidence = 0.95,
+            questions = emptyList()
+        )
+
+        val pantryItem = item.toPantryItem(warnings = emptyList())
+
+        assertThat(pantryItem).isNotNull()
+        assertThat(pantryItem!!.unit).isNull()
+        assertThat(pantryItem.needsVerify).isTrue()
+    }
 }

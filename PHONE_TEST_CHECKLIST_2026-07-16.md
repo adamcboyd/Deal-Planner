@@ -217,6 +217,7 @@ In `Settings`:
 5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
 6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 7. With key configured, test pantry photo recognition against a real pantry item label.
+8. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY instead of saving as fully reviewed.
 
 ## Settings Save Check
 

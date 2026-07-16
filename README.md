@@ -283,7 +283,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 The built-in demo flyer covers the same formats.
 Blank pasted flyer text shows `No flyer text found.` instead of failing silently.
 
-Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot or comma decimals.
+Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot, comma, and leading-decimal text such as `2.99`, `2,99`, or `.99`.
 
 ### Processing Receipts
 
@@ -295,7 +295,7 @@ On the Receipts tab:
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
 6. Low-confidence matches are marked with a review warning.
-7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot or comma decimals.
+7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot, comma, and leading-decimal text such as `1.78`, `1,78`, or `.89`.
 8. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
@@ -446,6 +446,7 @@ As of the latest local pass:
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31` before saving review items.
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
+- AI pantry photo items with an unknown amount unit require review instead of being treated as fully verified.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

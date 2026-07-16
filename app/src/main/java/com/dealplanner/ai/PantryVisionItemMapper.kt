@@ -12,7 +12,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     val questionNotes = questions.joinToString(" ")
     val warningNotes = warnings.joinToString(" ")
     val missingBrand = brand.isNullOrBlank()
-    val missingAmount = quantity == null || unit.isNullOrBlank()
+    val missingAmount = quantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
     val missingDate = parsedBestBy == null
 
     return PantryItem(
