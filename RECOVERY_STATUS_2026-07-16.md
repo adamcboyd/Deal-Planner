@@ -7,16 +7,28 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Pushed recovery checkpoint at start of follow-up work: `01e3dca docs: add recovery status checkpoint`
+- Latest pushed recovery checkpoint verified during source audit: `43a7094 fix: preserve valid barcode near label dates`
+- GitHub branch `origin/codex/deal-planner-baseline` matched local `HEAD` at `43a7094`.
+- GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
 
-- `F:\PROJECTS\DealPlanner`: older web/worker/resources material, not current Android app.
-- `F:\PROJECTS\DealPlannerAndroid`: old Android wrapper plus nested `SNAP_Optimizer`; not current.
-- `F:\PROJECTS\DealPlannerAndroid_DEV`: older Android project, not current.
-- `F:\PROJECTS\DealPlannerAndroid_ORIGINAL_BACKUP`: backup copy, not current.
-- `F:\PROJECTS\SNAP_Optimizer_DEV`: older clean SNAP Optimizer repo, not current Deal Planner.
-- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer`: same current commit as `Deal_Planner`, but old folder name.
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer`: old Android Studio folder on the same Deal-Planner GitHub remote and branch, but behind at `b1366ad`; do not use for new work.
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer_BROKEN`: old broken Android Studio folder from 2025; not current.
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer.new`: old Android Studio folder from 2025; not current.
+- `F:\PROJECTS\DealPlanner`: older web/worker/resources material (`deal-planner-v6.29-BACKUP.html`, `worker.js`, `RECIPTS`), not current Android app.
+- `F:\PROJECTS\DEALPLANNER OLD NOTES TO PARSE`: old planning notes (`Dynamic Meal Planning System Functi.txt`, `SUBSCRIPTION TIER IDEAS.txt`), not current app source.
+- `F:\PROJECTS\DealPlannerAndroid`: old Android wrapper on `https://github.com/adamcboyd/snap_optimizer`, branch `main`, head `9d9bdac`, with a modified nested `SNAP_Optimizer` entry; not current.
+- `F:\PROJECTS\DealPlannerAndroid_DEV`: older Android project copy without Git metadata; not current.
+- `F:\PROJECTS\DealPlannerAndroid_ORIGINAL_BACKUP`: backup Android project copy without Git metadata; not current.
+- `F:\PROJECTS\SNAP SHOPPER`: old notes/resources/working backup folder, not current app source.
+- `F:\PROJECTS\SNAP_Optimizer_DEV`: older clean SNAP Optimizer repo on `https://github.com/adamcboyd/SNAP_Optimizer.git`, branch `claude/snap-optimizer-mvp-011CUX1rDE9c6CixrJLHL6Kt`, head `42c76be`; not current Deal Planner.
+
+Refreshed source audit on 2026-07-16 confirms the only folder to open in Android Studio for current work is:
+
+```text
+C:\Users\adamc\AndroidStudioProjects\Deal_Planner
+```
 
 ## Verification Run This Session
 
@@ -862,6 +874,7 @@ Current AI configuration:
 
 - `JAVA_HOME` in the environment points to `C:\Program Files\Android\Android Studio\jre`, which does not exist on this machine. Use `C:\Program Files\Java\jdk-20` for command-line builds unless Android Studio supplies its own JBR.
 - Do not continue work in the broken Codex task attached to `C:\Users\adamc\Documents\NEOPUNK`; that task is attached to the wrong repo and can trigger missing-ref errors.
+- Do not continue app work in `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer`; it is the old-named Android Studio folder and is behind the current Deal Planner branch.
 - Avoid editing the older `F:\PROJECTS` copies unless explicitly doing archival comparison.
 
 ## Next Recommended Task
