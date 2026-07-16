@@ -192,6 +192,7 @@ Enter natural language descriptions:
 2 cans black beans 15oz
 Great Value peanut butter 16oz in pantry
 1.5 lb ground beef in freezer best by 12/25
+2 cans black beans 15oz pantry best by 2026-12-31
 rice 5 lb bag
 frozen broccoli 12oz
 ```
@@ -201,7 +202,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened, best by)
+- Dates (opened, best by, including `YYYY-MM-DD`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.

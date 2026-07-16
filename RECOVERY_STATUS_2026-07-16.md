@@ -182,6 +182,14 @@ Latest continuation gate after shopping-list consolidation identity work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest continuation gate after pantry ISO best-by date parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `77` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -238,6 +246,7 @@ Verified by build/unit tests/code inspection:
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
+- Pantry manual text input parses the phone-checklist `best by 2026-12-31` ISO date format without treating the date as part of the item name.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser accepts flyer prices when OCR drops dollar signs.

@@ -102,6 +102,19 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse checklist pantry entry with iso best by date`() {
+        val result = parser.parse("2 cans black beans 15oz pantry best by 2026-12-31")
+
+        assertThat(result.item.item).isEqualTo("black beans")
+        assertThat(result.item.qty).isEqualTo(2.0)
+        assertThat(result.item.unit).isEqualTo("can")
+        assertThat(result.item.size).isEqualTo("15oz")
+        assertThat(result.item.location).isEqualTo("pantry")
+        assertThat(result.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+        assertThat(result.item.needsVerify).isFalse()
+    }
+
+    @Test
     fun `parse complex item`() {
         val result = parser.parse("2 cans Great Value black beans 15oz in pantry")
 

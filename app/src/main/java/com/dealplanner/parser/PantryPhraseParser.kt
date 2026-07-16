@@ -158,7 +158,7 @@ class PantryPhraseParser {
         }
 
         // Extract item name (remove all parsed components)
-        val itemName = extractItemName(tokens, qty, unit, form, location, brand)
+        val itemName = extractItemName(tokens, unit, form, location, brand)
 
         // Confidence calculation
         var confidence = 1.0
@@ -219,7 +219,6 @@ class PantryPhraseParser {
 
     private fun extractItemName(
         tokens: List<String>,
-        qty: Double,
         unit: String?,
         form: String?,
         location: String?,
@@ -258,7 +257,7 @@ class PantryPhraseParser {
             !skipWords.contains(token) &&
             token.toDoubleOrNull() == null &&
             !Regex("""\d+(?:\.\d+)?(?:oz|lb|lbs|g|kg|ml|l)""").matches(token) &&
-            !Regex("""\d{1,2}[/-]\d{1,2}[/-]\d{2,4}""").matches(token)
+            !DATE_TOKEN_PATTERN.matches(token)
         }
 
         return itemTokens.joinToString(" ")
@@ -307,8 +306,7 @@ class PantryPhraseParser {
                 val afterKeyword = input.substring((keywordIndex + keyword.length).coerceAtMost(input.length))
 
                 // Extract potential date strings
-                val datePattern = Regex("""\d{1,2}[/-]\d{1,2}[/-]\d{2,4}""")
-                val dateMatch = datePattern.find(afterKeyword)
+                val dateMatch = DATE_TOKEN_PATTERN.find(afterKeyword)
 
                 if (dateMatch != null) {
                     for (formatter in dateFormats) {
@@ -436,4 +434,8 @@ class PantryPhraseParser {
         val barcode: String?,
         val duplicateKey: PantryDuplicateKey?
     )
+
+    private companion object {
+        private val DATE_TOKEN_PATTERN = Regex("""(?:\d{4}[/-]\d{1,2}[/-]\d{1,2})|(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4})""")
+    }
 }

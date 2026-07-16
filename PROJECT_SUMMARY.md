@@ -188,10 +188,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (76 Test Cases)
+### 7. Unit Tests (77 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (5 tests)
-- ✅ PantryPhraseParserTest (19 tests)
+- ✅ PantryPhraseParserTest (20 tests)
 - ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
@@ -422,7 +422,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 76 unit tests
+- ✅ 77 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
