@@ -132,6 +132,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun reportPantryPhotoCaptureCanceled() {
+        _pantryPhotoStatus.value = "Pantry photo canceled."
+    }
+
+    fun reportPantryCameraPermissionDenied() {
+        _pantryPhotoStatus.value = "Camera permission is needed to take pantry photos."
+    }
+
+    fun reportPantryBarcodeScanCanceled() {
+        _pantryPhotoStatus.value = "Barcode scan canceled."
+    }
+
+    fun reportPantryBarcodePermissionDenied() {
+        _pantryPhotoStatus.value = "Camera permission is needed to scan barcodes."
+    }
+
     fun processPantryPhoto(bitmap: Bitmap) {
         viewModelScope.launch {
             importPantryPhoto(bitmap)
@@ -260,6 +276,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun reportDealsPhotoCaptureCanceled() {
+        _dealsScanStatus.value = "Flyer photo canceled."
+    }
+
+    fun reportDealsCameraPermissionDenied() {
+        _dealsScanStatus.value = "Camera permission is needed to take flyer photos."
+    }
+
     fun processDealsPhoto(bitmap: Bitmap, store: String = "Unknown") {
         viewModelScope.launch {
             importDealsPhoto(bitmap, store)
@@ -380,6 +404,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val bitmap = loadBitmapFromUri(uri)
             importReceiptPhoto(bitmap, store)
         }
+    }
+
+    fun reportReceiptPhotoCaptureCanceled() {
+        _receiptScanStatus.value = "Receipt photo canceled."
+    }
+
+    fun reportReceiptCameraPermissionDenied() {
+        _receiptScanStatus.value = "Camera permission is needed to take receipt photos."
     }
 
     fun updateReceipt(item: ReceiptItem) {

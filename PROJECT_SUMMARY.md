@@ -123,6 +123,7 @@ Deal_Planner/
 - ✅ Bitmap processing
 - ✅ URI support for image selection
 - ✅ Full-resolution app-cache camera capture
+- ✅ Camera permission/cancel status feedback for phone testing
 - ✅ Pantry camera/gallery/barcode/manual code import
 - ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/manual text import
@@ -362,6 +363,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
+- ✅ Shows clear status when camera permission is denied or capture/scan is canceled
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans

@@ -70,6 +70,8 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
         pendingCameraUri = null
         if (saved && uri != null) {
             viewModel.processReceiptPhotoUri(uri, storeName)
+        } else {
+            viewModel.reportReceiptPhotoCaptureCanceled()
         }
     }
 
@@ -88,6 +90,8 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
             val uri = CapturePhotoUriFactory.create(context, "receipt")
             pendingCameraUri = uri
             cameraLauncher.launch(uri)
+        } else {
+            viewModel.reportReceiptCameraPermissionDenied()
         }
     }
 

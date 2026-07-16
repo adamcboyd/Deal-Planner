@@ -340,6 +340,7 @@ As of the latest local pass:
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
+- Camera permission denial and canceled capture/scan flows show on-screen status messages.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.

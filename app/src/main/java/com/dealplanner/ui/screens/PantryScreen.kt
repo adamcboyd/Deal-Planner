@@ -48,6 +48,8 @@ fun PantryScreen(viewModel: AppViewModel) {
         pendingCameraUri = null
         if (saved && uri != null) {
             viewModel.processPantryPhotoUri(uri)
+        } else {
+            viewModel.reportPantryPhotoCaptureCanceled()
         }
     }
 
@@ -65,6 +67,8 @@ fun PantryScreen(viewModel: AppViewModel) {
         val contents = result.contents?.trim().orEmpty()
         if (contents.isNotBlank()) {
             viewModel.addPantryBarcode(contents)
+        } else {
+            viewModel.reportPantryBarcodeScanCanceled()
         }
     }
 
@@ -82,6 +86,8 @@ fun PantryScreen(viewModel: AppViewModel) {
     ) { granted ->
         if (granted) {
             launchBarcodeScanner()
+        } else {
+            viewModel.reportPantryBarcodePermissionDenied()
         }
     }
 
@@ -92,6 +98,8 @@ fun PantryScreen(viewModel: AppViewModel) {
             val uri = CapturePhotoUriFactory.create(context, "pantry")
             pendingCameraUri = uri
             cameraLauncher.launch(uri)
+        } else {
+            viewModel.reportPantryCameraPermissionDenied()
         }
     }
 

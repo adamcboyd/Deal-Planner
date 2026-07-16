@@ -44,6 +44,8 @@ fun DealsScreen(viewModel: AppViewModel) {
         pendingCameraUri = null
         if (saved && uri != null) {
             viewModel.processDealsPhotoUri(uri, storeName)
+        } else {
+            viewModel.reportDealsPhotoCaptureCanceled()
         }
     }
 
@@ -70,6 +72,8 @@ fun DealsScreen(viewModel: AppViewModel) {
             val uri = CapturePhotoUriFactory.create(context, "flyer")
             pendingCameraUri = uri
             cameraLauncher.launch(uri)
+        } else {
+            viewModel.reportDealsCameraPermissionDenied()
         }
     }
 
