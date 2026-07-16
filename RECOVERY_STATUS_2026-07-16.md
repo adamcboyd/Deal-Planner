@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after richer pantry-label phone sample work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: pantry/deal review-date validator coverage work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after monochrome launcher icon work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: richer pantry-label phone sample work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2326,6 +2326,30 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest resource checkpoint after monochrome launcher icon work:
+
+Resource checkpoint:
+
+- Added `app\src\main\res\drawable\ic_launcher_monochrome.xml`.
+- Wired the monochrome icon into `ic_launcher.xml` and `ic_launcher_round.xml` so Android launchers that support themed icons have a monochrome asset.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the current launcher-icon checkpoint.
+
+Focused lint check:
+
+```powershell
+.\gradlew.bat lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; lint reported `0` errors with `19` warnings. The previous two `MonochromeLauncherIcon` warnings are gone; remaining warnings are dependency/SDK drift (`GradleDependency`, `OldTargetApi`, `ObsoleteSdkInt`).
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
 
 Latest helper checkpoint after richer pantry-label phone sample work:
 

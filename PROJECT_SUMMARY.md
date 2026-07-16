@@ -78,7 +78,8 @@ Deal_Planner/
         │       │   ├── themes.xml     ✅ Material theme
         │       │   └── colors.xml     ✅ Color palette
         │       ├── drawable/
-        │       │   └── ic_launcher_foreground.xml  ✅ Launcher icon
+        │       │   ├── ic_launcher_foreground.xml  ✅ Launcher icon
+        │       │   └── ic_launcher_monochrome.xml  ✅ Themed launcher icon
         │       ├── xml/
         │       │   └── file_paths.xml              ✅ FileProvider cache paths
         │       └── mipmap-anydpi-v26/
@@ -496,6 +497,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce`, `12-count`, punctuated label cues, slash dates, and two-digit dash dates plus local manifest/hash verification
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
+- ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility
 - ✅ 237 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
