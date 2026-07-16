@@ -101,6 +101,7 @@ gemini.model=gemini-3.5-flash
 Do not commit `local.properties`; it is ignored by Git.
 Rebuild the debug APK after changing `local.properties` so the key/model values are compiled into `BuildConfig`.
 The phone install helper blocks `-SkipBuild` when `local.properties` is newer than the existing APK, so a newly added Gemini key is not accidentally left out of the installed build.
+The phone preflight and generated phone-test report verify whether the debug APK's generated `BuildConfig` contains a non-placeholder Gemini key and which model it will use, without printing the key.
 
 A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks with concise API error summaries.
@@ -144,7 +145,7 @@ Command-line phone install helper:
 .\scripts\phone-debug-preflight.ps1
 ```
 
-This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
+This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, compiled Gemini key/model readiness without printing secrets, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration, and Open Food Facts barcode lookup reachability.
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-install.ps1 -Help` to list available phone-test options.
 
@@ -348,6 +349,7 @@ The Settings tab includes **AI Pantry Photo Status**:
 - If Gemini is configured, it shows the model used for pantry photo recognition.
 - If Gemini is not configured, it states that pantry photos will use on-device OCR fallback.
 - Placeholder keys such as `YOUR_GEMINI_API_KEY` are treated as not configured.
+- The preflight helper and generated phone-test report also show whether the installed debug APK has Gemini compiled in, so Settings can be compared against the APK source snapshot before testing photos.
 - **Test AI Connection** performs a small Gemini request from the phone so you can confirm the key, network, and model before testing pantry photos.
 
 ## Testing
@@ -416,9 +418,9 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
-- `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity that Settings -> About should show on the phone.
+- `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity and compiled Gemini key/model readiness that Settings should reflect on the phone.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
-- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, Gemini setup, and device context.
+- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, and device context.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Settings -> About Deal Planner shows the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
 - Pasted flyer and receipt OCR text shows a processing status, stays in the field when parsing fails, and clears only after a successful import.
@@ -465,6 +467,7 @@ As of the latest local pass:
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
+- Phone helpers verify the generated debug `BuildConfig` Gemini key/model state without printing secrets, so stale APKs can be caught before live AI testing.
 - Settings accepts comma-decimal and leading-decimal protein-per-meal values such as `0,5` or `.5`.
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.

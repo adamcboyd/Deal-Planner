@@ -193,6 +193,9 @@ $buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\d
 $apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
 $apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
 $apkSourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
+$apkGeminiKey = Get-BuildConfigValue $buildConfigPath "GEMINI_API_KEY"
+$apkGeminiModel = Get-BuildConfigValue $buildConfigPath "GEMINI_MODEL"
+$apkGeminiConfigured = Test-RealGeminiKey $apkGeminiKey
 if ([string]::IsNullOrWhiteSpace($apkSourceBranch)) {
     $apkSourceBranch = "UNKNOWN"
 }
@@ -201,6 +204,9 @@ if ([string]::IsNullOrWhiteSpace($apkSourceSha)) {
 }
 if ([string]::IsNullOrWhiteSpace($apkSourceDirty)) {
     $apkSourceDirty = "UNKNOWN"
+}
+if ([string]::IsNullOrWhiteSpace($apkGeminiModel)) {
+    $apkGeminiModel = "UNKNOWN"
 }
 
 if ($apkInfo) {
@@ -231,6 +237,8 @@ $apkLine
 - Package: $PackageName
 - Gemini configured: $geminiConfigured
 - Gemini model setting: $($geminiModel.Trim())
+- APK Gemini configured: $apkGeminiConfigured
+- APK Gemini model: $($apkGeminiModel.Trim())
 - Checklist: PHONE_TEST_CHECKLIST_2026-07-16.md
 
 ## Git Status
@@ -300,6 +308,7 @@ $adbBlock
 
 - [ ] Without Gemini key, Settings reports OCR fallback and Test AI Connection reports key not configured.
 - [ ] .\scripts\phone-debug-preflight.ps1 -RequireGemini passed after adding the key and rebuilding the APK.
+- [ ] Source Snapshot shows APK Gemini configured is True and APK Gemini model is the expected model.
 - [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.
 - [ ] Unclear Gemini fields show VERIFY notes explaining what to review.

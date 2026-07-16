@@ -415,6 +415,10 @@ $localGeminiKey = Get-LocalPropertyValue $localPropertiesPath "gemini.api.key"
 $localGeminiModel = Get-LocalPropertyValue $localPropertiesPath "gemini.model"
 $envGeminiKey = $env:GEMINI_API_KEY
 $envGeminiModel = $env:GEMINI_MODEL
+$sourceGeminiConfigured = (Test-RealKey $localGeminiKey) -or (Test-RealKey $envGeminiKey)
+$apkGeminiKey = Get-BuildConfigValue $buildConfigPath "GEMINI_API_KEY"
+$apkGeminiModel = Get-BuildConfigValue $buildConfigPath "GEMINI_MODEL"
+$apkGeminiConfigured = Test-RealKey $apkGeminiKey
 
 if (Test-RealKey $localGeminiKey) {
     Add-Check $results "Gemini key" "OK" "local.properties contains a non-placeholder Gemini key. Key value was not printed."
@@ -427,6 +431,40 @@ if (Test-RealKey $localGeminiKey) {
 
 $model = if ($localGeminiModel) { $localGeminiModel } elseif ($envGeminiModel) { $envGeminiModel } else { "gemini-3.5-flash" }
 Add-Check $results "Gemini model" "OK" "Build model setting resolves to $($model.Trim())."
+
+if ([string]::IsNullOrWhiteSpace($apkGeminiModel)) {
+    $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+    Add-Check $results "APK Gemini model" $status "Generated BuildConfig Gemini model was not found. Rebuild the debug APK before AI phone testing."
+} else {
+    $expectedModel = ($model.Trim() -replace "^models/", "")
+    $compiledModel = ($apkGeminiModel.Trim() -replace "^models/", "")
+    if ($compiledModel -eq $expectedModel) {
+        Add-Check $results "APK Gemini model" "OK" "Generated BuildConfig uses $compiledModel."
+    } else {
+        $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+        Add-Check $results "APK Gemini model" $status "Generated BuildConfig uses $compiledModel, but current Gemini config resolves to $expectedModel. Rebuild before AI phone testing."
+    }
+}
+
+if ($null -eq $apkGeminiKey) {
+    $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+    Add-Check $results "APK Gemini key" $status "Generated BuildConfig Gemini key value was not found. Rebuild the debug APK before AI phone testing."
+} elseif ($sourceGeminiConfigured -and -not $apkGeminiConfigured) {
+    $status = if ($RequireGemini) { "FAIL" } else { "WARN" }
+    Add-Check $results "APK Gemini key" $status "A non-placeholder Gemini key is configured locally, but generated BuildConfig does not contain one. Rebuild before AI phone testing."
+} elseif (-not $sourceGeminiConfigured -and $apkGeminiConfigured) {
+    Add-Check $results "APK Gemini key" "WARN" "Generated BuildConfig contains a non-placeholder Gemini key, but no current local.properties or GEMINI_API_KEY value is configured. Rebuild if this APK should use OCR fallback."
+} elseif ($apkGeminiConfigured) {
+    Add-Check $results "APK Gemini key" "OK" "Generated BuildConfig contains a non-placeholder Gemini key. Key value was not printed."
+} else {
+    $status = if ($RequireGemini) { "FAIL" } else { "OK" }
+    $detail = if ($RequireGemini) {
+        "Generated BuildConfig has no non-placeholder Gemini key. Rebuild with a real key before AI phone testing."
+    } else {
+        "Generated BuildConfig has no Gemini key; OCR fallback is expected."
+    }
+    Add-Check $results "APK Gemini key" $status $detail
+}
 
 if ($apkInfo -and (Test-Path $localPropertiesPath)) {
     $localPropertiesInfo = Get-Item $localPropertiesPath

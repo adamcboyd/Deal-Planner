@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `3ef066f feat: show source commit in app about`
+- Current validated app-code checkpoint: `0e596dc feat: add receipt PDF import`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -74,6 +74,8 @@ Before the AI-specific phone pass, verify the key, rebuilt APK, and connected ph
 ```powershell
 .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini
 ```
+
+Expected with a real key after rebuild: preflight reports `Gemini key`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `APK Gemini configured: True` and `APK Gemini model: gemini-3.5-flash`.
 
 Do not commit `local.properties`.
 
@@ -240,13 +242,14 @@ In `Settings`:
 3. Expected without key: status reports that Gemini API key is not configured.
 4. With a real key and rebuilt APK, tap `Test AI Connection`.
 5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
-6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
-7. With key configured, test pantry photo recognition against a real pantry item label.
-8. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
-9. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
-10. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
-11. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
-12. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
+6. In the preflight/report output, confirm `APK Gemini configured` is true and `APK Gemini model` is `gemini-3.5-flash` before testing photos.
+7. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
+8. With key configured, test pantry photo recognition against a real pantry item label.
+9. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
+10. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
+11. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
+12. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
+13. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
 
 ## Settings Save Check
 
@@ -263,7 +266,7 @@ In `Settings` -> `About Deal Planner`, confirm:
 - Version shows the Gradle build version, currently `1.0 (1)`.
 - Package shows `com.dealplanner`.
 - Build shows `Debug` for the command-line debug APK.
-- Source shows the app-code branch and commit, currently `codex/deal-planner-baseline @ 3ef066f`, without a `(dirty)` marker for a clean debug APK.
+- Source shows the app-code branch and commit matching the preflight/report APK source identity, without a `(dirty)` marker for a clean debug APK.
 
 ## Cancel and Permission Tests
 

@@ -1007,6 +1007,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 
 Result: both helpers printed usage/options successfully, including `-RequirePhone`, `-RequireGemini`, `-SkipNetwork`, `-SkipBuild`, and `-NoLaunch`.
 
+Latest helper checkpoint after compiled APK Gemini readiness checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -Help
+.\scripts\phone-debug-preflight.ps1 -SkipNetwork
+.\scripts\phone-debug-preflight.ps1 -RequireGemini -SkipNetwork
+.\scripts\new-phone-test-report.ps1
+```
+
+Result:
+
+- Helper usage output worked for preflight and phone-test report scripts.
+- Normal preflight still allows OCR fallback with `0 failure(s)` when no Gemini key is configured.
+- Normal preflight reports `APK Gemini model` as `gemini-3.5-flash` and `APK Gemini key` as OCR fallback expected.
+- Strict `-RequireGemini` intentionally fails without a real key, including an explicit `APK Gemini key` failure when generated debug `BuildConfig` has no non-placeholder key.
+- Generated phone-test reports now include non-secret `APK Gemini configured` and `APK Gemini model` fields in Source Snapshot.
+
 Latest continuation gate after receipt PDF import work:
 
 ```powershell
@@ -1221,8 +1239,8 @@ Current AI configuration:
 - `GEMINI_API_KEY` environment variable was not set in this shell.
 - Therefore Gemini Vision is not live-configured yet; the app will use ML Kit OCR fallback.
 - `scripts\phone-debug-preflight.ps1 -RequireGemini` is now available for the AI-specific phone pass and intentionally fails until a real key is configured and the APK can be verified against that configuration.
-- Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI model page checked on 2026-07-16.
-- Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`, and `-SkipBuild` is blocked if `local.properties` is newer than the APK.
+- Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI model page checked again on 2026-07-16. The official model page lists `gemini-3.5-flash` as stable and supports text/image/PDF-style multimodal inputs.
+- Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`, `-SkipBuild` is blocked if `local.properties` is newer than the APK, and preflight/report output now verifies the compiled APK Gemini key/model state without printing secrets.
 - Live Gemini connection testing is now available from Settings after adding a real key.
 
 ## Important Cautions
@@ -1316,9 +1334,10 @@ Optional before the phone test run:
    - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.
+   - Preflight/report APK Gemini configured/model fields after adding a real key and rebuilding.
    - Settings protein-per-meal comma-decimal and leading-decimal value such as `0,5` or `.5`.
    - Settings invalid protein-per-meal text such as `abc`; confirm Save is disabled and a visible format message appears.
-   - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, debug build, and source `codex/deal-planner-baseline @ 3ef066f` without a dirty marker.
+   - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, debug build, and source branch/commit matching the preflight/report APK source identity without a dirty marker.
    - Generate meal plan.
    - Review shopping list.
    - After a generated plan exists, change pantry/deal/receipt/settings inputs and confirm Shopping refreshes without app relaunch.
