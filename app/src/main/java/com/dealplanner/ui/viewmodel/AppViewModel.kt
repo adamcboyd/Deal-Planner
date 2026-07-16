@@ -12,6 +12,7 @@ import android.graphics.pdf.PdfRenderer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.dealplanner.ai.GeminiPantryVisionClient
+import com.dealplanner.ai.toPantryItem
 import com.dealplanner.data.database.AppDatabase
 import com.dealplanner.data.model.*
 import com.dealplanner.data.repository.AppRepository
@@ -21,12 +22,10 @@ import com.dealplanner.lookup.OpenFoodFactsBarcodeClient.BarcodeLookupResult
 import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
-import com.dealplanner.util.toFlexibleLocalDateOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
@@ -783,28 +782,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String>): PantryItem? {
-        val productName = product?.trim()?.ifBlank { null } ?: return null
-        val questionNotes = questions.joinToString(" ")
-        val warningNotes = warnings.joinToString(" ")
-        val missingBrand = brand.isNullOrBlank()
-        val missingAmount = quantity == null || unit.isNullOrBlank()
-        val missingDate = expirationDate.isNullOrBlank()
-
-        return PantryItem(
-            item = productName,
-            qty = quantity ?: 1.0,
-            unit = unit?.takeUnless { it == "unknown" },
-            size = size,
-            brand = brand?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "Generic",
-            location = location?.takeUnless { it == "unknown" } ?: "pantry",
-            opened = parseDateOrNull(openedDate),
-            bestBy = parseDateOrNull(expirationDate),
-            notes = mergeNotes("AI photo import", questionNotes, warningNotes),
-            needsVerify = confidence < 0.85 || questions.isNotEmpty() || missingBrand || missingAmount || missingDate
-        )
-    }
-
     private fun BarcodeLookupResult.toPantryItem(barcode: String): PantryItem {
         return when (this) {
             is BarcodeLookupResult.Found -> PantryItem(
@@ -865,11 +842,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 "$action barcode item with VERIFY checks; product lookup unavailable."
             }
         }
-    }
-
-    private fun parseDateOrNull(value: String?): LocalDate? {
-        if (value.isNullOrBlank()) return null
-        return value.toFlexibleLocalDateOrNull()
     }
 
     private suspend fun upsertPantryItem(item: PantryItem): Boolean {
