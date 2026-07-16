@@ -355,8 +355,9 @@ class GeminiPantryVisionClient(
         }
         if (text.isBlank()) return null
 
-        val match = quantityPattern.find(text) ?: return null
-        val value = match.groupValues[1].toQuantityDoubleOrNull() ?: return null
+        val match = quantityPattern.find(text) ?: wordQuantityPattern.find(text) ?: return null
+        val value = match.groupValues[1].toQuantityDoubleOrNull() ?: wordQuantities[match.groupValues[1].lowercase()]
+            ?: return null
         val unit = match.groupValues.getOrNull(2)?.ifBlank { null }
         return QuantityParts(value = value, unit = unit)
     }
@@ -432,6 +433,23 @@ class GeminiPantryVisionClient(
     private companion object {
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
         private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:\.\d+)?)\s*([A-Za-z]+)?""")
+        private val wordQuantityPattern = Regex(
+            """\b(one|two|three|four|five|six|seven|eight|nine|ten|half)\b\s*([A-Za-z]+)?""",
+            RegexOption.IGNORE_CASE
+        )
+        private val wordQuantities = mapOf(
+            "one" to 1.0,
+            "two" to 2.0,
+            "three" to 3.0,
+            "four" to 4.0,
+            "five" to 5.0,
+            "six" to 6.0,
+            "seven" to 7.0,
+            "eight" to 8.0,
+            "nine" to 9.0,
+            "ten" to 10.0,
+            "half" to 0.5
+        )
 
         private val pantryPrompt = """
             You identify pantry, fridge, and freezer food items from a phone photo.
