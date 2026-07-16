@@ -625,6 +625,9 @@ class ReceiptReconcilerTest {
             STORE DISCOUNT   $0.50
             DIGITAL COUPON   0.25
             REWARDS SAVINGS  0.75
+            YOU SAVED        $4.25
+            SAVED TODAY      4.25
+            TOTAL SAVED      $4.25
             REFUND          -2.00
             KROGER PASTA     $3.00
             TOTAL            $3.53

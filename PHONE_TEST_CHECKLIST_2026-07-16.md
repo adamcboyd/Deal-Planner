@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after year-first receipt header date parsing work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after receipt saved-total filtering work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -166,9 +166,10 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 13. Optional whole-dollar receipt check: paste `RICE 5 LB $3`, `2 @ $1 BLACK BEANS $2`, and `BANANAS 1 lb @ $1/lb $1`; confirm the rows import with totals 3.00, 2.00, and 1.00.
 14. Optional year-first date check: paste `Transaction Date: 2025/10/27` above `BLACK BEANS $1.78`; confirm the imported receipt row uses October 27, 2025.
 15. Delete one receipt line and confirm Budget updates again.
-16. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-17. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
-18. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+16. Optional saved-total check: append `YOU SAVED $4.25`, `SAVED TODAY 4.25`, and `TOTAL SAVED $4.25`; confirm those savings lines do not appear as receipt items or affect Budget spending.
+17. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+18. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+19. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ### Budget
 

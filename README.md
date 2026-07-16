@@ -326,7 +326,7 @@ On the Receipts tab:
 6. Low-confidence matches are marked with a review warning.
 7. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status. Quantity, total, and confidence corrections accept dot, comma, and leading-decimal text such as `1.78`, `1,78`, or `.89`.
 8. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
-9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
+9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, saved-total, reward, and refund lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 11. OCR prices work with or without dollar signs, including comma-decimal OCR such as `BLACK BEANS 1,78` or `2 @ 0,89 BLACK BEANS 1,78`.
 12. One-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` are imported with the item name, weight, and total separated.
@@ -381,7 +381,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon line filtering)
+- Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar/object-wrapped warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields)
 - AI pantry review-note reasons for missing or uncertain brand, amount/unit, storage location, and best-by date details
 
@@ -474,7 +474,7 @@ As of the latest local pass:
 - Receipt reconciliation handles fuzzy matching and split or inline weighted receipt quantity lines, including price-per-pound produce lines.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available, including common `Date: 10/27/2025`, `Transaction Date: 2025/10/27`, and `Purchase Date: 2025-10-28` formats.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, omits leading zeroes in prices such as `.89`, uses comma decimals, or returns explicit whole-dollar prices such as `$3`.
-- Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
+- Receipt reconciliation ignores subtotal, tax, total, savings, saved-total, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, PDF, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.

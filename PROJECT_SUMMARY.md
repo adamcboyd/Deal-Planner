@@ -412,7 +412,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
 - ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields
-- ✅ Ignores receipt subtotal, tax, total, savings, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
+- ✅ Ignores receipt subtotal, tax, total, savings, saved-total, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Recalculates budget daily envelope and projected spend from current-month receipt history
