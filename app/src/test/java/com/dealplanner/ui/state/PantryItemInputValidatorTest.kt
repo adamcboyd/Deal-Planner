@@ -1,6 +1,7 @@
 package com.dealplanner.ui.state
 
 import com.google.common.truth.Truth.assertThat
+import java.time.LocalDate
 import org.junit.Test
 
 class PantryItemInputValidatorTest {
@@ -33,6 +34,30 @@ class PantryItemInputValidatorTest {
         assertInvalidQuantity("-Infinity")
     }
 
+    @Test
+    fun `pantry best by date accepts blank and flexible local date formats`() {
+        val blank = PantryItemInputValidator.validateBestByDate("")
+        val iso = PantryItemInputValidator.validateBestByDate("2026-12-31")
+        val slash = PantryItemInputValidator.validateBestByDate("12/31/2026")
+        val shortDash = PantryItemInputValidator.validateBestByDate("12-31-26")
+        val yearFirstSlash = PantryItemInputValidator.validateBestByDate("2026/12/31")
+
+        assertThat(blank.isValid).isTrue()
+        assertThat(blank.parsedValue).isNull()
+        assertValidBestByDate(iso)
+        assertValidBestByDate(slash)
+        assertValidBestByDate(shortDash)
+        assertValidBestByDate(yearFirstSlash)
+    }
+
+    @Test
+    fun `pantry best by date rejects invalid text`() {
+        val result = PantryItemInputValidator.validateBestByDate("not a date")
+
+        assertThat(result.isValid).isFalse()
+        assertThat(result.message).isEqualTo(PantryItemInputValidator.BEST_BY_DATE_ERROR)
+    }
+
     private fun assertValidQuantity(value: String, expected: Double) {
         val result = PantryItemInputValidator.validateQuantity(value)
 
@@ -46,5 +71,11 @@ class PantryItemInputValidatorTest {
 
         assertThat(result.isValid).isFalse()
         assertThat(result.message).isEqualTo(PantryItemInputValidator.QUANTITY_ERROR)
+    }
+
+    private fun assertValidBestByDate(result: DateInputValidation) {
+        assertThat(result.isValid).isTrue()
+        assertThat(result.parsedValue).isEqualTo(LocalDate.of(2026, 12, 31))
+        assertThat(result.message).isEqualTo(PantryItemInputValidator.BEST_BY_DATE_ERROR)
     }
 }

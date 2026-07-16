@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after flexible review date input work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: receipt negative-return filtering work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry/deal review-date validator coverage work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: flexible review date input work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2301,3 +2301,28 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `233` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest app-code checkpoint after pantry/deal review-date validator coverage work:
+
+App-code checkpoint:
+
+- Pantry best-by and Deal valid-until review/edit date checks now live in `PantryItemInputValidator` and `DealItemInputValidator`.
+- Pantry and Deal review dialogs use those validators for parsed save values, save enablement, and visible flexible-date error text.
+- Added direct unit coverage for blank optional dates, ISO dates, slash dates, two-digit dash dates, year-first slash dates, and invalid text.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated with the validator-backed review-date behavior.
+
+Focused app check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ui.state.PantryItemInputValidatorTest" --tests "com.dealplanner.ui.state.DealItemInputValidatorTest"
+```
+
+Result: `BUILD SUCCESSFUL`; targeted pantry and deal edit validation tests passed.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

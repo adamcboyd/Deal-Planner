@@ -381,8 +381,8 @@ Tests cover:
 - Manual input clear/retain policy for barcode, pasted flyer text, and pasted receipt text status changes
 - Budget Settings validation for monthly budget, spent-to-date baseline, and breakfast anchor cost dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Settings protein-per-meal validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
-- Pantry edit quantity validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
-- Deal edit validation for price, PPU, discount, score, confidence, and limit text including 0-to-1 and 0-to-100 bounds
+- Pantry edit validation for quantity and flexible best-by date text, including dot, comma, leading-decimal, invalid, negative, and non-finite quantity text
+- Deal edit validation for price, PPU, discount, score, confidence, limit, and flexible valid-until date text including 0-to-1 and 0-to-100 bounds
 - Receipt edit validation for optional quantity, total, match ID, confidence, flexible date text, and comma-decimal/leading-decimal corrections
 - Receipt edit/delete adjustment deltas for Budget spending and pantry-matched receipt quantities
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
@@ -466,7 +466,7 @@ As of the latest local pass:
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, accepts valid bare product codes near label dates, and rejects non-code date, item, lot, SKU, or plain text.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections plus common best-by date formats.
-- Pantry edit quantity blocks invalid or negative values with visible validation instead of silently preserving the old quantity.
+- Pantry edit quantity and best-by date fields block invalid values with visible validation instead of silently preserving old values.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores impossible or unsafe multibuy counts such as `0 for $5` and oversized OCR counts instead of importing invalid deals.

@@ -29,7 +29,6 @@ import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.state.PantryItemInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleLocalDateOrNull
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
@@ -411,9 +410,9 @@ fun PantryItemEditDialog(
     var notes by remember(item.id) { mutableStateOf(item.notes.orEmpty()) }
     var needsVerify by remember(item.id) { mutableStateOf(item.needsVerify) }
     val quantityValidation = PantryItemInputValidator.validateQuantity(quantity)
+    val bestByValidation = PantryItemInputValidator.validateBestByDate(bestBy)
     val isQuantityValid = quantityValidation.isValid
-    val parsedBestBy = bestBy.toLocalDateOrNull()
-    val isBestByValid = bestBy.isBlank() || parsedBestBy != null
+    val isBestByValid = bestByValidation.isValid
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -495,7 +494,7 @@ fun PantryItemEditDialog(
                     )
                     if (!isBestByValid) {
                         Text(
-                            "Use YYYY-MM-DD or leave blank.",
+                            bestByValidation.message,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -537,7 +536,7 @@ fun PantryItemEditDialog(
                             size = size.trim().ifBlank { null },
                             brand = brand.trim().ifBlank { null },
                             location = location.trim().ifBlank { null },
-                            bestBy = parsedBestBy,
+                            bestBy = bestByValidation.parsedValue,
                             notes = notes.trim().ifBlank { null },
                             needsVerify = needsVerify
                         )
@@ -554,5 +553,3 @@ fun PantryItemEditDialog(
         }
     )
 }
-
-private fun String.toLocalDateOrNull() = toFlexibleLocalDateOrNull()

@@ -1,12 +1,14 @@
 package com.dealplanner.ui.state
 
 import com.dealplanner.util.toFlexibleDoubleOrNull
+import com.dealplanner.util.toFlexibleLocalDateOrNull
 
 object DealItemInputValidator {
     const val PRICE_ERROR = "Use a non-negative price like 2.99 or 2,99."
     const val LIMIT_ERROR = "Use a whole number limit or leave blank."
     const val PRICE_PER_UNIT_DISCOUNT_ERROR = "Use non-negative PPU and percent off from 0 to 100."
     const val SCORE_CONFIDENCE_ERROR = "Use values from 0 to 1 for score and confidence."
+    const val VALID_UNTIL_DATE_ERROR = "Use YYYY-MM-DD, M/D/YYYY, or M-D-YY; or leave blank."
 
     fun validateNonNegativePrice(value: String): NumericInputValidation {
         return validateDouble(value, PRICE_ERROR) { parsed -> parsed >= 0.0 }
@@ -39,6 +41,15 @@ object DealItemInputValidator {
             parsedValue = parsed,
             isValid = parsed != null && parsed >= 0,
             message = LIMIT_ERROR
+        )
+    }
+
+    fun validateValidUntilDate(value: String): DateInputValidation {
+        val parsed = value.toFlexibleLocalDateOrNull()
+        return DateInputValidation(
+            parsedValue = parsed,
+            isValid = value.isBlank() || parsed != null,
+            message = VALID_UNTIL_DATE_ERROR
         )
     }
 

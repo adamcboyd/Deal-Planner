@@ -28,7 +28,6 @@ import com.dealplanner.ui.state.DealItemInputValidator
 import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleLocalDateOrNull
 
 @Composable
 fun DealsScreen(viewModel: AppViewModel) {
@@ -395,14 +394,14 @@ fun DealItemEditDialog(
     val discountPercentValidation = DealItemInputValidator.validateDiscountPercent(discountPercent)
     val dealScoreValidation = DealItemInputValidator.validateScore(dealScore)
     val confidenceValidation = DealItemInputValidator.validateConfidence(confidence)
+    val validUntilValidation = DealItemInputValidator.validateValidUntilDate(validUntil)
     val isPriceValid = priceValidation.isValid
     val isLimitValid = limitValidation.isValid
     val isPricePerUnitValid = pricePerUnitValidation.isValid
     val isDiscountPercentValid = discountPercentValidation.isValid
     val isDealScoreValid = dealScoreValidation.isValid
     val isConfidenceValid = confidenceValidation.isValid
-    val parsedValidUntil = validUntil.toLocalDateOrNull()
-    val isValidUntilValid = validUntil.isBlank() || parsedValidUntil != null
+    val isValidUntilValid = validUntilValidation.isValid
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -564,7 +563,7 @@ fun DealItemEditDialog(
                     )
                     if (!isValidUntilValid) {
                         Text(
-                            "Use YYYY-MM-DD or leave blank.",
+                            validUntilValidation.message,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -613,7 +612,7 @@ fun DealItemEditDialog(
                             dealScore = dealScoreValidation.parsedValue ?: deal.dealScore,
                             pricePerUnit = pricePerUnitValidation.parsedValue ?: safePrice,
                             discountPercent = discountPercentValidation.parsedValue ?: deal.discountPercent,
-                            validUntil = parsedValidUntil
+                            validUntil = validUntilValidation.parsedValue
                         )
                     )
                 }
@@ -628,5 +627,3 @@ fun DealItemEditDialog(
         }
     )
 }
-
-private fun String.toLocalDateOrNull() = toFlexibleLocalDateOrNull()

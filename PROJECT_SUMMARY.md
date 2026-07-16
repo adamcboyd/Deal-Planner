@@ -105,7 +105,7 @@ Deal_Planner/
             │   ├── BudgetInputValidatorTest.kt ✅ Budget numeric validation tests
             │   ├── DealItemInputValidatorTest.kt ✅ Deal edit validation tests
             │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
-            │   ├── PantryItemInputValidatorTest.kt ✅ Pantry edit quantity validation tests
+            │   ├── PantryItemInputValidatorTest.kt ✅ Pantry edit validation tests
             │   ├── ReceiptItemInputValidatorTest.kt ✅ Receipt edit validation tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
             └── util/
@@ -214,7 +214,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (233 Test Cases)
+### 7. Unit Tests (237 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -414,7 +414,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Lets users correct pantry OCR/AI output, common best-by date formats, and verification status
-- ✅ Validates pantry edit quantities with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
+- ✅ Validates pantry edit quantities and best-by dates with dot, comma, leading-decimal, and flexible date input while blocking invalid values
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-finite numeric fallback, non-JSON fallback, and clamped confidence
@@ -496,7 +496,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
-- ✅ 233 unit tests
+- ✅ 237 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

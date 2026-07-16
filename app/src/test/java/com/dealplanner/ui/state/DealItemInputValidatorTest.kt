@@ -1,6 +1,7 @@
 package com.dealplanner.ui.state
 
 import com.google.common.truth.Truth.assertThat
+import java.time.LocalDate
 import org.junit.Test
 
 class DealItemInputValidatorTest {
@@ -69,6 +70,30 @@ class DealItemInputValidatorTest {
         assertInvalidNumber(DealItemInputValidator.validateConfidence("Infinity"))
     }
 
+    @Test
+    fun `valid until date accepts blank and flexible local date formats`() {
+        val blank = DealItemInputValidator.validateValidUntilDate("")
+        val iso = DealItemInputValidator.validateValidUntilDate("2026-12-31")
+        val slash = DealItemInputValidator.validateValidUntilDate("12/31/2026")
+        val shortDash = DealItemInputValidator.validateValidUntilDate("12-31-26")
+        val yearFirstSlash = DealItemInputValidator.validateValidUntilDate("2026/12/31")
+
+        assertThat(blank.isValid).isTrue()
+        assertThat(blank.parsedValue).isNull()
+        assertValidDate(iso)
+        assertValidDate(slash)
+        assertValidDate(shortDash)
+        assertValidDate(yearFirstSlash)
+    }
+
+    @Test
+    fun `valid until date rejects invalid text`() {
+        val result = DealItemInputValidator.validateValidUntilDate("not a date")
+
+        assertThat(result.isValid).isFalse()
+        assertThat(result.message).isEqualTo(DealItemInputValidator.VALID_UNTIL_DATE_ERROR)
+    }
+
     private fun assertValidNumber(result: NumericInputValidation, expected: Double) {
         assertThat(result.isValid).isTrue()
         assertThat(result.parsedValue).isEqualTo(expected)
@@ -76,5 +101,11 @@ class DealItemInputValidatorTest {
 
     private fun assertInvalidNumber(result: NumericInputValidation) {
         assertThat(result.isValid).isFalse()
+    }
+
+    private fun assertValidDate(result: DateInputValidation) {
+        assertThat(result.isValid).isTrue()
+        assertThat(result.parsedValue).isEqualTo(LocalDate.of(2026, 12, 31))
+        assertThat(result.message).isEqualTo(DealItemInputValidator.VALID_UNTIL_DATE_ERROR)
     }
 }
