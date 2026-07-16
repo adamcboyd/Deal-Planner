@@ -489,7 +489,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
+- ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification
 - ✅ 231 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow

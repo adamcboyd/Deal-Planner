@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after Gemini connection-test seam coverage; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after phone sample manifest verification work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -63,6 +63,11 @@ To create deterministic sample files for pasted text, gallery image, and PDF pic
 ```
 
 Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, and requests Android media scans so picker apps can see the files sooner. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples. The pantry-label sample includes hyphenated `16-ounce` and `12-count` rows for OCR fallback checks.
+Each generated sample folder also includes `SAMPLE_MANIFEST.md` with byte counts and SHA-256 hashes. To verify the latest local bundle before phone transfer, run:
+
+```powershell
+.\scripts\new-phone-test-samples.ps1 -VerifyOnly
+```
 
 ## Optional Gemini Setup
 

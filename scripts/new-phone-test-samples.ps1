@@ -1,5 +1,7 @@
 param(
     [switch]$Help,
+    [switch]$VerifyOnly,
+    [string]$SamplesDir = "",
     [string]$OutputDir = "phone-test-samples"
 )
 
@@ -10,9 +12,12 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\new-phone-test-samples.ps1"
+    Write-Host "  .\scripts\new-phone-test-samples.ps1 -VerifyOnly"
+    Write-Host "  .\scripts\new-phone-test-samples.ps1 -VerifyOnly -SamplesDir phone-test-samples\20260716-103940"
     Write-Host "  .\scripts\new-phone-test-samples.ps1 -OutputDir phone-test-samples"
     Write-Host ""
-    Write-Host "Creates ignored timestamped TXT, PDF, and PNG sample files from bundled demo assets."
+    Write-Host "Creates ignored timestamped TXT, PDF, PNG, pantry-label, and UPC-A barcode sample files from bundled demo assets."
+    Write-Host "Also verifies required files and writes SAMPLE_MANIFEST.md with byte counts and SHA-256 hashes."
 }
 
 if ($Help) {
@@ -323,6 +328,131 @@ function New-UpcABarcodeImage {
     }
 }
 
+function Get-LatestSampleDir {
+    param([string]$Root)
+
+    if (-not (Test-Path $Root)) {
+        return $null
+    }
+
+    return Get-ChildItem -LiteralPath $Root -Directory |
+        Sort-Object Name -Descending |
+        Select-Object -First 1
+}
+
+function Resolve-SampleDir {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $null
+    }
+
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return $Path
+    }
+
+    return Join-Path $Root $Path
+}
+
+function Test-PdfFile {
+    param([string]$Path)
+
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    if ($bytes.Length -lt 12) {
+        return $false
+    }
+
+    $header = [System.Text.Encoding]::ASCII.GetString($bytes, 0, [Math]::Min(8, $bytes.Length))
+    $tailLength = [Math]::Min(256, $bytes.Length)
+    $tail = [System.Text.Encoding]::ASCII.GetString($bytes, $bytes.Length - $tailLength, $tailLength)
+    return $header.StartsWith("%PDF-") -and $tail.Contains("%%EOF")
+}
+
+function Test-PngFile {
+    param([string]$Path)
+
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    if ($bytes.Length -lt 8) {
+        return $false
+    }
+
+    $signature = ($bytes[0..7] | ForEach-Object { $_.ToString("X2") }) -join ""
+    return $signature -eq "89504E470D0A1A0A"
+}
+
+function Assert-SampleFolder {
+    param([string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path $Path)) {
+        throw "Phone test sample folder was not found. Run .\scripts\new-phone-test-samples.ps1 first."
+    }
+
+    $requiredFiles = @(
+        "deal-planner-demo-receipt.txt",
+        "deal-planner-demo-receipt.pdf",
+        "deal-planner-demo-receipt.png",
+        "deal-planner-demo-flyer.txt",
+        "deal-planner-demo-flyer.pdf",
+        "deal-planner-demo-flyer.png",
+        "deal-planner-demo-pantry-label.txt",
+        "deal-planner-demo-pantry-label.png",
+        "deal-planner-demo-upc-a.txt",
+        "deal-planner-demo-upc-a.png",
+        "README.md"
+    )
+
+    foreach ($fileName in $requiredFiles) {
+        $fullPath = Join-Path $Path $fileName
+        if (-not (Test-Path $fullPath)) {
+            throw "Sample folder is missing $fileName."
+        }
+    }
+
+    foreach ($pdfName in @("deal-planner-demo-receipt.pdf", "deal-planner-demo-flyer.pdf")) {
+        $pdfPath = Join-Path $Path $pdfName
+        if (-not (Test-PdfFile $pdfPath)) {
+            throw "$pdfName is not a valid generated PDF sample."
+        }
+    }
+
+    foreach ($pngName in @("deal-planner-demo-receipt.png", "deal-planner-demo-flyer.png", "deal-planner-demo-pantry-label.png", "deal-planner-demo-upc-a.png")) {
+        $pngPath = Join-Path $Path $pngName
+        if (-not (Test-PngFile $pngPath)) {
+            throw "$pngName is not a valid generated PNG sample."
+        }
+    }
+}
+
+function Write-SampleManifest {
+    param([string]$Path)
+
+    $manifestPath = Join-Path $Path "SAMPLE_MANIFEST.md"
+    $files = Get-ChildItem -LiteralPath $Path -File |
+        Where-Object { $_.Name -ne "SAMPLE_MANIFEST.md" } |
+        Sort-Object Name
+
+    $rows = New-Object System.Collections.Generic.List[string]
+    $rows.Add("# Deal Planner Phone Test Sample Manifest") | Out-Null
+    $rows.Add("") | Out-Null
+    $rows.Add("- Folder: $Path") | Out-Null
+    $rows.Add("- Generated/verified: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss K")") | Out-Null
+    $rows.Add("- Purpose: deterministic sample files for pasted text, picker image/PDF, pantry-label OCR, and UPC-A barcode phone checks.") | Out-Null
+    $rows.Add("") | Out-Null
+    $rows.Add("| File | Bytes | SHA-256 |") | Out-Null
+    $rows.Add("| --- | ---: | --- |") | Out-Null
+
+    foreach ($file in $files) {
+        $hash = Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256
+        $rows.Add("| $($file.Name) | $($file.Length) | $($hash.Hash) |") | Out-Null
+    }
+
+    Set-Content -LiteralPath $manifestPath -Value $rows -Encoding UTF8
+    return $manifestPath
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -343,6 +473,26 @@ if ([System.IO.Path]::IsPathRooted($OutputDir)) {
     $outputRoot = Join-Path $repoRoot $OutputDir
 }
 
+if ($VerifyOnly) {
+    $sampleDir = Resolve-SampleDir $repoRoot $SamplesDir
+    if (-not $sampleDir) {
+        $latest = Get-LatestSampleDir $outputRoot
+        if (-not $latest) {
+            throw "No generated sample folder found under $outputRoot. Run .\scripts\new-phone-test-samples.ps1 first."
+        }
+        $sampleDir = $latest.FullName
+    }
+
+    Assert-SampleFolder $sampleDir
+    $manifestPath = Write-SampleManifest $sampleDir
+    Write-Host "Verified phone test samples:"
+    Write-Host $sampleDir
+    Write-Host "Manifest:"
+    Write-Host $manifestPath
+    Get-ChildItem -LiteralPath $sampleDir | Select-Object Name, Length
+    exit 0
+}
+
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $sessionDir = Join-Path $outputRoot $stamp
 New-Item -ItemType Directory -Force -Path $sessionDir | Out-Null
@@ -358,6 +508,7 @@ $flyerImage = Join-Path $sessionDir "deal-planner-demo-flyer.png"
 $pantryImage = Join-Path $sessionDir "deal-planner-demo-pantry-label.png"
 $barcodeImage = Join-Path $sessionDir "deal-planner-demo-upc-a.png"
 $readmePath = Join-Path $sessionDir "README.md"
+$manifestPath = Join-Path $sessionDir "SAMPLE_MANIFEST.md"
 
 Copy-Item -LiteralPath $receiptAsset -Destination $receiptText -Force
 Copy-Item -LiteralPath $flyerAsset -Destination $flyerText -Force
@@ -398,6 +549,7 @@ Copy this folder to the Android phone or upload it to a location the phone can o
 - deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery for multi-item pantry OCR, including hyphenated package-size rows.
 - deal-planner-demo-upc-a.txt: paste or type into Pantry -> Barcode / UPC.
 - deal-planner-demo-upc-a.png: display on another screen or print, then scan from Pantry -> Scan.
+- SAMPLE_MANIFEST.md: file byte counts and SHA-256 hashes for local and transfer verification.
 
 Expected receipt result: the bundled demo receipt imports grocery line items, ignores total/tender lines, and updates Budget.
 Expected flyer result: the bundled demo flyer imports multiple Kroger deals with prices, limits, coupons, and deal scores.
@@ -406,7 +558,11 @@ Expected barcode result: the UPC imports a VERIFY barcode item, using Open Food 
 "@
 
 Set-Content -LiteralPath $readmePath -Value $readme -Encoding UTF8
+Assert-SampleFolder $sessionDir
+$manifestPath = Write-SampleManifest $sessionDir
 
 Write-Host "Created phone test samples:"
 Write-Host $sessionDir
+Write-Host "Manifest:"
+Write-Host $manifestPath
 Get-ChildItem -LiteralPath $sessionDir | Select-Object Name, Length

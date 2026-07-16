@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini connection-test seam coverage; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: receipt adjustment calculator extraction.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone sample manifest verification work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: Gemini connection-test seam coverage.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2031,6 +2031,34 @@ Targeted Gemini gate:
 ```
 
 Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after phone sample manifest verification work:
+
+Helper checkpoint:
+
+- `scripts\new-phone-test-samples.ps1` now verifies required sample files after generation and writes `SAMPLE_MANIFEST.md` with byte counts and SHA-256 hashes.
+- Added `-VerifyOnly` and `-SamplesDir` support for local sample-bundle verification before an Android phone is connected.
+- Generated and verified local sample folder `phone-test-samples\20260716-152321`, including receipt/flyer TXT/PDF/PNG files, pantry-label TXT/PNG files, UPC-A TXT/PNG files, README, and manifest.
+- Updated README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST with the manifest and `-VerifyOnly` workflow.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -Help
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\new-phone-test-samples.ps1')); 'new-phone-test-samples.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -VerifyOnly
+```
+
+Result: help printed successfully, PowerShell parse check passed, sample generation succeeded, and `-VerifyOnly` verified the latest local sample bundle plus manifest.
 
 Full local gate:
 

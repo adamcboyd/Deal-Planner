@@ -199,7 +199,7 @@ Phone test sample helper:
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Samples are saved under ignored `phone-test-samples\` folders and include demo receipt/flyer TXT, PDF, and PNG files, a pantry-label PNG with multi-item and hyphenated package-size rows, and a valid UPC-A barcode PNG/text sample generated for deterministic pasted-text, gallery-image, barcode, and PDF picker checks. When an authorized Android phone is connected, `send-phone-test-samples.ps1` copies the latest generated sample folder to `/sdcard/Download/DealPlannerPhoneTestSamples/`, verifies remote byte sizes, and requests Android media scans for picker visibility.
+Samples are saved under ignored `phone-test-samples\` folders and include demo receipt/flyer TXT, PDF, and PNG files, a pantry-label PNG with multi-item and hyphenated package-size rows, a valid UPC-A barcode PNG/text sample, and `SAMPLE_MANIFEST.md` byte counts plus SHA-256 hashes for deterministic pasted-text, gallery-image, barcode, and PDF picker checks. `new-phone-test-samples.ps1 -VerifyOnly` verifies the latest local bundle before phone transfer. When an authorized Android phone is connected, `send-phone-test-samples.ps1` copies the latest generated sample folder to `/sdcard/Download/DealPlannerPhoneTestSamples/`, verifies remote byte sizes, and requests Android media scans for picker visibility.
 
 Debug APK output:
 
@@ -444,7 +444,7 @@ As of the latest local pass:
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity and compiled Gemini key/model readiness that Settings should reflect on the phone.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, and device context.
-- `scripts\new-phone-test-samples.ps1` creates ignored timestamped `phone-test-samples\` folders with demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples for deterministic phone input checks. The pantry-label sample includes `16-ounce` and `12-count` rows for OCR fallback checks.
+- `scripts\new-phone-test-samples.ps1` creates ignored timestamped `phone-test-samples\` folders with demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples for deterministic phone input checks. The pantry-label sample includes `16-ounce` and `12-count` rows for OCR fallback checks, and `SAMPLE_MANIFEST.md` records byte counts plus SHA-256 hashes. `-VerifyOnly` checks the latest bundle without needing a connected phone.
 - `scripts\send-phone-test-samples.ps1` copies the latest generated demo receipt/flyer/pantry/barcode TXT, PDF, and PNG files to an authorized Android phone's Downloads folder, verifies remote byte sizes, and requests Android media scans for deterministic picker checks.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Settings -> About Deal Planner shows the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
