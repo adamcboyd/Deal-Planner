@@ -9,7 +9,7 @@ import kotlin.math.abs
  * Handles various deal formats:
  * - $X.XX/lb
  * - (N) for $X or N for $X
- * - Buy N Get M, BOGO, B1G1
+ * - Buy N Get M, BOGO Free, BOGO X% off, B1G1
  * - X% off
  * - Member Price, Digital Coupon
  */
@@ -27,6 +27,7 @@ class DealsParser {
     private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val buyNGetMPattern = Regex("""buy\s*(\d+)\s*get\s*(\d+)(?:\s*free)?""", RegexOption.IGNORE_CASE)
+    private val bogoPercentPattern = Regex("""\bbogo\s*(\d+)%\s*off\b""", RegexOption.IGNORE_CASE)
     private val bogoPattern = Regex("""\b(?:bogo(?:\s*free)?|b1g1(?:\s*free)?)\b""", RegexOption.IGNORE_CASE)
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
@@ -222,6 +223,25 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
+        bogoPercentPattern.find(line)?.let { match ->
+            dealType = "buy_n_get_m"
+            unit = "ea"
+
+            val priceMatch = packagePricePattern.find(line)
+            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.7
+            }
+
+            val secondItemDiscount = match.groupValues[1].toDouble()
+            discountPercent = secondItemDiscount / 2.0
+
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
         bogoPattern.find(line)?.let { match ->
             dealType = "buy_n_get_m"
             unit = "ea"
@@ -297,6 +317,7 @@ class DealsParser {
             name = name.replace(keyword, "", ignoreCase = true)
         }
         name = name.replace(buyNGetMPattern, "")
+        name = name.replace(bogoPercentPattern, "")
         name = name.replace(bogoPattern, "")
         name = name.replace(priceTextPattern, "")
         return name.trim()
@@ -310,6 +331,7 @@ class DealsParser {
             nForXPattern.containsMatchIn(line) ||
             slashNForXPattern.containsMatchIn(line) ||
             buyNGetMPattern.containsMatchIn(line) ||
+            bogoPercentPattern.containsMatchIn(line) ||
             bogoPattern.containsMatchIn(line) ||
             percentOffPattern.containsMatchIn(line) ||
             packagePricePattern.containsMatchIn(line) ||
@@ -327,6 +349,7 @@ class DealsParser {
         return limitPattern.matches(line) ||
             percentOffPattern.matches(line) ||
             buyNGetMPattern.matches(line) ||
+            bogoPercentPattern.matches(line) ||
             bogoPattern.matches(line) ||
             couponKeywords.any { lineLower.contains(it) }
     }

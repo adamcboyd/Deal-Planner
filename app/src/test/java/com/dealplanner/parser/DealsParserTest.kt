@@ -114,6 +114,23 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse BOGO percent off second item flyer shorthand`() {
+        val text = """
+            Coffee Creamer
+            BOGO 50% off
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(1)
+        val deal = result.deals.first()
+        assertThat(deal.name).isEqualTo("Coffee Creamer")
+        assertThat(deal.dealType).isEqualTo("buy_n_get_m")
+        assertThat(deal.discountPercent).isEqualTo(25.0)
+        assertThat(deal.sizeText).isNull()
+    }
+
+    @Test
     fun `parse percent off deal`() {
         val text = "Mandarin Oranges\n25% off"
         val result = parser.parse(text, "Kroger")
