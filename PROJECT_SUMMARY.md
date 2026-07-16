@@ -394,6 +394,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-finite numeric fallback, non-JSON fallback, and clamped confidence
+- ✅ Maps missing, zero, or negative Gemini pantry amounts to reviewable quantity defaults instead of saving invalid pantry quantities
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened

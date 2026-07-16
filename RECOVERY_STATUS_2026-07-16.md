@@ -7,7 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after AI non-positive quantity review validation; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after generated phone-test report AI checklist sync; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint before that helper/docs sync: AI non-positive quantity review validation.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1395,6 +1396,14 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 ```
 
 Result: `BUILD SUCCESSFUL`. Targeted `PantryVisionItemMapperTest` passed locally, then the full Gradle gate passed with `175` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. AI pantry photo mapping now treats non-positive model quantities as missing amount details, defaults the saved review item to quantity `1.0`, and adds `Review amount/unit.` instead of saving a zero or negative pantry quantity.
+
+Latest helper checkpoint after generated phone-test report AI checklist sync:
+
+```powershell
+.\scripts\new-phone-test-report.ps1
+```
+
+Result: report helper help printed successfully, all 7 PowerShell helpers parsed successfully, and a generated ignored `PHONE_TEST_REPORT.md` included an AI verification row for zero or negative Gemini amount details falling back to quantity `1.0`, showing VERIFY, and including `Review amount/unit.` so the real-phone report matches `PHONE_TEST_CHECKLIST_2026-07-16.md`. The full Gradle gate stayed `BUILD SUCCESSFUL` with `175` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings.
 
 Additional check:
 

@@ -332,6 +332,7 @@ $adbBlock
 - [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.
 - [ ] Unclear Gemini fields show VERIFY notes explaining what to review.
+- [ ] Zero or negative Gemini amount details fall back to quantity 1.0, show VERIFY, and include Review amount/unit.
 - Notes:
 
 ## Budget, Menu, Shopping

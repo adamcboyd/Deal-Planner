@@ -190,7 +190,7 @@ Phone test report helper:
 .\scripts\new-phone-test-report.ps1
 ```
 
-Reports are saved under ignored `phone-test-results\` folders and capture the current commit, APK, Gemini configuration state, ADB/device snapshot when available, and pass/fail sections for the phone checklist.
+Reports are saved under ignored `phone-test-results\` folders and capture the current commit, APK, Gemini configuration state, ADB/device snapshot when available, and pass/fail sections for the phone checklist, including AI review-safety checks such as zero or negative Gemini amount fallback.
 
 Phone test sample helper:
 
