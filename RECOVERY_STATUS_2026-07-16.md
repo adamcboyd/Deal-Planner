@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `6c04fb1 fix: keep picker imports off storage permissions`
-- The branch may include later docs-only recovery commits, but `6c04fb1` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `ef84a20 fix: handle camera picker launch failures`
+- The branch may include later docs-only recovery commits, but `ef84a20` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -968,6 +968,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-rep
 
 Result: report helper help printed successfully, generated an ignored `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` file without requiring a connected phone, preflight recognized the report helper, and the Gradle gate stayed `BUILD SUCCESSFUL` with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest continuation gate after camera/picker/scanner launch-failure status work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`. The first attempt without overriding `JAVA_HOME` did not reach Gradle because this shell still pointed to the removed `C:\Program Files\Android\Android Studio\jre` path.
+
 Additional check:
 
 ```powershell
@@ -1065,6 +1075,7 @@ Verified by build/unit tests/code inspection:
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Pantry edit/review quantity fields accept comma-decimal and leading-decimal corrections such as `1,5`, `.5`, and `,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
+- Camera, gallery, PDF picker, and barcode scanner launch failures now show visible recovery messages instead of crashing the app if Android cannot open the external flow.
 - Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Gallery image and PDF imports rely on Android picker URI grants; the APK no longer requests `READ_EXTERNAL_STORAGE` or `READ_MEDIA_IMAGES`.
@@ -1137,6 +1148,7 @@ Not yet verified on a real phone:
 - Gemini pantry photo API call.
 - Android permissions flow.
 - Camera permission denial/cancel and gallery/PDF picker cancel status on the physical phone.
+- External camera/picker/scanner launch-failure status on the physical phone.
 - Shopping list startup restore on the physical phone.
 - Kitchen pantry test.
 
@@ -1196,7 +1208,7 @@ Optional before the phone test run:
    - Pantry photo.
    - Pantry gallery image.
    - Pantry barcode scan.
-   - Pantry camera-permission denial or canceled capture/gallery/scan status.
+   - Pantry camera-permission denial, canceled capture/gallery/scan status, and external camera/gallery/scanner launch-failure status if reproducible.
    - Pantry manual barcode/code entry.
    - Pantry manual barcode/code entry with pasted label text that includes unrelated item/date numbers before the UPC.
    - Pantry manual barcode/code entry with invalid text that has no product code; confirm `No barcode found.` appears and the text stays available for correction.
@@ -1205,7 +1217,7 @@ Optional before the phone test run:
    - Pantry edit/review dialog for VERIFY items.
    - Pantry edit/review dialog comma-decimal and leading-decimal quantity correction such as `1,5` or `.5`.
    - Deals flyer photo.
-   - Deals camera-permission denial or canceled capture/gallery/PDF status.
+   - Deals camera-permission denial, canceled capture/gallery/PDF status, and external camera/gallery/PDF launch-failure status if reproducible.
    - Deals gallery image.
    - Deals PDF.
    - Deals pasted OCR text.
@@ -1216,7 +1228,7 @@ Optional before the phone test run:
    - Deals edit/review dialog for low-confidence OCR results.
    - Deals edit/review dialog comma-decimal and leading-decimal numeric correction such as price `2,99` or `.99`.
    - Receipts photo.
-   - Receipts camera-permission denial or canceled capture/gallery status.
+   - Receipts camera-permission denial, canceled capture/gallery status, and external camera/gallery launch-failure status if reproducible.
    - Receipts gallery image.
    - Receipts pasted OCR text.
    - Receipts pasted OCR text with prices missing dollar signs.

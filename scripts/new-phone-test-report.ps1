@@ -246,7 +246,7 @@ $adbBlock
 - [ ] Flyer PDF works or shows a clear recovery message.
 - [ ] Receipt photo works or shows a clear recovery message.
 - [ ] Receipt gallery works or shows a clear recovery message.
-- [ ] Camera denial/cancel and picker cancel states show visible messages.
+- [ ] Camera denial/cancel, picker cancel, and external launch-failure states show visible messages.
 - Notes:
 
 ## AI Verification
