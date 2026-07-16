@@ -424,7 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ All Gradle files with dependencies
 - ✅ 7 Room entities + DAOs + Database
 - ✅ Production-ready pantry parser
-- ✅ Pantry item review/edit flow
+- ✅ Pantry item review/edit flow with quantity validation
 - ✅ Visible typed pantry add/update feedback
 - ✅ Barcode/manual code pantry lookup and intake
 - ✅ Manual barcode/code failure text retention

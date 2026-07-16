@@ -373,6 +373,8 @@ fun PantryItemEditDialog(
     var bestBy by remember(item.id) { mutableStateOf(item.bestBy?.toString().orEmpty()) }
     var notes by remember(item.id) { mutableStateOf(item.notes.orEmpty()) }
     var needsVerify by remember(item.id) { mutableStateOf(item.needsVerify) }
+    val parsedQuantity = quantity.toFlexibleDoubleOrNull()
+    val isQuantityValid = parsedQuantity != null && parsedQuantity >= 0.0
     val parsedBestBy = bestBy.toLocalDateOrNull()
     val isBestByValid = bestBy.isBlank() || parsedBestBy != null
 
@@ -399,6 +401,7 @@ fun PantryItemEditDialog(
                             onValueChange = { quantity = it },
                             label = { Text("Qty") },
                             modifier = Modifier.weight(1f),
+                            isError = !isQuantityValid,
                             singleLine = true
                         )
                         OutlinedTextField(
@@ -407,6 +410,13 @@ fun PantryItemEditDialog(
                             label = { Text("Unit") },
                             modifier = Modifier.weight(1f),
                             singleLine = true
+                        )
+                    }
+                    if (!isQuantityValid) {
+                        Text(
+                            "Use a non-negative number like 1.5 or 1,5.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -480,12 +490,12 @@ fun PantryItemEditDialog(
         },
         confirmButton = {
             TextButton(
-                enabled = itemName.isNotBlank() && isBestByValid,
+                enabled = itemName.isNotBlank() && isQuantityValid && isBestByValid,
                 onClick = {
                     onSave(
                         item.copy(
                             item = itemName.trim(),
-                            qty = quantity.toFlexibleDoubleOrNull() ?: item.qty,
+                            qty = parsedQuantity ?: item.qty,
                             unit = unit.trim().ifBlank { null },
                             size = size.trim().ifBlank { null },
                             brand = brand.trim().ifBlank { null },

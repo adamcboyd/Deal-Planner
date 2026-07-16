@@ -94,10 +94,11 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Confirm a visible added/updated status appears and a pantry row appears or merges into an existing black beans row.
 4. Tap edit and confirm the item can be reviewed and saved.
 5. In the edit dialog, enter quantity `1,5`, save, and confirm it is accepted as 1.5.
-6. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
-7. Confirm opened date and best-by date stay separate on the pantry item.
-8. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
-9. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
+6. Reopen edit, enter quantity `abc`, and confirm Save disables with a non-negative number message.
+7. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
+8. Confirm opened date and best-by date stay separate on the pantry item.
+9. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
+10. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 

@@ -632,6 +632,14 @@ Latest continuation gate after Budget settings editor work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Pantry edit quantity validation work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -715,6 +723,7 @@ Verified by build/unit tests/code inspection:
 - Pantry photo/gallery/barcode/manual code input exists.
 - Typed pantry input shows visible added/updated status after successful add or merge.
 - Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
+- Pantry item edit blocks invalid or negative quantities with visible validation instead of silently preserving the old quantity.
 - Barcode/manual code pantry input looks up product names, brands, and package quantities through Open Food Facts when network is available.
 - Barcode/manual code pantry input still creates VERIFY fallback items with the barcode preserved in notes when lookup misses or network is unavailable.
 - Barcode/manual code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text such as `UPC: 0 12345-67890 5`, prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers, and rejects non-code text with `No barcode found.`.
