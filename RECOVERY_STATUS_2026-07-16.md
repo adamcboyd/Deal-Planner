@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `1503c49 fix: parse common Gemini pantry label aliases`
-- The branch may include later docs-only recovery commits, but `1503c49` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `52f2010 fix: split clear multi-item pantry OCR imports`
+- The branch may include later docs-only recovery commits, but `52f2010` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -924,6 +924,22 @@ Latest continuation gate after Gemini pantry label-alias parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `147` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest focused pantry OCR multi-item fallback and liquid-size parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ocr.PantryOcrCandidateExtractorTest" --tests "com.dealplanner.parser.PantryPhraseParserTest" --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after pantry OCR multi-item fallback work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Additional check:
 
 ```powershell
@@ -986,6 +1002,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses hyphenated label cues such as `use-by 12/31/2026` and `best-by 2026-12-31` without leaving the cue in the item name.
 - Pantry manual/OCR text input accepts comma-decimal quantities and package sizes such as `1,5 lb ground beef` and `Kroger yogurt 5,3oz`.
 - Pantry manual/OCR text input accepts leading-decimal quantities and package sizes such as `.5 lb ground beef`, `.25 cups olive oil`, and `Kroger yogurt .75oz`.
+- Pantry manual/OCR text input accepts common liquid package sizes such as `Kroger milk 1 gal fridge`, `chicken broth 1 quart pantry`, and `cream 1 pint fridge`.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
@@ -1022,6 +1039,7 @@ Verified by build/unit tests/code inspection:
 - Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
+- ML Kit pantry OCR fallback preserves single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer pasted-text import shows processing status, keeps pasted text available when parsing finds no deals, and clears it only after successful deal import.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
@@ -1061,7 +1079,7 @@ Verified by build/unit tests/code inspection:
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.

@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `1503c49 fix: parse common Gemini pantry label aliases`
+- Current validated app-code checkpoint: `52f2010 fix: split clear multi-item pantry OCR imports`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -177,6 +177,12 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Tap `Gallery`.
    - Pick a pantry image.
    - Expected: same as pantry photo, including common label-date handling.
+6. Optional multi-item OCR fallback:
+   - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`.
+   - Expected without Gemini or after AI fallback: the clear item lines import as separate VERIFY pantry rows instead of one combined row.
+7. Optional liquid-size check:
+   - Enter or OCR `Kroger milk 1 gal fridge`, `chicken broth 1 quart pantry`, or `cream 1 pint fridge`.
+   - Expected: liquid size/unit is preserved as `gal`, `qt`, or `pt`.
 
 ### Flyer Inputs
 
@@ -265,6 +271,8 @@ Verify these show visible status messages instead of silent failures:
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
 - Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
 - Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections.
+- Pantry typed/OCR intake preserves gallon, quart, and pint package sizes.
+- Pantry OCR fallback splits clear multi-item pantry rows into separate VERIFY rows.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Gemini no-key fallback is clear.

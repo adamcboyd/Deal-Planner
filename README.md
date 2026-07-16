@@ -242,7 +242,7 @@ On the Pantry tab:
 
 1. Tap **Photo** to capture a full-resolution app-cache image, or **Gallery** to choose an image.
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
-3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
+3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate. If OCR sees at least two complete item lines, Deal Planner imports those as separate reviewable items instead of collapsing the whole photo into one pantry row.
 4. Missing brand, amount/unit, location, or expiration information is marked with a VERIFY badge and notes such as `Review brand.`, `Review amount/unit.`, `Review pantry/fridge/freezer location.`, or `Review expiration or best-by date.`.
 5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`.
 
@@ -341,7 +341,8 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce labels, comma-decimal and leading-decimal OCR quantities/sizes)
+- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce and gallon/quart/pint labels, comma-decimal and leading-decimal OCR quantities/sizes)
+- Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal flyer OCR prices, slash/no-slash per-pound prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
@@ -409,6 +410,7 @@ As of the latest local pass:
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
 - Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
+- Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
@@ -451,6 +453,7 @@ As of the latest local pass:
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
 - AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
 - AI pantry photo VERIFY notes include specific review prompts for missing brand, amount/unit, storage location, and best-by date details.
+- ML Kit pantry OCR fallback keeps single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions
