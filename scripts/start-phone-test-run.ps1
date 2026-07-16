@@ -60,9 +60,18 @@ function Invoke-Helper {
 }
 
 function Invoke-PhoneTestReport {
-    param([string]$Label)
+    param(
+        [string]$Label,
+        [string]$SetupStatus = "Not recorded",
+        [string]$SetupFailure = ""
+    )
 
-    Invoke-Helper $Label (Join-Path $PSScriptRoot "new-phone-test-report.ps1")
+    $reportArgs = @("-SetupStatus", $SetupStatus)
+    if (-not [string]::IsNullOrWhiteSpace($SetupFailure)) {
+        $reportArgs += @("-SetupFailure", $SetupFailure)
+    }
+
+    Invoke-Helper $Label (Join-Path $PSScriptRoot "new-phone-test-report.ps1") $reportArgs
     $script:reportCreated = $true
 }
 
@@ -108,7 +117,7 @@ try {
     Invoke-Helper "Install Deal Planner debug APK" (Join-Path $PSScriptRoot "phone-debug-install.ps1") $installArgs
 
     if (-not $SkipReport) {
-        Invoke-PhoneTestReport "Create phone-test report"
+        Invoke-PhoneTestReport -Label "Create phone-test report" -SetupStatus "Completed"
     }
 
     Write-Host ""
@@ -120,7 +129,7 @@ try {
         Write-Warning "Phone test setup stopped before completion: $failureMessage"
         Write-Warning "Creating a phone-test report with the current failure state."
         try {
-            Invoke-PhoneTestReport "Create phone-test report after setup failure"
+            Invoke-PhoneTestReport -Label "Create phone-test report after setup failure" -SetupStatus "Failed" -SetupFailure $failureMessage
         } catch {
             Write-Warning "Could not create failure-state phone-test report: $($_.Exception.Message)"
         }

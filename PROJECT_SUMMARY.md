@@ -488,7 +488,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
-- ✅ One-command phone test starter writes a failure-state report if setup stops early
+- ✅ One-command phone test starter writes setup status on success and a failure-state report with stopping reason if setup stops early
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone test report includes latest sample folder/manifest evidence when available
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification

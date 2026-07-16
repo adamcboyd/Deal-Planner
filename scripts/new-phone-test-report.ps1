@@ -1,7 +1,9 @@
 param(
     [switch]$Help,
     [string]$OutputDir = "phone-test-results",
-    [string]$PackageName = "com.dealplanner"
+    [string]$PackageName = "com.dealplanner",
+    [string]$SetupStatus = "Not recorded",
+    [string]$SetupFailure = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,8 +14,10 @@ function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\scripts\new-phone-test-report.ps1"
     Write-Host "  .\scripts\new-phone-test-report.ps1 -OutputDir phone-test-results"
+    Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupStatus Failed -SetupFailure ""Phone preflight failed"""
     Write-Host ""
     Write-Host "Creates an ignored timestamped Markdown report for recording real-phone pass/fail evidence."
+    Write-Host "SetupStatus/SetupFailure are optional; start-phone-test-run.ps1 fills them automatically."
     Write-Host "Set ANDROID_SERIAL when more than one authorized device is connected."
 }
 
@@ -257,6 +261,17 @@ if ([string]::IsNullOrWhiteSpace($adb.Devices)) {
     $adbBlock = $adb.Devices
 }
 
+$setupStatusLine = if ([string]::IsNullOrWhiteSpace($SetupStatus)) {
+    "Not recorded"
+} else {
+    $SetupStatus.Trim()
+}
+$setupFailureLine = if ([string]::IsNullOrWhiteSpace($SetupFailure)) {
+    "None recorded."
+} else {
+    ($SetupFailure -replace "\r?\n", " ").Trim()
+}
+
 $report = @"
 # Deal Planner Phone Test Report - $stamp
 
@@ -280,6 +295,11 @@ $sampleManifestLine
 $sampleDestinationLine
 $sampleTransferReportLine
 - Checklist: PHONE_TEST_CHECKLIST_2026-07-16.md
+
+## Setup Run Summary
+
+- Setup status: $setupStatusLine
+- Setup failure: $setupFailureLine
 
 ## Git Status
 

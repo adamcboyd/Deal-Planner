@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone starter failure-report work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: sample transfer receipt/report work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone report setup-status work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: phone starter failure-report work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2168,6 +2168,33 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-r
 ```
 
 Result: PowerShell parse check passed, help output documented failure-state report behavior, and the expected no-phone run failed at required-phone preflight while creating ignored failure-state report `phone-test-results\20260716-154940\PHONE_TEST_REPORT.md` with current repo/APK identity, dirty tracked paths, no selected device, and latest sample destination details.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after phone report setup-status work:
+
+Helper checkpoint:
+
+- `scripts\new-phone-test-report.ps1` now includes a `Setup Run Summary` section with setup status and setup failure reason when provided.
+- `scripts\start-phone-test-run.ps1` now stamps successful starter-created reports as `Completed` and failure-state reports as `Failed` with the original stopping reason.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so phone setup/report evidence includes setup status.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\new-phone-test-report.ps1')); 'new-phone-test-report.ps1 parsed'"
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\start-phone-test-run.ps1')); 'start-phone-test-run.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -SetupStatus Manual -SetupFailure "manual verification"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -SkipNetwork
+```
+
+Result: PowerShell parse checks passed for both helper scripts, report help documented `SetupStatus`/`SetupFailure`, manual report `phone-test-results\20260716-155539\PHONE_TEST_REPORT.md` included `Setup status: Manual` and `Setup failure: manual verification`, and the expected no-phone starter run created failure report `phone-test-results\20260716-155600\PHONE_TEST_REPORT.md` with `Setup status: Failed` plus `Setup failure: Phone preflight failed with exit code 1.`
 
 Full local gate:
 
