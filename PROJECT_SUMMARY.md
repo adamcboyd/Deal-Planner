@@ -82,7 +82,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 10 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 11 test cases
             ├── lookup/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
@@ -138,7 +138,7 @@ Deal_Planner/
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
-- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, and malformed string/list fields
+- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, snake_case/name aliases, and malformed string/list fields
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -189,8 +189,8 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (86 Test Cases)
-- ✅ GeminiPantryVisionClientTest (10 tests)
+### 7. Unit Tests (87 Test Cases)
+- ✅ GeminiPantryVisionClientTest (11 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (22 tests)
 - ✅ DealsParserTest (15 tests)
@@ -374,7 +374,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
-- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, and clamped confidence
+- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, snake_case/name aliases, and clamped confidence
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
@@ -423,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 86 unit tests
+- ✅ 87 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

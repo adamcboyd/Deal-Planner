@@ -130,6 +130,45 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with snake case date fields`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product_name": "peanut butter",
+                  "brand": "Great Value",
+                  "quantity": 1,
+                  "unit": "jar",
+                  "expiration_date": "2026-12-31",
+                  "opened_date": "2026-07-16",
+                  "confidence": 0.88
+                },
+                {
+                  "name": "rolled oats",
+                  "best_by_date": "2027-01-15",
+                  "openedDate": null,
+                  "confidence": 0.77
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+
+        val peanutButter = result.items.first { it.product == "peanut butter" }
+        assertThat(peanutButter.brand).isEqualTo("Great Value")
+        assertThat(peanutButter.expirationDate).isEqualTo("2026-12-31")
+        assertThat(peanutButter.openedDate).isEqualTo("2026-07-16")
+
+        val oats = result.items.first { it.product == "rolled oats" }
+        assertThat(oats.expirationDate).isEqualTo("2027-01-15")
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

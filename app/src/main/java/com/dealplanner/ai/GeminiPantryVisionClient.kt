@@ -219,7 +219,7 @@ class GeminiPantryVisionClient(
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
-        val product = getStringOrNull("product") ?: getStringOrNull("item")
+        val product = firstStringOrNull("product", "item", "product_name", "name")
         if (product.isNullOrBlank()) return null
 
         return PantryVisionItem(
@@ -229,8 +229,15 @@ class GeminiPantryVisionClient(
             unit = getStringOrNull("unit"),
             size = getStringOrNull("size"),
             location = getStringOrNull("location"),
-            expirationDate = getStringOrNull("expirationDate"),
-            openedDate = getStringOrNull("openedDate"),
+            expirationDate = firstStringOrNull(
+                "expirationDate",
+                "expiration_date",
+                "bestBy",
+                "best_by",
+                "bestByDate",
+                "best_by_date"
+            ),
+            openedDate = firstStringOrNull("openedDate", "opened_date"),
             confidence = (get("confidence")?.asDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
             questions = get("questions")?.toStringList().orEmpty()
         )
@@ -267,6 +274,10 @@ class GeminiPantryVisionClient(
         } catch (_: Exception) {
             null
         }
+    }
+
+    private fun JsonObject.firstStringOrNull(vararg names: String): String? {
+        return names.firstNotNullOfOrNull { name -> getStringOrNull(name) }
     }
 
     private fun JsonElement.asDoubleOrNull(): Double? {
