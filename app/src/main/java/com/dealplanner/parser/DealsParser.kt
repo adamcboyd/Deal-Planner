@@ -22,8 +22,10 @@ class DealsParser {
     )
 
     private val pricePerPoundPattern = Regex("""\$?(\d+[.,]\d{2})\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
+    private val loosePricePerPoundPattern = Regex("""\$?(\d+[.,]\d{2})\s+(?:per\s+)?(?:lb|lbs|pound|pounds)\b""", RegexOption.IGNORE_CASE)
     private val pricePerUnitPattern = Regex("""\$?(\d+[.,]\d{2})\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val centsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
+    private val looseCentsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s+(?:per\s+)?(?:lb|lbs|pound|pounds)\b""", RegexOption.IGNORE_CASE)
     private val centsPricePerUnitPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:[.,]\d{2})?)""", RegexOption.IGNORE_CASE)
     private val slashNForXPattern = Regex("""(?<![\d.,])(\d+)\s*/\s*\$?(\d+(?:[.,]\d{2})?)""", RegexOption.IGNORE_CASE)
@@ -42,7 +44,7 @@ class DealsParser {
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
     private val packagePricePattern = Regex("""(?<![\d.,])\$?(\d+[.,]\d{2})(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
     private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
-    private val priceTextPattern = Regex("""\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
+    private val priceTextPattern = Regex("""\$?\d+[.,]\d{2}(?:\s*(?:/|per\s+)?\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
 
     private val couponKeywords = listOf("coupon", "digital coupon", "member price", "clip", "app only")
     private val packageWords = Regex("""\b(bag|can|box|bottle|jar|pack|family|fresh|wild|caught|boneless|skinless|extra|virgin|with)\b""", RegexOption.IGNORE_CASE)
@@ -142,7 +144,31 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
+        loosePricePerPoundPattern.find(line)?.let { match ->
+            price = match.groupValues[1].toPriceDouble()
+            unit = "lb"
+            dealType = "per_pound"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
         centsPricePerPoundPattern.find(line)?.let { match ->
+            price = centsToDollars(match.groupValues[1])
+            unit = "lb"
+            dealType = "per_pound"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
+        looseCentsPricePerPoundPattern.find(line)?.let { match ->
             price = centsToDollars(match.groupValues[1])
             unit = "lb"
             dealType = "per_pound"
@@ -356,8 +382,10 @@ class DealsParser {
 
     private fun containsDealSignal(line: String): Boolean {
         return pricePerPoundPattern.containsMatchIn(line) ||
+            loosePricePerPoundPattern.containsMatchIn(line) ||
             pricePerUnitPattern.containsMatchIn(line) ||
             centsPricePerPoundPattern.containsMatchIn(line) ||
+            looseCentsPricePerPoundPattern.containsMatchIn(line) ||
             centsPricePerUnitPattern.containsMatchIn(line) ||
             nForXPattern.containsMatchIn(line) ||
             slashNForXPattern.containsMatchIn(line) ||

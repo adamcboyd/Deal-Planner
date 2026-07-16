@@ -26,6 +26,48 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse per pound flyer prices when OCR drops slash`() {
+        val text = """
+            Chicken Breast
+            ${'$'}2.99 lb
+
+            Ground Beef
+            2,99 per pound
+
+            Roma Tomatoes
+            99c lb
+
+            Yellow Onions
+            3 lb bag ${'$'}2.99
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(4)
+
+        val chicken = result.deals.first { it.name == "Chicken Breast" }
+        assertThat(chicken.price).isEqualTo(2.99)
+        assertThat(chicken.unit).isEqualTo("lb")
+        assertThat(chicken.dealType).isEqualTo("per_pound")
+
+        val beef = result.deals.first { it.name == "Ground Beef" }
+        assertThat(beef.price).isEqualTo(2.99)
+        assertThat(beef.unit).isEqualTo("lb")
+        assertThat(beef.dealType).isEqualTo("per_pound")
+
+        val tomatoes = result.deals.first { it.name == "Roma Tomatoes" }
+        assertThat(tomatoes.price).isEqualTo(0.99)
+        assertThat(tomatoes.unit).isEqualTo("lb")
+        assertThat(tomatoes.dealType).isEqualTo("per_pound")
+
+        val onions = result.deals.first { it.name == "Yellow Onions" }
+        assertThat(onions.price).isEqualTo(2.99)
+        assertThat(onions.unit).isEqualTo("ea")
+        assertThat(onions.dealType).isEqualTo("per_unit")
+        assertThat(onions.sizeText).isEqualTo("3 lb")
+    }
+
+    @Test
     fun `parse N for X deal`() {
         val text = "Kroger Pasta\n2 for $5"
         val result = parser.parse(text, "Kroger")
