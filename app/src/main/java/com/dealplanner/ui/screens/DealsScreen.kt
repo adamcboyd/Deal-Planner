@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.DealItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
+import com.dealplanner.ui.state.DealItemInputValidator
 import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleDoubleOrNull
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -390,18 +390,18 @@ fun DealItemEditDialog(
     var limit by remember(deal.id) { mutableStateOf(deal.limit?.toString().orEmpty()) }
     var validUntil by remember(deal.id) { mutableStateOf(deal.validUntil?.toString().orEmpty()) }
     var couponFlag by remember(deal.id) { mutableStateOf(deal.couponFlag) }
-    val parsedPrice = price.toFlexibleDoubleOrNull()
-    val isPriceValid = parsedPrice != null && parsedPrice >= 0.0
-    val parsedLimit = limit.toIntOrNull()
-    val isLimitValid = limit.isBlank() || (parsedLimit != null && parsedLimit >= 0)
-    val parsedPricePerUnit = pricePerUnit.toFlexibleDoubleOrNull()
-    val isPricePerUnitValid = parsedPricePerUnit != null && parsedPricePerUnit >= 0.0
-    val parsedDiscountPercent = discountPercent.toFlexibleDoubleOrNull()
-    val isDiscountPercentValid = parsedDiscountPercent != null && parsedDiscountPercent in 0.0..100.0
-    val parsedDealScore = dealScore.toFlexibleDoubleOrNull()
-    val isDealScoreValid = parsedDealScore != null && parsedDealScore in 0.0..1.0
-    val parsedConfidence = confidence.toFlexibleDoubleOrNull()
-    val isConfidenceValid = parsedConfidence != null && parsedConfidence in 0.0..1.0
+    val priceValidation = DealItemInputValidator.validateNonNegativePrice(price)
+    val limitValidation = DealItemInputValidator.validateLimit(limit)
+    val pricePerUnitValidation = DealItemInputValidator.validatePricePerUnit(pricePerUnit)
+    val discountPercentValidation = DealItemInputValidator.validateDiscountPercent(discountPercent)
+    val dealScoreValidation = DealItemInputValidator.validateScore(dealScore)
+    val confidenceValidation = DealItemInputValidator.validateConfidence(confidence)
+    val isPriceValid = priceValidation.isValid
+    val isLimitValid = limitValidation.isValid
+    val isPricePerUnitValid = pricePerUnitValidation.isValid
+    val isDiscountPercentValid = discountPercentValidation.isValid
+    val isDealScoreValid = dealScoreValidation.isValid
+    val isConfidenceValid = confidenceValidation.isValid
     val parsedValidUntil = validUntil.toLocalDateOrNull()
     val isValidUntilValid = validUntil.isBlank() || parsedValidUntil != null
 
@@ -441,7 +441,7 @@ fun DealItemEditDialog(
                     }
                     if (!isPriceValid) {
                         Text(
-                            "Use a non-negative price like 2.99 or 2,99.",
+                            priceValidation.message,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -494,7 +494,7 @@ fun DealItemEditDialog(
                     }
                     if (!isLimitValid) {
                         Text(
-                            "Use a whole number limit or leave blank.",
+                            limitValidation.message,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -521,7 +521,7 @@ fun DealItemEditDialog(
                     }
                     if (!isPricePerUnitValid || !isDiscountPercentValid) {
                         Text(
-                            "Use non-negative PPU and percent off from 0 to 100.",
+                            DealItemInputValidator.PRICE_PER_UNIT_DISCOUNT_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -548,7 +548,7 @@ fun DealItemEditDialog(
                     }
                     if (!isDealScoreValid || !isConfidenceValid) {
                         Text(
-                            "Use values from 0 to 1 for score and confidence.",
+                            DealItemInputValidator.SCORE_CONFIDENCE_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -598,7 +598,7 @@ fun DealItemEditDialog(
                     isConfidenceValid &&
                     isValidUntilValid,
                 onClick = {
-                    val safePrice = parsedPrice ?: deal.price
+                    val safePrice = priceValidation.parsedValue ?: deal.price
                     onSave(
                         deal.copy(
                             name = name.trim(),
@@ -607,13 +607,13 @@ fun DealItemEditDialog(
                             price = safePrice,
                             unit = unit.trim().ifBlank { null },
                             dealType = dealType.trim().ifBlank { "per_unit" },
-                            limit = parsedLimit,
+                            limit = limitValidation.parsedValue,
                             couponFlag = couponFlag,
                             store = store.trim(),
-                            confidence = parsedConfidence ?: deal.confidence,
-                            dealScore = parsedDealScore ?: deal.dealScore,
-                            pricePerUnit = parsedPricePerUnit ?: safePrice,
-                            discountPercent = parsedDiscountPercent ?: deal.discountPercent,
+                            confidence = confidenceValidation.parsedValue ?: deal.confidence,
+                            dealScore = dealScoreValidation.parsedValue ?: deal.dealScore,
+                            pricePerUnit = pricePerUnitValidation.parsedValue ?: safePrice,
+                            discountPercent = discountPercentValidation.parsedValue ?: deal.discountPercent,
                             validUntil = parsedValidUntil
                         )
                     )

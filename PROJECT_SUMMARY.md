@@ -100,6 +100,7 @@ Deal_Planner/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
             ├── ui/state/
             │   ├── BudgetInputValidatorTest.kt ✅ Budget numeric validation tests
+            │   ├── DealItemInputValidatorTest.kt ✅ Deal edit validation tests
             │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
             │   ├── PantryItemInputValidatorTest.kt ✅ Pantry edit quantity validation tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
@@ -418,6 +419,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Validates Settings protein-per-meal values with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
+- ✅ Validates deal edit price, PPU, discount, score, confidence, and limit values with flexible decimal input and bounded score/percent ranges
 - ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c, plus comma-decimal package sizes such as 5,3 oz
 - ✅ Ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings do not import as fake deals
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, each/ea prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
@@ -475,7 +477,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 205 unit tests
+- ✅ 212 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
