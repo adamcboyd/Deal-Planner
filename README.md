@@ -241,7 +241,7 @@ Great Value peanut butter 16oz in pantry
 1,5 lb ground beef in freezer
 Kroger yogurt 5,3oz fridge
 2 cans black beans 15oz pantry best by 2026-12-31
-Great Value peanut butter opened yesterday best by 2026-12-31
+Great Value peanut butter opened 2026-7-1 best by 2026-12-31
 Great Value peanut butter opened on 2026-07-01 best by date 2026-12-31
 Kroger yogurt best before 2026-12-31
 milk use by 12/31/2026
@@ -259,7 +259,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, and `best by date`)
+- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, and `best by date`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
@@ -487,7 +487,7 @@ As of the latest local pass:
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
-- AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31` before saving review items.
+- AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and unpadded `2026-7-1` before saving review items.
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
 - AI pantry photo items with an unknown amount unit require review instead of being treated as fully verified.
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.

@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after receipt saved-total filtering work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after unpadded year-first pantry/AI date parsing work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1253,6 +1253,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `ReceiptReconcilerTest` passed, then the full Gradle gate passed with `160` unit tests detected and `0` failures/errors. Receipt summary lines such as `YOU SAVED $4.25`, `SAVED TODAY 4.25`, and `TOTAL SAVED $4.25` are ignored so savings summaries do not import as grocery rows or inflate Budget spending.
 
+Latest focused pantry/AI date parsing check after unpadded year-first date support:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.util.FlexibleDateParsingTest --tests com.dealplanner.parser.PantryPhraseParserTest --tests com.dealplanner.ai.PantryVisionItemMapperTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `FlexibleDateParsingTest`, `PantryPhraseParserTest`, and `PantryVisionItemMapperTest` passed, then the full Gradle gate passed with `162` unit tests detected and `0` failures/errors. Manual pantry text and AI pantry photo mapping accept unpadded year-first dash dates such as `2026-7-1` for opened and best-by dates.
+
 Additional check:
 
 ```powershell
@@ -1322,6 +1333,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses common label-style expiration cues such as `best before`, `use by`, and `exp`.
 - Pantry manual text input parses label wording such as `expiration date 12/31/2026` and `best by date 2026-12-31` without leaving `date` in the item name.
 - Pantry manual text input parses `opened on 2026-07-01` without leaving `on` in the item name.
+- Pantry manual text input parses unpadded year-first dates such as `opened 2026-7-1`.
 - Pantry manual text input parses hyphenated label cues such as `use-by 12/31/2026` and `best-by 2026-12-31` without leaving the cue in the item name.
 - Pantry manual/OCR text input accepts comma-decimal quantities and package sizes such as `1,5 lb ground beef` and `Kroger yogurt 5,3oz`.
 - Pantry manual/OCR text input accepts leading-decimal quantities and package sizes such as `.5 lb ground beef`, `.25 cups olive oil`, and `Kroger yogurt .75oz`.
@@ -1411,7 +1423,7 @@ Verified by build/unit tests/code inspection:
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
-- AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
+- AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and `2026-7-1`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
 - AI pantry photo item mapping has unit coverage for Generic or unknown brand values; the item requires review so missing label brand details stay visible.

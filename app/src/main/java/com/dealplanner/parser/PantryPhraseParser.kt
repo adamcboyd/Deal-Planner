@@ -353,6 +353,7 @@ class PantryPhraseParser {
             DateTimeFormatter.ofPattern("MM/dd/yy"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd"),
             DateTimeFormatter.ofPattern("yyyy/M/d"),
+            DateTimeFormatter.ofPattern("yyyy-M-d"),
             DateTimeFormatter.ofPattern("M-d-yyyy")
         )
 

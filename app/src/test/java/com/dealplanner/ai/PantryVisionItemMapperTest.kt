@@ -33,6 +33,21 @@ class PantryVisionItemMapperTest {
     }
 
     @Test
+    fun `map vision item with unpadded year first dash dates into pantry item`() {
+        val item = completeVisionItem().copy(
+            expirationDate = "2026-7-1",
+            openedDate = "2026-6-30"
+        )
+
+        val pantryItem = item.toPantryItem(warnings = emptyList())
+
+        assertThat(pantryItem).isNotNull()
+        assertThat(pantryItem!!.bestBy).isEqualTo(LocalDate.of(2026, 7, 1))
+        assertThat(pantryItem.opened).isEqualTo(LocalDate.of(2026, 6, 30))
+        assertThat(pantryItem.needsVerify).isFalse()
+    }
+
+    @Test
     fun `unparseable vision dates stay visible and require review`() {
         val item = GeminiPantryVisionClient.PantryVisionItem(
             brand = "Generic",

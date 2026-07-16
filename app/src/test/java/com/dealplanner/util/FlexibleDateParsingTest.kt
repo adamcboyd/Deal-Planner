@@ -12,6 +12,7 @@ class FlexibleDateParsingTest {
         assertThat("12/31/2026".toFlexibleLocalDateOrNull()).isEqualTo(LocalDate.of(2026, 12, 31))
         assertThat("12-31-2026".toFlexibleLocalDateOrNull()).isEqualTo(LocalDate.of(2026, 12, 31))
         assertThat("2026/12/31".toFlexibleLocalDateOrNull()).isEqualTo(LocalDate.of(2026, 12, 31))
+        assertThat("2026-7-1".toFlexibleLocalDateOrNull()).isEqualTo(LocalDate.of(2026, 7, 1))
     }
 
     @Test

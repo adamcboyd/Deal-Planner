@@ -14,7 +14,8 @@ private val flexibleDateFormats = listOf(
     DateTimeFormatter.ofPattern("M-d-yy"),
     DateTimeFormatter.ofPattern("MM-dd-yyyy"),
     DateTimeFormatter.ofPattern("MM-dd-yy"),
-    DateTimeFormatter.ofPattern("yyyy/M/d")
+    DateTimeFormatter.ofPattern("yyyy/M/d"),
+    DateTimeFormatter.ofPattern("yyyy-M-d")
 )
 
 fun String.toFlexibleLocalDateOrNull(): LocalDate? {
