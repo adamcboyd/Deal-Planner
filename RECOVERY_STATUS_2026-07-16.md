@@ -390,6 +390,14 @@ Latest continuation gate after inline weighted produce receipt parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `103` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after labeled barcode normalization work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `104` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -473,7 +481,7 @@ Verified by build/unit tests/code inspection:
 - Pantry items can be edited/reviewed after typed, barcode/manual code, OCR, or AI import.
 - Barcode/manual code pantry input looks up product names, brands, and package quantities through Open Food Facts when network is available.
 - Barcode/manual code pantry input still creates VERIFY fallback items with the barcode preserved in notes when lookup misses or network is unavailable.
-- Barcode/manual code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text such as `UPC: 0 12345-67890 5` and rejects non-code text with `No barcode found.`.
+- Barcode/manual code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text such as `UPC: 0 12345-67890 5`, prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers, and rejects non-code text with `No barcode found.`.
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
@@ -572,6 +580,7 @@ gemini.model=gemini-3.5-flash
    - Pantry barcode scan.
    - Pantry camera-permission denial or canceled capture/gallery/scan status.
    - Pantry manual barcode/code entry.
+   - Pantry manual barcode/code entry with pasted label text that includes unrelated item/date numbers before the UPC.
    - Pantry duplicate check: add the same typed/photo item twice and confirm quantity merges.
    - Pantry barcode duplicate check: add the same UPC twice and confirm quantity merges, then add a different UPC and confirm it remains separate.
    - Pantry edit/review dialog for VERIFY items.

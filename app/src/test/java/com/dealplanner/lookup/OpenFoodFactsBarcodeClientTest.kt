@@ -23,6 +23,13 @@ class OpenFoodFactsBarcodeClientTest {
     }
 
     @Test
+    fun `normalize barcode prefers labeled UPC over earlier item numbers`() {
+        val normalized = client.normalizeBarcode("Item #12345678 UPC: 0 12345-67890 5 Best By 12/31/2026")
+
+        assertThat(normalized).isEqualTo("012345678905")
+    }
+
+    @Test
     fun `normalize barcode returns blank for text without product code`() {
         val normalized = client.normalizeBarcode("not a product barcode")
 

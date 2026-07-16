@@ -100,6 +100,11 @@ class OpenFoodFactsBarcodeClient(
             return compact
         }
 
+        labeledBarcodePattern.findAll(trimmed)
+            .map { match -> match.groupValues[1].filter { it.isDigit() } }
+            .firstOrNull { it.isProductBarcode() }
+            ?.let { return it }
+
         val digitRuns = productBarcodePattern.findAll(compact)
             .map { it.value }
             .toList()
@@ -181,5 +186,8 @@ class OpenFoodFactsBarcodeClient(
 
     private companion object {
         private val productBarcodePattern = Regex("""\d{8,14}""")
+        private val labeledBarcodePattern = Regex(
+            """(?i)\b(?:upc|ean|gtin|barcode|bar\s*code)\b[^0-9]{0,20}((?:\d[\s-]*){8,14})"""
+        )
     }
 }

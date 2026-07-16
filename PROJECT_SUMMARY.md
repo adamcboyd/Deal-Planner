@@ -84,7 +84,7 @@ Deal_Planner/
             ├── ai/
             │   └── GeminiPantryVisionClientTest.kt ✅ 15 test cases
             ├── lookup/
-            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
+            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 8 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
             │   └── DealsParserTest.kt         ✅ 20 test cases
@@ -189,9 +189,9 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (103 Test Cases)
+### 7. Unit Tests (104 Test Cases)
 - ✅ GeminiPantryVisionClientTest (15 tests)
-- ✅ OpenFoodFactsBarcodeClientTest (7 tests)
+- ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
 - ✅ MealPlanningEngineTest (8 tests)
@@ -369,6 +369,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses pantry items
 - ✅ Parses pantry comma-decimal OCR quantities and sizes such as 1,5 lb and 5,3oz
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
+- ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
 - ✅ Imports pantry items from camera/gallery photos
@@ -424,7 +425,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 103 unit tests
+- ✅ 104 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
