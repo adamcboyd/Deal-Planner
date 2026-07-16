@@ -20,12 +20,12 @@ class DealsParser {
         val warnings: List<String>
     )
 
-    private val pricePerPoundPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
-    private val pricePerUnitPattern = Regex("""\$?(\d+\.\d{2})\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
+    private val pricePerPoundPattern = Regex("""\$?(\d+[.,]\d{2})\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
+    private val pricePerUnitPattern = Regex("""\$?(\d+[.,]\d{2})\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
     private val centsPricePerPoundPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(?:lb|lbs|pound|pounds)""", RegexOption.IGNORE_CASE)
     private val centsPricePerUnitPattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)\s*/\s*(ea|each|oz)""", RegexOption.IGNORE_CASE)
-    private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
-    private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
+    private val nForXPattern = Regex("""(\d+)\s*for\s*\$?(\d+(?:[.,]\d{2})?)""", RegexOption.IGNORE_CASE)
+    private val slashNForXPattern = Regex("""(?<![\d.,])(\d+)\s*/\s*\$?(\d+(?:[.,]\d{2})?)""", RegexOption.IGNORE_CASE)
     private val buyNGetMPattern = Regex(
         """buy\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*get\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*free)?""",
         RegexOption.IGNORE_CASE
@@ -39,9 +39,9 @@ class DealsParser {
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
-    private val packagePricePattern = Regex("""(?<![\d.])\$?(\d+\.\d{2})(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
+    private val packagePricePattern = Regex("""(?<![\d.,])\$?(\d+[.,]\d{2})(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
     private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
-    private val priceTextPattern = Regex("""\$?\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
+    private val priceTextPattern = Regex("""\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
 
     private val couponKeywords = listOf("coupon", "digital coupon", "member price", "clip", "app only")
     private val packageWords = Regex("""\b(bag|can|box|bottle|jar|pack|family|fresh|wild|caught|boneless|skinless|extra|virgin|with)\b""", RegexOption.IGNORE_CASE)
@@ -129,7 +129,7 @@ class DealsParser {
 
         // 1. Price per pound: $3.99/lb
         pricePerPoundPattern.find(line)?.let { match ->
-            price = match.groupValues[1].toDouble()
+            price = match.groupValues[1].toPriceDouble()
             unit = "lb"
             dealType = "per_pound"
             name = chooseName(extractItemName(line, match.value), nextLine)
@@ -154,7 +154,7 @@ class DealsParser {
 
         // 2. Price per unit: $2.99/ea
         pricePerUnitPattern.find(line)?.let { match ->
-            price = match.groupValues[1].toDouble()
+            price = match.groupValues[1].toPriceDouble()
             unit = match.groupValues[2].lowercase()
             dealType = "per_unit"
             name = chooseName(extractItemName(line, match.value), nextLine)
@@ -168,7 +168,7 @@ class DealsParser {
         // 3. N for $X: 2 for $5
         nForXPattern.find(line)?.let { match ->
             val n = match.groupValues[1].toInt()
-            val totalPrice = match.groupValues[2].toDouble()
+            val totalPrice = match.groupValues[2].toPriceDouble()
             price = totalPrice / n
             unit = "ea"
             dealType = "n_for_x"
@@ -195,7 +195,7 @@ class DealsParser {
         // 4. Slash N for X: 2/$5 or 10 / $10
         slashNForXPattern.find(line)?.let { match ->
             val n = match.groupValues[1].toInt()
-            val totalPrice = match.groupValues[2].toDouble()
+            val totalPrice = match.groupValues[2].toPriceDouble()
             price = totalPrice / n
             unit = "ea"
             dealType = "n_for_x"
@@ -215,7 +215,7 @@ class DealsParser {
             unit = "ea"
 
             val priceMatch = packagePricePattern.find(line)
-            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+            price = priceMatch?.groupValues?.get(1)?.toPriceDouble() ?: 0.0
 
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
@@ -237,7 +237,7 @@ class DealsParser {
 
             // Extract price if available
             val priceMatch = packagePricePattern.find(line)
-            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+            price = priceMatch?.groupValues?.get(1)?.toPriceDouble() ?: 0.0
 
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
@@ -256,7 +256,7 @@ class DealsParser {
             unit = "ea"
 
             val priceMatch = packagePricePattern.find(line)
-            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+            price = priceMatch?.groupValues?.get(1)?.toPriceDouble() ?: 0.0
 
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
@@ -276,7 +276,7 @@ class DealsParser {
 
             // BOGO/B1G1 is buy one, get one free: 50% effective discount.
             val priceMatch = packagePricePattern.find(line)
-            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+            price = priceMatch?.groupValues?.get(1)?.toPriceDouble() ?: 0.0
 
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
@@ -297,7 +297,7 @@ class DealsParser {
 
             // Extract price if available
             val priceMatch = packagePricePattern.find(line)
-            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+            price = priceMatch?.groupValues?.get(1)?.toPriceDouble() ?: 0.0
 
             name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
@@ -310,7 +310,7 @@ class DealsParser {
 
         // 7. Plain package price: Yellow Onions 3 lb bag $2.99 or Black Beans $0.89
         packagePricePattern.find(line)?.let { match ->
-            price = match.groupValues[1].toDouble()
+            price = match.groupValues[1].toPriceDouble()
             unit = "ea"
             dealType = "per_unit"
             name = chooseName(extractItemName(line, match.value), nextLine)
@@ -555,6 +555,10 @@ class DealsParser {
 
     private fun String.toDealCount(): Int? {
         return toIntOrNull() ?: dealCountWords[lowercase()]
+    }
+
+    private fun String.toPriceDouble(): Double {
+        return replace(',', '.').toDouble()
     }
 
     private companion object {

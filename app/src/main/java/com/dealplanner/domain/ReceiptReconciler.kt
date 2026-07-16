@@ -140,14 +140,14 @@ class ReceiptReconciler {
      */
     private fun parseReceiptLine(line: String): Triple<String, Double, Double?>? {
         // Pattern: optional qty, item name, price
-        val pattern1 = Regex("""(\d+)\s*@\s*\$?(\d+\.\d{2})\s+(.+?)\s+\$?(\d+\.\d{2})""")
-        val pattern2 = Regex("""(.+?)\s+\$?(\d+\.\d{2})""")
+        val pattern1 = Regex("""(\d+)\s*@\s*\$?(\d+[.,]\d{2})\s+(.+?)\s+\$?(\d+[.,]\d{2})""")
+        val pattern2 = Regex("""(.+?)\s+\$?(\d+[.,]\d{2})""")
 
         pattern1.find(line)?.let { match ->
             val qty = match.groupValues[1].toDoubleOrNull() ?: 1.0
             val itemName = match.groupValues[3].trim()
             if (isSummaryOrTenderLine(itemName)) return null
-            val totalPrice = match.groupValues[4].toDoubleOrNull() ?: 0.0
+            val totalPrice = match.groupValues[4].toPriceDoubleOrNull() ?: 0.0
             return Triple(itemName, totalPrice, qty)
         }
 
@@ -156,7 +156,7 @@ class ReceiptReconciler {
         pattern2.find(line)?.let { match ->
             val itemName = match.groupValues[1].trim()
             if (isSummaryOrTenderLine(itemName)) return null
-            val price = match.groupValues[2].toDoubleOrNull() ?: 0.0
+            val price = match.groupValues[2].toPriceDoubleOrNull() ?: 0.0
             return Triple(itemName, price, null)
         }
 
@@ -350,7 +350,7 @@ class ReceiptReconciler {
         return splitQuantityPattern.find(lines[startIndex].trim())
             ?.groupValues
             ?.get(1)
-            ?.toDoubleOrNull()
+            ?.toPriceDoubleOrNull()
     }
 
     /**
@@ -417,6 +417,10 @@ class ReceiptReconciler {
         return kotlin.math.round(value * 100.0) / 100.0
     }
 
+    private fun String.toPriceDoubleOrNull(): Double? {
+        return replace(',', '.').toDoubleOrNull()
+    }
+
     private companion object {
         private val receiptDateHeaderPattern = Regex(
             """(?i)\b(?:date|transaction date|trans date|purchase date)\s*[:#-]?\s*(\d{1,4}[/-]\d{1,2}[/-]\d{1,4})\b"""
@@ -434,7 +438,7 @@ class ReceiptReconciler {
             DateTimeFormatter.ISO_LOCAL_DATE
         )
         private val splitQuantityPattern = Regex(
-            """(?i)^(\d+(?:\.\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
+            """(?i)^(\d+(?:[.,]\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
         )
     }
 }

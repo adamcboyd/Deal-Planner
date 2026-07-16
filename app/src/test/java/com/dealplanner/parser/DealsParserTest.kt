@@ -288,6 +288,36 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse flyer prices when OCR uses comma decimals`() {
+        val text = """
+            Chicken Breast
+            2,99/lb
+
+            Kroger Pasta
+            2 for 5,00
+
+            Yellow Onions
+            3 lb bag 2,99
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(3)
+
+        val chicken = result.deals.first { it.name == "Chicken Breast" }
+        assertThat(chicken.price).isEqualTo(2.99)
+        assertThat(chicken.unit).isEqualTo("lb")
+
+        val pasta = result.deals.first { it.name == "Kroger Pasta" }
+        assertThat(pasta.price).isEqualTo(2.5)
+        assertThat(pasta.dealType).isEqualTo("n_for_x")
+
+        val onions = result.deals.first { it.name == "Yellow Onions" }
+        assertThat(onions.price).isEqualTo(2.99)
+        assertThat(onions.sizeText).isEqualTo("3 lb")
+    }
+
+    @Test
     fun `parse cent style flyer prices`() {
         val text = """
             Roma Tomatoes

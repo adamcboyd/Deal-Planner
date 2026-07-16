@@ -87,11 +87,11 @@ Deal_Planner/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 25 test cases
-            │   └── DealsParserTest.kt         ✅ 19 test cases
+            │   └── DealsParserTest.kt         ✅ 20 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 15 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 16 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -115,7 +115,7 @@ Deal_Planner/
   - $X.XX/lb pattern
   - Cent-style prices such as 99c/lb and 88c
   - Plain package prices such as 3 lb bag $2.99
-  - Dollar/no-dollar flyer OCR price parsing
+  - Dollar/no-dollar/comma-decimal flyer OCR price parsing
   - N for $X pattern
   - Buy N Get M with numeric or word numbers, buy-get percent-off promos, plus BOGO/B1G1/BOGO-percent shorthand patterns
   - Percent off pattern
@@ -165,7 +165,7 @@ Deal_Planner/
   - VPP calculation for proteins
   - Confidence scoring
   - Pantry quantity updates
-  - Dollar/no-dollar OCR price parsing
+  - Dollar/no-dollar/comma-decimal OCR price parsing
 
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
@@ -189,14 +189,14 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (98 Test Cases)
+### 7. Unit Tests (100 Test Cases)
 - ✅ GeminiPantryVisionClientTest (14 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (25 tests)
-- ✅ DealsParserTest (19 tests)
+- ✅ DealsParserTest (20 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (15 tests)
+- ✅ ReceiptReconcilerTest (16 tests)
 
 ## 🔧 Technology Stack
 
@@ -384,12 +384,12 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
-- ✅ Parses flyer prices with or without dollar signs, including cent-style prices such as 99c/lb and 88c
+- ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
-- ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs
+- ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
 - ✅ Ignores receipt subtotal, tax, total, savings, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
@@ -423,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 98 unit tests
+- ✅ 100 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

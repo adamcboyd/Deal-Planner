@@ -250,6 +250,7 @@ On the Deals tab, enter the store name or leave it as `Unknown`, then use one of
 ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 - `$3.99/lb` or `3.99/lb` (per pound)
+- `2,99/lb` or `3 lb bag 2,99` when OCR uses comma decimals
 - `99c/lb` or `88c` (cent-style flyer/OCR prices)
 - `3 lb bag $2.99`, `3 lb bag 2.99`, or standalone package prices after an item name
 - `2 for $10`, `10 for 10`, `2/$5`, or `10 / $10` (N for X)
@@ -277,7 +278,7 @@ On the Receipts tab:
 8. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 9. Subtotal, tax, total, payment, card tender, EBT/card, SNAP EBT, WIC benefit, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
-11. OCR prices work with or without dollar signs, such as `BLACK BEANS 1.78` or `2 @ 0.89 BLACK BEANS 1.78`.
+11. OCR prices work with or without dollar signs, including comma-decimal OCR such as `BLACK BEANS 1,78` or `2 @ 0,89 BLACK BEANS 1,78`.
 
 ### Meal Planning
 
@@ -318,12 +319,12 @@ Tests cover:
 - Pantry phrase parsing (fractions, brands, dates)
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text
-- Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
+- Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal flyer OCR prices, slash-style multi-buy prices, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split quantities, dollar/no-dollar OCR prices, discount/coupon line filtering)
+- Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, numeric/word quantity aliases, storage aliases, malformed string/list fields)
 
 ## Key Algorithms
@@ -380,7 +381,7 @@ As of the latest local pass:
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
-- Deals parser accepts flyer prices when OCR drops dollar signs, including cent-style prices such as `99c/lb` and `88c`.
+- Deals parser accepts flyer prices when OCR drops dollar signs or uses comma decimals, including cent-style prices such as `99c/lb` and `88c`.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
@@ -391,7 +392,7 @@ As of the latest local pass:
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available.
-- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
+- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs or uses comma decimals.
 - Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.

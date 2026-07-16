@@ -358,6 +358,14 @@ Latest continuation gate after buy-get percent-off flyer promo parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `98` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after comma-decimal OCR price parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `100` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -429,6 +437,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser handles BOGO second-item percent discounts such as `BOGO 50% off` as a 25% effective overall discount.
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
+- Deals parser accepts comma-decimal flyer OCR prices such as `2,99/lb`, `2 for 5,00`, and `3 lb bag 2,99`.
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
@@ -455,6 +464,7 @@ Verified by build/unit tests/code inspection:
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
+- Receipt reconciliation accepts item totals and split quantity lines when OCR uses comma decimals, such as `BLACK BEANS 1,78` plus `2 @ 0,89`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
 - Receipt reconciliation ignores SNAP/EBT/WIC benefit tender lines such as `SNAP EBT`, `EBT FOOD`, and `WIC BENEFIT` so they do not inflate grocery spending.
 - Receipt reconciliation ignores coupon, discount, reward, refund, return, promo, markdown, and adjustment lines so those OCR rows do not increase spending.
@@ -544,6 +554,7 @@ gemini.model=gemini-3.5-flash
    - Deals PDF.
    - Deals pasted OCR text.
    - Deals pasted OCR text with prices missing dollar signs.
+   - Deals pasted OCR text with comma-decimal prices such as `2,99/lb` or `2 for 5,00`.
    - Deals bundled demo flyer text via pasted OCR.
    - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
@@ -552,6 +563,7 @@ gemini.model=gemini-3.5-flash
    - Receipts gallery image.
    - Receipts pasted OCR text.
    - Receipts pasted OCR text with prices missing dollar signs.
+   - Receipts pasted OCR text with comma-decimal prices such as `BLACK BEANS 1,78` and `2 @ 0,89`.
    - Receipts split quantity lines do not import as separate items.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
