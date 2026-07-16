@@ -183,6 +183,7 @@ Verify these show visible status messages instead of silent failures:
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget updates after receipt import/edit/delete.
-- Menu generation and Shopping list generation work from current pantry/deals/settings.
+- Menu generation replaces the active generated week instead of stacking duplicate meal-plan rows.
+- Shopping list generation works from current pantry/deals/settings.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.

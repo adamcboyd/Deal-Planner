@@ -57,6 +57,49 @@ class MealPlanningEngineTest {
     }
 
     @Test
+    fun `generate meal plan uses one row per requested date`() {
+        val startDate = LocalDate.of(2026, 7, 16)
+        val params = Params()
+        val pantryItems = listOf(
+            PantryItem(item = "rice", qty = 5.0, unit = "lb"),
+            PantryItem(item = "oats", qty = 2.0, unit = "lb")
+        )
+        val deals = listOf(
+            DealItem(
+                name = "Chicken Breast",
+                price = 2.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                dealScore = 0.8,
+                pricePerUnit = 2.99
+            )
+        )
+
+        val result = engine.generateMealPlan(
+            MealPlanningEngine.MealPlanRequest(
+                params = params,
+                pantryItems = pantryItems,
+                deals = deals,
+                startDate = startDate,
+                daysToGenerate = 7
+            )
+        )
+
+        assertThat(result.mealPlans.map { it.date })
+            .containsExactly(
+                startDate,
+                startDate.plusDays(1),
+                startDate.plusDays(2),
+                startDate.plusDays(3),
+                startDate.plusDays(4),
+                startDate.plusDays(5),
+                startDate.plusDays(6)
+            )
+            .inOrder()
+    }
+
+    @Test
     fun `filter GERD-friendly foods`() {
         val params = Params(gerdFriendly = true)
         val pantryItems = listOf(

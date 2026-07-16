@@ -172,7 +172,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
    - **Shopping**: See consolidated shopping list with PPU
-   - **Menu**: Browse 7-day meal plan with freezer directives
+- **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
    - **Settings**: Configure dietary preferences and verify AI setup status
 
@@ -261,7 +261,7 @@ On the Receipts tab:
 
 ### Meal Planning
 
-Click "Generate" in the Menu tab to create a 7-day plan:
+Click "Generate" in the Menu tab to create a 7-day plan. Re-generating replaces the active generated week instead of stacking duplicate plan rows.
 - Breakfast uses pantry anchors (oats, cereal) if enabled
 - Lunch/Dinner pairs: Protein + Veg + Starch
 - Proteins from top-scored deals
@@ -300,6 +300,7 @@ Tests cover:
 - Open Food Facts barcode response parsing and barcode normalization
 - Deal regex patterns (all deal types, dollar/no-dollar flyer OCR prices)
 - Meal planning (GERD-filtering, anchors)
+- Meal plan date coverage for repeatable 7-day generation
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, malformed string/list fields)
@@ -347,6 +348,7 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
+- Menu Generate replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.

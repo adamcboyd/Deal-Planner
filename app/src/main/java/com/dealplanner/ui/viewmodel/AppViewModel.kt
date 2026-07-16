@@ -369,8 +369,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
             val result = mealPlanningEngine.generateMealPlan(request)
 
-            // Clear old plans and insert new ones
-            repository.deleteOldMealPlans(LocalDate.now().minusDays(1))
+            // Replace generated plans so repeated taps do not duplicate the same week.
+            repository.deleteAllMealPlans()
             repository.insertMealPlans(result.mealPlans)
 
             _shoppingList.value = result.shoppingList
