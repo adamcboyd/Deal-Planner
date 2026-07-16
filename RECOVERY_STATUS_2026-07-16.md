@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after Gemini review question/warning alias parsing work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry `NET WT` package-label OCR/parser work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1286,6 +1286,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `GeminiPantryVisionClientTest` passed locally, then the full Gradle gate passed with `164` unit tests detected, `0` failures/errors, and `21` lint warnings. Gemini pantry response parsing now preserves alternate AI review-question aliases such as `clarifying_questions` and `followUpQuestions`, plus warning aliases such as `review_notes`, so imported VERIFY rows can keep model-provided review prompts.
 
+Latest focused pantry OCR/parser check after net-weight label handling:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.PantryPhraseParserTest --tests com.dealplanner.ocr.PantryOcrCandidateExtractorTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `PantryPhraseParserTest` and `PantryOcrCandidateExtractorTest` passed locally, then the full Gradle gate passed with `165` unit tests detected, `0` failures/errors, and `21` lint warnings. Pantry OCR fallback now avoids treating `NET WT` package-size lines as separate products, and the pantry parser strips `net wt` label wording from the item name while preserving the package size and best-if-used-by date.
+
 Additional check:
 
 ```powershell
@@ -1404,7 +1415,7 @@ Verified by build/unit tests/code inspection:
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Gallery image and PDF imports rely on Android picker URI grants; the APK no longer requests `READ_EXTERNAL_STORAGE` or `READ_MEDIA_IMAGES`.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
-- ML Kit pantry OCR fallback preserves single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
+- ML Kit pantry OCR fallback preserves single-label photos as one combined review item, avoids treating `NET WT` package-size lines as products, and splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer pasted-text import shows processing status, keeps pasted text available when parsing finds no deals or processing fails, and clears it only after successful deal import.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.

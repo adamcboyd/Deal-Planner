@@ -266,6 +266,18 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse net weight label wording without leaking net wt into item name`() {
+        val result = parser.parse("Great Value black beans net wt 15 oz pantry best if used by 12/31/2026")
+
+        assertThat(result.item.item).isEqualTo("black beans")
+        assertThat(result.item.brand).isEqualTo("Great Value")
+        assertThat(result.item.size).isEqualTo("15oz")
+        assertThat(result.item.unit).isEqualTo("oz")
+        assertThat(result.item.location).isEqualTo("pantry")
+        assertThat(result.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+    }
+
+    @Test
     fun `parse date label wording without leaking date into item name`() {
         val expirationDate = parser.parse("milk expiration date 12/31/2026")
         val bestByDate = parser.parse("yogurt best by date 2026-12-31")

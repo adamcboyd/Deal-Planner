@@ -303,7 +303,7 @@ class PantryPhraseParser {
             listOf(
                 "of", "in", "on", "the", "a", "an", "opened", "best", "by", "bestby", "before",
                 "best-by", "best-before", "if", "use", "use-by", "used", "expires", "expiration", "exp", "date",
-                "today", "yesterday", "tomorrow", "days", "day", "ago", "fl", "fluid"
+                "today", "yesterday", "tomorrow", "days", "day", "ago", "fl", "fluid", "net", "wt", "weight"
             )
         )
 

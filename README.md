@@ -372,8 +372,8 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce and gallon/quart/pint labels, comma-decimal and leading-decimal OCR quantities/sizes)
-- Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows
+- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce and gallon/quart/pint labels, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
+- Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products
 - Pantry duplicate detection/merging, including barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
@@ -444,7 +444,7 @@ As of the latest local pass:
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
-- Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
+- Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, package `net wt` labels, common expiration label cues such as `expiration date`, `best by date`, `best if used by`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
 - Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
@@ -494,7 +494,7 @@ As of the latest local pass:
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
 - AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
 - AI pantry photo VERIFY notes include specific review prompts for missing brand, amount/unit, storage location, and best-by date details.
-- ML Kit pantry OCR fallback keeps single-label photos as one combined review item, but splits clear multi-item OCR rows into separate VERIFY pantry items.
+- ML Kit pantry OCR fallback keeps single-label photos as one combined review item, avoids treating `NET WT` package-size lines as products, and splits clear multi-item OCR rows into separate VERIFY pantry items.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

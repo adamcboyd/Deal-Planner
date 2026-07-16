@@ -26,6 +26,7 @@ class PantryOcrCandidateExtractorTest {
     fun `multi item OCR keeps complete pantry lines separate`() {
         val text = """
             Great Value Black Beans 15 oz pantry
+            NET WT 15 OZ
             Kroger Pasta 16 oz pantry
             Best By 2026-12-31
             Calories 120

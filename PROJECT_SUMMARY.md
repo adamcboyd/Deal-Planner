@@ -151,7 +151,7 @@ Deal_Planner/
 - ✅ Concise Gemini API error summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, and malformed string/list fields
 - ✅ Settings screen AI configuration status and Gemini connection test
-- ✅ ML Kit OCR fallback when Gemini is not configured
+- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
 ### 4. Business Logic Engines
@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (164 Test Cases)
+### 7. Unit Tests (165 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 164 unit tests
+- ✅ 165 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
