@@ -58,9 +58,10 @@ To create deterministic sample files for pasted text and PDF picker checks:
 
 ```powershell
 .\scripts\new-phone-test-samples.ps1
+.\scripts\send-phone-test-samples.ps1
 ```
 
-Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open. It contains demo receipt/flyer TXT and PDF files generated from the bundled app assets.
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`. The folder contains demo receipt/flyer TXT and PDF files generated from the bundled app assets.
 
 ## Optional Gemini Setup
 

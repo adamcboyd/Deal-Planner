@@ -1051,6 +1051,25 @@ Result: created an ignored timestamped `phone-test-samples\` folder with:
 
 The generated PDFs were checked for `%PDF-1.4` headers and `%%EOF` trailers, and `git check-ignore` confirmed the sample output is ignored.
 
+Latest helper checkpoint after phone-test sample transfer work:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\send-phone-test-samples.ps1 -Help
+.\scripts\send-phone-test-samples.ps1
+```
+
+Result: help output printed successfully, all PowerShell helpers parsed successfully, and the helper validated the latest generated sample folder before stopping at the expected no connected/authorized Android phone condition. With one authorized phone, it copies the sample TXT/PDF files to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`.
+
+Latest continuation gate after phone-test sample transfer work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Latest continuation gate after receipt PDF import work:
 
 ```powershell
@@ -1117,6 +1136,7 @@ Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-insta
 Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
 Use `.\scripts\new-phone-test-report.ps1` before or during phone testing; its Source Snapshot now records both the repo HEAD and the compiled APK source branch/commit/dirty state from generated debug `BuildConfig`.
 Use `.\scripts\new-phone-test-samples.ps1` before phone testing to create ignored demo receipt/flyer TXT and PDF files for pasted-text and PDF picker checks.
+Use `.\scripts\send-phone-test-samples.ps1` after USB debugging is authorized to copy the latest generated sample folder to the phone's Downloads folder.
 
 Phone test checklist:
 
@@ -1137,6 +1157,7 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture, records repo HEAD plus compiled APK source branch/commit/dirty state, and writes local reports under ignored `phone-test-results\`.
 - `scripts\new-phone-test-samples.ps1` is available for creating ignored demo receipt/flyer TXT and PDF files under `phone-test-samples\`.
+- `scripts\send-phone-test-samples.ps1` is available for copying the latest generated demo receipt/flyer TXT and PDF files to an authorized Android phone's Downloads folder.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
@@ -1314,6 +1335,7 @@ Optional before the phone test run:
 ```powershell
 .\scripts\new-phone-test-report.ps1
 .\scripts\new-phone-test-samples.ps1
+.\scripts\send-phone-test-samples.ps1
 ```
 
 7. Test in this order:

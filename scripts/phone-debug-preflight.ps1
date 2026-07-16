@@ -528,6 +528,12 @@ if (Test-Path ".\scripts\new-phone-test-report.ps1") {
     Add-Check $results "Phone test report helper" "WARN" "Phone test report helper not found; test evidence may end up only in chat."
 }
 
+if (Test-Path ".\scripts\send-phone-test-samples.ps1") {
+    Add-Check $results "Phone sample transfer helper" "OK" "scripts\send-phone-test-samples.ps1 is present for copying generated samples to phone Downloads."
+} else {
+    Add-Check $results "Phone sample transfer helper" "WARN" "Phone sample transfer helper not found; generated test files must be copied manually."
+}
+
 Write-Host ""
 $failCount = @($results | Where-Object { $_.Status -eq "FAIL" }).Count
 $warnCount = @($results | Where-Object { $_.Status -eq "WARN" }).Count

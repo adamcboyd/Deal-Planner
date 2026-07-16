@@ -300,6 +300,7 @@ $adbBlock
 - [ ] Deals pasted flyer text works, including edit/review and comma/leading-decimal price corrections.
 - [ ] Receipts pasted receipt text works, updates Budget, and supports edit/delete corrections.
 - [ ] Generated sample TXT files were available for pasted flyer/receipt checks, if used.
+- [ ] Generated sample folder was copied or otherwise available on the phone, if used.
 - [ ] Budget settings save valid comma/leading-decimal values and block invalid text.
 - Notes:
 
