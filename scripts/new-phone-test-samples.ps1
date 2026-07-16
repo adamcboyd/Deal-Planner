@@ -17,6 +17,7 @@ function Show-Usage {
     Write-Host "  .\scripts\new-phone-test-samples.ps1 -OutputDir phone-test-samples"
     Write-Host ""
     Write-Host "Creates ignored timestamped TXT, PDF, PNG, pantry-label, and UPC-A barcode sample files from bundled demo assets."
+    Write-Host "The pantry-label sample covers hyphenated sizes, punctuated label cues, slash dates, and two-digit dash dates."
     Write-Host "Also verifies required files and writes SAMPLE_MANIFEST.md with byte counts and SHA-256 hashes."
 }
 
@@ -411,6 +412,15 @@ function Assert-SampleFolder {
         }
     }
 
+    $pantryTextPath = Join-Path $Path "deal-planner-demo-pantry-label.txt"
+    $pantryText = Get-Content -Raw -LiteralPath $pantryTextPath
+    $requiredPantryText = @("16-ounce", "12-count", "net wt:", "best by:", "12/31/2026", "12-31-26")
+    foreach ($expectedText in $requiredPantryText) {
+        if (-not $pantryText.Contains($expectedText)) {
+            throw "Pantry label sample is missing expected OCR coverage text: $expectedText"
+        }
+    }
+
     foreach ($pdfName in @("deal-planner-demo-receipt.pdf", "deal-planner-demo-flyer.pdf")) {
         $pdfPath = Join-Path $Path $pdfName
         if (-not (Test-PdfFile $pdfPath)) {
@@ -513,11 +523,11 @@ $manifestPath = Join-Path $sessionDir "SAMPLE_MANIFEST.md"
 Copy-Item -LiteralPath $receiptAsset -Destination $receiptText -Force
 Copy-Item -LiteralPath $flyerAsset -Destination $flyerText -Force
 $pantryLines = @(
-    "Great Value Black Beans 15 oz pantry best by 2026-12-31",
-    "Kroger Pasta 16 oz pantry best by 2026-11-15",
-    "Great Value Peanut Butter 16-ounce pantry best by 2027-03-04",
-    "Kroger Eggs 12-count fridge best by 2026-07-31",
-    "Private Selection Salsa 16 oz fridge opened 2026-07-01 best by 2026-08-15"
+    "Great Value Black Beans net wt: 15 oz pantry best by: 12/31/2026",
+    "Kroger Pasta 16 oz pantry exp: 12-31-26",
+    "Great Value Peanut Butter 16-ounce pantry best-by 2027-03-04",
+    "Kroger Eggs 12-count fridge use by 12-31-26",
+    "Private Selection Salsa 16 oz fridge opened: 2026-07-01 use by: 12/31/2026"
 )
 Set-Content -LiteralPath $pantryText -Value $pantryLines -Encoding UTF8
 $barcodeValue = "012345678905"
@@ -545,15 +555,15 @@ Copy this folder to the Android phone or upload it to a location the phone can o
 - deal-planner-demo-flyer.txt: paste into Deals -> Paste flyer OCR text.
 - deal-planner-demo-flyer.pdf: choose from Deals -> Choose Flyer PDF.
 - deal-planner-demo-flyer.png: choose from Deals -> Choose Flyer Image.
-- deal-planner-demo-pantry-label.txt: reference text for pantry label OCR, including hyphenated 16-ounce and 12-count rows.
-- deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery for multi-item pantry OCR, including hyphenated package-size rows.
+- deal-planner-demo-pantry-label.txt: reference text for pantry label OCR, including hyphenated 16-ounce and 12-count rows, punctuated label cues, and slash/two-digit label dates.
+- deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery for multi-item pantry OCR, including hyphenated package-size rows, punctuated label cues, and common non-ISO label dates.
 - deal-planner-demo-upc-a.txt: paste or type into Pantry -> Barcode / UPC.
 - deal-planner-demo-upc-a.png: display on another screen or print, then scan from Pantry -> Scan.
 - SAMPLE_MANIFEST.md: file byte counts and SHA-256 hashes for local and transfer verification.
 
 Expected receipt result: the bundled demo receipt imports grocery line items, ignores total/tender lines, and updates Budget.
 Expected flyer result: the bundled demo flyer imports multiple Kroger deals with prices, limits, coupons, and deal scores.
-Expected pantry result: the label image imports separate VERIFY pantry rows, including the 16-ounce peanut butter and 12-count eggs rows, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
+Expected pantry result: the label image imports separate VERIFY pantry rows, including the 16-ounce peanut butter, 12-count eggs, punctuated `net wt:`/`best by:` cues, and slash/two-digit label dates, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
 Expected barcode result: the UPC imports a VERIFY barcode item, using Open Food Facts details when available or fallback barcode details otherwise.
 "@
 

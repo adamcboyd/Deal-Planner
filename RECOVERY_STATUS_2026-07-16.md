@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry/deal review-date validator coverage work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: flexible review date input work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after richer pantry-label phone sample work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: pantry/deal review-date validator coverage work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2318,6 +2318,34 @@ Focused app check:
 ```
 
 Result: `BUILD SUCCESSFUL`; targeted pantry and deal edit validation tests passed.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after richer pantry-label phone sample work:
+
+Helper checkpoint:
+
+- `scripts\new-phone-test-samples.ps1` now generates pantry-label TXT/PNG samples with hyphenated package-size rows, punctuated label cues such as `net wt:` and `best by:`, slash dates such as `12/31/2026`, and two-digit dash dates such as `12-31-26`.
+- `new-phone-test-samples.ps1 -VerifyOnly` now checks that the generated pantry-label text still contains the phone-test coverage strings before writing the manifest.
+- Generated and verified ignored sample folder: `phone-test-samples\20260716-163910`.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so the real phone run expects those richer pantry-label sample cases.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-phone-test-samples.ps1")); "new-phone-test-samples.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -VerifyOnly -SamplesDir phone-test-samples\20260716-163910
+```
+
+Result: parse check passed, help printed, sample generation succeeded, `SAMPLE_MANIFEST.md` was written, the new pantry-label text includes `net wt:`, `best by:`, `12/31/2026`, `12-31-26`, `16-ounce`, and `12-count`, and `-VerifyOnly` accepted the generated folder.
 
 Full local gate:
 
