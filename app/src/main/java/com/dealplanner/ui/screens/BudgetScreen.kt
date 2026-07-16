@@ -14,7 +14,17 @@ import com.dealplanner.ui.viewmodel.AppViewModel
 fun BudgetScreen(viewModel: AppViewModel) {
     val budgetState by viewModel.budgetState.collectAsState()
     val budgetAnalysis by viewModel.budgetAnalysis.collectAsState()
+    val startingBudget = budgetState?.startingBudget ?: 0.0
+    val displayCurrentBalance = budgetAnalysis?.currentBalance
+        ?: budgetState?.let { it.startingBudget - it.spentToDate }
+        ?: 0.0
     val displayDailyEnvelope = budgetAnalysis?.dailyBudget ?: budgetState?.dailyEnvelope ?: 0.0
+    val displaySpentToDate = (startingBudget - displayCurrentBalance).coerceAtLeast(0.0)
+    val spendingProgress = if (startingBudget > 0.0) {
+        (displaySpentToDate / startingBudget).coerceIn(0.0, 1.0).toFloat()
+    } else {
+        0.0f
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -36,13 +46,13 @@ fun BudgetScreen(viewModel: AppViewModel) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "${"$%.2f".format(budgetState?.let { it.startingBudget - it.spentToDate } ?: 0.0)}",
+                        "${"$%.2f".format(displayCurrentBalance)}",
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        "of ${"$%.2f".format(budgetState?.startingBudget ?: 0.0)} monthly food budget",
+                        "of ${"$%.2f".format(startingBudget)} monthly food budget",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -200,7 +210,7 @@ fun BudgetScreen(viewModel: AppViewModel) {
                         ) {
                             Text("Spent to Date:", style = MaterialTheme.typography.bodyMedium)
                             Text(
-                                "${"$%.2f".format(budget.spentToDate)}",
+                                "${"$%.2f".format(displaySpentToDate)}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -208,7 +218,7 @@ fun BudgetScreen(viewModel: AppViewModel) {
 
                         Spacer(modifier = Modifier.height(8.dp))
                         LinearProgressIndicator(
-                            progress = (budget.spentToDate / budget.startingBudget).toFloat(),
+                            progress = spendingProgress,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

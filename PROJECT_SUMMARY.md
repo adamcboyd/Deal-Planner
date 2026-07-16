@@ -181,7 +181,7 @@ Deal_Planner/
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs and PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
-- ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
+- ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
 - ✅ Material 3 theming with dark/light support
 

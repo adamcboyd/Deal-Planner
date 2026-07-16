@@ -298,7 +298,7 @@ Click "Generate" in the Menu tab to create a deterministic 7-day plan. The same 
 ### Budget Management
 
 The Budget tab shows:
-- Current balance
+- Receipt-aware current balance
 - Daily envelope (auto-calculated from remaining budget and receipt spending)
 - Projected spend from current-month receipt/budget history
 - Surplus/deficit warnings
@@ -406,6 +406,7 @@ As of the latest local pass:
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal quantity, total, and confidence corrections.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
+- Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
 - Settings accepts comma-decimal protein-per-meal values such as `0,5`.

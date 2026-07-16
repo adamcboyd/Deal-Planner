@@ -462,6 +462,14 @@ Latest continuation gate after Gemini object-shaped response parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt-aware budget display work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -567,6 +575,7 @@ Verified by build/unit tests/code inspection:
 - Receipt totals are rounded to cents before budget updates.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
 - Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.
+- Budget screen current balance, monthly overview, and progress display use receipt-aware analysis values when available, so stale stored budget totals do not contradict current receipt history.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.

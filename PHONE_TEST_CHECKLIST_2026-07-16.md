@@ -196,7 +196,7 @@ Verify these show visible status messages instead of silent failures:
 - Manual pantry, deals, and receipt text paths work.
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
-- Budget updates after receipt import/edit/delete.
+- Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
 - Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, and estimates totals from planned quantities and normalized price-per-unit values.
