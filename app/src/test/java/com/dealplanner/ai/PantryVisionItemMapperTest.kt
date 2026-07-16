@@ -103,4 +103,34 @@ class PantryVisionItemMapperTest {
         assertThat(pantryItem!!.unit).isNull()
         assertThat(pantryItem.needsVerify).isTrue()
     }
+
+    @Test
+    fun `generic or unknown vision brand requires review`() {
+        val genericItem = completeVisionItem().copy(brand = "Generic")
+        val unknownItem = completeVisionItem().copy(brand = "unknown")
+
+        val genericPantryItem = genericItem.toPantryItem(warnings = emptyList())
+        val unknownPantryItem = unknownItem.toPantryItem(warnings = emptyList())
+
+        assertThat(genericPantryItem).isNotNull()
+        assertThat(genericPantryItem!!.brand).isEqualTo("Generic")
+        assertThat(genericPantryItem.needsVerify).isTrue()
+
+        assertThat(unknownPantryItem).isNotNull()
+        assertThat(unknownPantryItem!!.brand).isEqualTo("Generic")
+        assertThat(unknownPantryItem.needsVerify).isTrue()
+    }
+
+    private fun completeVisionItem() = GeminiPantryVisionClient.PantryVisionItem(
+        brand = "Kroger",
+        product = "rolled oats",
+        quantity = 1.0,
+        unit = "container",
+        size = "18 oz",
+        location = "pantry",
+        expirationDate = "2026-12-31",
+        openedDate = null,
+        confidence = 0.95,
+        questions = emptyList()
+    )
 }

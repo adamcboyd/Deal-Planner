@@ -447,6 +447,7 @@ As of the latest local pass:
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31` before saving review items.
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
 - AI pantry photo items with an unknown amount unit require review instead of being treated as fully verified.
+- AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

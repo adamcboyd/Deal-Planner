@@ -11,7 +11,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     val unparsedBestByNote = expirationDate.toUnparsedDateNote("best-by date", parsedBestBy != null)
     val questionNotes = questions.joinToString(" ")
     val warningNotes = warnings.joinToString(" ")
-    val missingBrand = brand.isNullOrBlank()
+    val missingBrand = brand.isMissingBrand()
     val missingAmount = quantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
     val missingDate = parsedBestBy == null
 
@@ -36,6 +36,11 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
 }
 
 private fun String?.toParsedDate() = this?.toFlexibleLocalDateOrNull()
+
+private fun String?.isMissingBrand(): Boolean {
+    val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
+    return normalized == "unknown" || normalized == "generic"
+}
 
 private fun String?.toUnparsedDateNote(label: String, parsed: Boolean): String? {
     val value = this?.trim()?.ifBlank { null } ?: return null

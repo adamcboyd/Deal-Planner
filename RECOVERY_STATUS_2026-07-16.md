@@ -860,6 +860,22 @@ Latest continuation gate after AI pantry unknown-unit review work:
 
 Result: `BUILD SUCCESSFUL`, with `144` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused AI pantry Generic/unknown brand review check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.PantryVisionItemMapperTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after AI pantry Generic/unknown brand review work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `145` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -1001,6 +1017,7 @@ Verified by build/unit tests/code inspection:
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
+- AI pantry photo item mapping has unit coverage for Generic or unknown brand values; the item requires review so missing label brand details stay visible.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.
