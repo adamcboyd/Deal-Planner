@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry OCR hyphenated package-size splitting validation; confirm the exact commit with `git log -1 --oneline`.
-- Previous app-code checkpoint before that work: pantry hyphenated package-size parser validation.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after AI pantry saved-row normalization validation; confirm the exact commit with `git log -1 --oneline`.
+- Previous app-code checkpoint before that work: pantry OCR hyphenated package-size splitting validation.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -43,6 +43,14 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 ```
 
 Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after AI pantry saved-row normalization work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `180` unit tests detected, `0` failures/errors/skipped, and lint at `0 errors, 21 warnings`. Focused `PantryVisionItemMapperTest` also passed locally before the full gate.
 
 Latest continuation gate after pantry OCR hyphenated package-size splitting work:
 

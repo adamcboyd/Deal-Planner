@@ -26,9 +26,36 @@ class PantryVisionItemMapperTest {
         assertThat(pantryItem).isNotNull()
         assertThat(pantryItem!!.item).isEqualTo("black beans")
         assertThat(pantryItem.qty).isEqualTo(2.0)
-        assertThat(pantryItem.unit).isEqualTo("cans")
+        assertThat(pantryItem.unit).isEqualTo("can")
         assertThat(pantryItem.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
         assertThat(pantryItem.opened).isEqualTo(LocalDate.of(2026, 7, 1))
+        assertThat(pantryItem.location).isEqualTo("pantry")
+        assertThat(pantryItem.needsVerify).isFalse()
+    }
+
+    @Test
+    fun `map vision item normalizes raw unit brand size and storage aliases`() {
+        val item = GeminiPantryVisionClient.PantryVisionItem(
+            brand = "  Great Value  ",
+            product = "  milk  ",
+            quantity = 1.0,
+            unit = "fluid ounces",
+            size = "  64 fl oz  ",
+            location = "Cold Storage",
+            expirationDate = "12/31/2026",
+            openedDate = null,
+            confidence = 0.91,
+            questions = emptyList()
+        )
+
+        val pantryItem = item.toPantryItem(warnings = emptyList())
+
+        assertThat(pantryItem).isNotNull()
+        assertThat(pantryItem!!.brand).isEqualTo("Great Value")
+        assertThat(pantryItem.item).isEqualTo("milk")
+        assertThat(pantryItem.unit).isEqualTo("oz")
+        assertThat(pantryItem.size).isEqualTo("64 fl oz")
+        assertThat(pantryItem.location).isEqualTo("fridge")
         assertThat(pantryItem.needsVerify).isFalse()
     }
 

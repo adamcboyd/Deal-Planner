@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry OCR hyphenated package-size splitting validation; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after AI pantry saved-row normalization validation; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -276,6 +276,7 @@ In `Settings`:
 12. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
 13. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
 14. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
+15. Open at least one AI-imported pantry item in the edit dialog and confirm saved unit/location text is clean and canonical, such as plural cans saved as `can`, fluid ounces saved as `oz`, and refrigerator/cold-storage wording saved as `fridge`.
 
 ## Settings Save Check
 
@@ -332,3 +333,4 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.
 - AI pantry VERIFY rows explain what needs review in the item notes, including model-provided clarifying questions or review-note warnings when present.
+- AI pantry rows save trimmed/canonical unit and storage values so review/edit fields do not contain raw model wording.

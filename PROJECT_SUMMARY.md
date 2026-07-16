@@ -151,6 +151,7 @@ Deal_Planner/
 - ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Concise Gemini API error summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
+- ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling and hyphenated package-size multi-item splitting
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -202,7 +203,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (179 Test Cases)
+### 7. Unit Tests (180 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -395,6 +396,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
 - ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-finite numeric fallback, non-JSON fallback, and clamped confidence
+- ✅ Normalizes saved AI pantry rows so raw plural units, fluid-ounce wording, whitespace, and refrigerator/cold-storage wording become canonical pantry values
 - ✅ Maps missing, zero, or negative Gemini pantry amounts to reviewable quantity defaults instead of saving invalid pantry quantities
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
@@ -461,7 +463,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 177 unit tests
+- ✅ 180 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

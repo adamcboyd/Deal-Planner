@@ -4,17 +4,21 @@ import com.dealplanner.data.model.PantryItem
 import com.dealplanner.util.toFlexibleLocalDateOrNull
 
 fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String>): PantryItem? {
-    val productName = product?.trim()?.ifBlank { null } ?: return null
+    val productName = product.normalizedText() ?: return null
+    val normalizedBrand = brand.normalizeBrand()
+    val normalizedUnit = unit.normalizePantryUnit()
+    val normalizedSize = size.normalizedText()
+    val normalizedLocation = location.normalizeStorageLocation()
     val parsedOpened = openedDate.toParsedDate()
     val parsedBestBy = expirationDate.toParsedDate()
     val unparsedOpenedNote = openedDate.toUnparsedDateNote("opened date", parsedOpened != null)
     val unparsedBestByNote = expirationDate.toUnparsedDateNote("best-by date", parsedBestBy != null)
     val questionNotes = questions.joinToString(" ")
     val warningNotes = warnings.joinToString(" ")
-    val missingBrand = brand.isMissingBrand()
+    val missingBrand = normalizedBrand == null
     val safeQuantity = quantity?.takeIf { it > 0.0 }
-    val missingAmount = safeQuantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
-    val missingLocation = location.isMissingLocation()
+    val missingAmount = safeQuantity == null || normalizedUnit == null
+    val missingLocation = normalizedLocation == null
     val missingDate = parsedBestBy == null
     val reviewNotes = buildReviewNotes(
         missingBrand = missingBrand,
@@ -26,10 +30,10 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     return PantryItem(
         item = productName,
         qty = safeQuantity ?: 1.0,
-        unit = unit?.takeUnless { it.equals("unknown", ignoreCase = true) },
-        size = size,
-        brand = brand?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "Generic",
-        location = location?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "pantry",
+        unit = normalizedUnit,
+        size = normalizedSize,
+        brand = normalizedBrand ?: "Generic",
+        location = normalizedLocation ?: "pantry",
         opened = parsedOpened,
         bestBy = parsedBestBy,
         notes = mergeNotes("AI photo import", reviewNotes, questionNotes, warningNotes, unparsedOpenedNote, unparsedBestByNote),
@@ -46,14 +50,68 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
 
 private fun String?.toParsedDate() = this?.toFlexibleLocalDateOrNull()
 
-private fun String?.isMissingBrand(): Boolean {
-    val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
-    return normalized == "unknown" || normalized == "generic"
+private fun String?.normalizedText(): String? {
+    return this
+        ?.trim()
+        ?.replace(Regex("""\s+"""), " ")
+        ?.ifBlank { null }
 }
 
-private fun String?.isMissingLocation(): Boolean {
-    val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
-    return normalized == "unknown"
+private fun String?.normalizeBrand(): String? {
+    val cleaned = normalizedText() ?: return null
+    return when (cleaned.lowercase()) {
+        "unknown", "generic" -> null
+        else -> cleaned
+    }
+}
+
+private fun String?.normalizePantryUnit(): String? {
+    val normalized = this
+        .normalizedText()
+        ?.lowercase()
+        ?.trim('.', ',', ';', ':')
+        ?.ifBlank { null }
+        ?: return null
+
+    return when (normalized) {
+        "unknown" -> null
+        "cans" -> "can"
+        "jars" -> "jar"
+        "boxes" -> "box"
+        "bags" -> "bag"
+        "bottles" -> "bottle"
+        "containers" -> "container"
+        "cups" -> "cup"
+        "lbs", "pound", "pounds" -> "lb"
+        "ounces", "ounce", "fl oz", "fluid oz", "fluid ounce", "fluid ounces" -> "oz"
+        "grams", "gram" -> "g"
+        "kilograms", "kilogram" -> "kg"
+        "ct", "each", "ea", "item", "items", "counts", "pack", "packs", "package", "packages", "pk" -> "count"
+        "milliliters", "milliliter" -> "ml"
+        "liters", "liter" -> "l"
+        "gallons", "gallon" -> "gal"
+        "quarts", "quart" -> "qt"
+        "pints", "pint" -> "pt"
+        "dozen", "dozens" -> "count"
+        else -> normalized
+    }
+}
+
+private fun String?.normalizeStorageLocation(): String? {
+    val normalized = this
+        .normalizedText()
+        ?.lowercase()
+        ?.trim('.', ',', ';', ':')
+        ?.ifBlank { null }
+        ?: return null
+
+    return when (normalized) {
+        "unknown" -> null
+        "refrigerator", "refrigerated", "cold storage", "cold" -> "fridge"
+        "deep freezer", "deep freeze", "frozen" -> "freezer"
+        "cabinet", "cupboard", "shelf", "shelf stable", "shelf-stable", "room temp", "room temperature" -> "pantry"
+        else -> normalized
+    }
 }
 
 private fun buildReviewNotes(
