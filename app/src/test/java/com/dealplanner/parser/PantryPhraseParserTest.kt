@@ -164,6 +164,18 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse hyphenated date label cues without leaking cue into item name`() {
+        val useBy = parser.parse("milk use-by 12/31/2026")
+        val bestBy = parser.parse("yogurt best-by 2026-12-31")
+
+        assertThat(useBy.item.item).isEqualTo("milk")
+        assertThat(useBy.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        assertThat(bestBy.item.item).isEqualTo("yogurt")
+        assertThat(bestBy.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+    }
+
+    @Test
     fun `parse complex item`() {
         val result = parser.parse("2 cans Great Value black beans 15oz in pantry")
 

@@ -334,6 +334,14 @@ Latest continuation gate after pantry opened-on date wording cleanup:
 
 Result: `BUILD SUCCESSFUL`, with `95` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after hyphenated pantry date-label parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `96` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -395,6 +403,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses common label-style expiration cues such as `best before`, `use by`, and `exp`.
 - Pantry manual text input parses label wording such as `expiration date 12/31/2026` and `best by date 2026-12-31` without leaving `date` in the item name.
 - Pantry manual text input parses `opened on 2026-07-01` without leaving `on` in the item name.
+- Pantry manual text input parses hyphenated label cues such as `use-by 12/31/2026` and `best-by 2026-12-31` without leaving the cue in the item name.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.

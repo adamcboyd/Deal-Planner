@@ -235,7 +235,7 @@ class PantryPhraseParser {
         skipWords.addAll(
             listOf(
                 "of", "in", "on", "the", "a", "an", "opened", "best", "by", "bestby", "before",
-                "if", "use", "used", "expires", "expiration", "exp", "date",
+                "best-by", "best-before", "if", "use", "use-by", "used", "expires", "expiration", "exp", "date",
                 "today", "yesterday", "tomorrow", "days", "day", "ago"
             )
         )
@@ -509,9 +509,12 @@ class PantryPhraseParser {
         private val expDateCuePattern = Regex("""\bexp\.?\b""")
         private val bestByDateCueKeywords = listOf(
             "best if used by",
+            "best-before",
             "best before",
+            "best-by",
             "best by",
             "bestby",
+            "use-by",
             "use by",
             "expires",
             "expiration"
