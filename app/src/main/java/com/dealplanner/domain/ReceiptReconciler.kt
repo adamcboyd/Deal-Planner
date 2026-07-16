@@ -124,7 +124,7 @@ class ReceiptReconciler {
             receiptItems = receiptItems,
             pantryUpdates = pantryUpdates,
             dealMatches = dealMatches,
-            total = total,
+            total = roundCurrency(total),
             warnings = warnings
         )
     }
@@ -143,17 +143,75 @@ class ReceiptReconciler {
         pattern1.find(line)?.let { match ->
             val qty = match.groupValues[1].toDoubleOrNull() ?: 1.0
             val itemName = match.groupValues[3].trim()
+            if (isSummaryOrTenderLine(itemName)) return null
             val totalPrice = match.groupValues[4].toDoubleOrNull() ?: 0.0
             return Triple(itemName, totalPrice, qty)
         }
 
         pattern2.find(line)?.let { match ->
             val itemName = match.groupValues[1].trim()
+            if (isSummaryOrTenderLine(itemName)) return null
             val price = match.groupValues[2].toDoubleOrNull() ?: 0.0
             return Triple(itemName, price, null)
         }
 
         return null
+    }
+
+    private fun isSummaryOrTenderLine(itemName: String): Boolean {
+        val normalized = itemName.lowercase()
+            .replace(Regex("""[^a-z0-9]+"""), " ")
+            .trim()
+            .replace(Regex("""\s+"""), " ")
+
+        val exactMatches = setOf(
+            "sub total",
+            "subtotal",
+            "tax",
+            "sales tax",
+            "total",
+            "grand total",
+            "order total",
+            "balance",
+            "balance due",
+            "amount due",
+            "amount paid",
+            "payment",
+            "cash",
+            "change",
+            "change due",
+            "credit",
+            "credit card",
+            "debit",
+            "debit card",
+            "visa",
+            "mastercard",
+            "master card",
+            "amex",
+            "discover",
+            "ebt",
+            "ebt card",
+            "snap",
+            "wic",
+            "savings",
+            "total savings"
+        )
+
+        val prefixes = listOf(
+            "tax ",
+            "sales tax ",
+            "balance due ",
+            "amount due ",
+            "amount paid ",
+            "payment ",
+            "change due ",
+            "credit card ",
+            "debit card ",
+            "ebt card ",
+            "total savings "
+        )
+
+        return normalized in exactMatches || prefixes.any { normalized.startsWith(it) }
     }
 
     private fun findSplitQuantity(lines: List<String>, startIndex: Int): Double? {
@@ -224,5 +282,9 @@ class ReceiptReconciler {
     fun calculateVPP(packagePrice: Double, packageWeight: Double, servingSize: Double = 0.5): Double {
         val servings = packageWeight / servingSize
         return packagePrice / servings
+    }
+
+    private fun roundCurrency(value: Double): Double {
+        return kotlin.math.round(value * 100.0) / 100.0
     }
 }

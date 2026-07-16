@@ -44,8 +44,9 @@ class ReceiptReconcilerTest {
 
         val result = reconciler.reconcileReceipt(ocrText, deals, emptyList(), "Kroger")
 
-        assertThat(result.receiptItems).isNotEmpty()
-        assertThat(result.total).isGreaterThan(0.0)
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("TOTAL            $12.95")
+        assertThat(result.total).isEqualTo(12.95)
     }
 
     @Test
@@ -169,5 +170,26 @@ class ReceiptReconcilerTest {
         assertThat(result.receiptItems[0].matchedType).isEqualTo("pantry")
         assertThat(result.receiptItems[0].matchedItemId).isEqualTo(7)
         assertThat(result.dealMatches).isEmpty()
+    }
+
+    @Test
+    fun `ignore receipt subtotal tax total and tender lines`() {
+        val ocrText = """
+            BLACK BEANS      $1.78
+            KROGER PASTA     $3.00
+            SUBTOTAL         $4.78
+            TAX              $0.00
+            TOTAL            $4.78
+            EBT/CARD         $4.78
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS      $1.78",
+            "KROGER PASTA     $3.00"
+        ).inOrder()
+        assertThat(result.total).isEqualTo(4.78)
     }
 }
