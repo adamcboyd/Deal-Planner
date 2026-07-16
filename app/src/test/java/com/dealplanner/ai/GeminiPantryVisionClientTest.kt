@@ -59,6 +59,47 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `summarize api error extracts google status and message`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val error = """
+            {
+              "error": {
+                "code": 400,
+                "message": "API key not valid. Please pass a valid API key.",
+                "status": "INVALID_ARGUMENT"
+              }
+            }
+        """.trimIndent()
+
+        val summary = client.summarizeApiError(400, error)
+
+        assertThat(summary).isEqualTo(
+            "HTTP 400 INVALID_ARGUMENT: API key not valid. Please pass a valid API key."
+        )
+    }
+
+    @Test
+    fun `summarize api error handles empty body`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+
+        val summary = client.summarizeApiError(503, "")
+
+        assertThat(summary).isEqualTo("HTTP 503 unknown error")
+    }
+
+    @Test
+    fun `summarize api error compacts and truncates raw text`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val longError = "Gateway timeout\n" + "x".repeat(240)
+
+        val summary = client.summarizeApiError(504, longError)
+
+        assertThat(summary).startsWith("HTTP 504 Gateway timeout")
+        assertThat(summary).endsWith("...")
+        assertThat(summary.length).isAtMost(190)
+    }
+
+    @Test
     fun `parse pantry vision response from fenced json`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

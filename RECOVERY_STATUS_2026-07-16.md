@@ -494,6 +494,22 @@ Latest continuation gate after shopping-list startup restore work:
 
 Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused AI connection error-summary check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after Gemini API error-summary work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `115` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -608,6 +624,7 @@ Verified by build/unit tests/code inspection:
 - Optional Gemini pantry photo client exists.
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
+- Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal values such as `0,5`.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.

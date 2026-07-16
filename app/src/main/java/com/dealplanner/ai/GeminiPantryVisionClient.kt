@@ -120,11 +120,28 @@ class GeminiPantryVisionClient(
                 connection.inputStream.bufferedReader().use { it.readText() }
             } else {
                 val errorText = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
-                throw IOException("Gemini request failed (${connection.responseCode}): $errorText")
+                throw IOException("Gemini request failed: ${summarizeApiError(connection.responseCode, errorText)}")
             }
         } finally {
             connection.disconnect()
         }
+    }
+
+    internal fun summarizeApiError(responseCode: Int, errorText: String): String {
+        val apiError = try {
+            val root = JsonParser.parseString(errorText).asJsonObject
+            val error = root.getAsJsonObject("error")
+            val status = error?.getStringOrNull("status")
+            val message = error?.getStringOrNull("message")
+            listOfNotNull(status, message)
+                .joinToString(": ")
+                .ifBlank { null }
+        } catch (_: Exception) {
+            null
+        }
+
+        val detail = (apiError ?: errorText.compactForStatus()).ifBlank { "unknown error" }
+        return "HTTP $responseCode ${detail.truncateStatusDetail()}"
     }
 
     private fun buildRequest(base64Image: String): JsonObject {
@@ -486,8 +503,25 @@ class GeminiPantryVisionClient(
         }
     }
 
+    private fun String.compactForStatus(): String {
+        return lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+            .replace(Regex("""\s+"""), " ")
+    }
+
+    private fun String.truncateStatusDetail(): String {
+        return if (length <= MAX_STATUS_DETAIL_LENGTH) {
+            this
+        } else {
+            take(MAX_STATUS_DETAIL_LENGTH - 3).trimEnd() + "..."
+        }
+    }
+
     private companion object {
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
+        private const val MAX_STATUS_DETAIL_LENGTH = 180
         private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:[.,]\d+)?)\s*([A-Za-z]+)?""")
         private val wordQuantityPattern = Regex(
             """\b(one|two|three|four|five|six|seven|eight|nine|ten|half)\b\s*([A-Za-z]+)?""",

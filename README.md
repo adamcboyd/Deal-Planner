@@ -103,7 +103,7 @@ Rebuild the debug APK after changing `local.properties` so the key/model values 
 The phone install helper blocks `-SkipBuild` when `local.properties` is newer than the existing APK, so a newly added Gemini key is not accidentally left out of the installed build.
 
 A non-secret template is included at `local.properties.example`.
-The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks.
+The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks with concise API error summaries.
 The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
 
 ### Build & Run

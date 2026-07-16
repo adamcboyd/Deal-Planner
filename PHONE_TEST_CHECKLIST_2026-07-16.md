@@ -179,7 +179,8 @@ In `Settings`:
 3. Expected without key: status reports that Gemini API key is not configured.
 4. With a real key and rebuilt APK, tap `Test AI Connection`.
 5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
-6. With key configured, test pantry photo recognition against a real pantry item label.
+6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
+7. With key configured, test pantry photo recognition against a real pantry item label.
 
 ## Cancel and Permission Tests
 

@@ -84,7 +84,7 @@ Deal_Planner/
         │           └── ic_launcher_round.xml       ✅ Round icon
         └── test/java/com/dealplanner/
             ├── ai/
-            │   └── GeminiPantryVisionClientTest.kt ✅ 18 test cases
+            │   └── GeminiPantryVisionClientTest.kt ✅ 21 test cases
             ├── lookup/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 8 test cases
             ├── parser/
@@ -143,6 +143,7 @@ Deal_Planner/
 - ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
+- ✅ Concise Gemini API error summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, and malformed string/list fields
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ ML Kit OCR fallback when Gemini is not configured
@@ -194,8 +195,8 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (112 Test Cases)
-- ✅ GeminiPantryVisionClientTest (18 tests)
+### 7. Unit Tests (115 Test Cases)
+- ✅ GeminiPantryVisionClientTest (21 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
@@ -435,7 +436,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper with stale source/Gemini APK warnings
-- ✅ 112 unit tests
+- ✅ 115 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
