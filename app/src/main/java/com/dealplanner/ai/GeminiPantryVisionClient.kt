@@ -280,12 +280,13 @@ class GeminiPantryVisionClient(
         if (product.isNullOrBlank()) return null
         val quantity = firstQuantityParts("quantity", "qty", "amount", "count")
         val explicitUnit = firstStringOrNull("unit", "units", "item_unit", "itemUnit", "package_unit", "packageUnit")
+        val quantityWithExplicitUnit = quantity.withExplicitUnit(explicitUnit)
 
         return PantryVisionItem(
             brand = firstStringOrNull("brand", "brand_name", "brandName"),
             product = product,
-            quantity = quantity.value,
-            unit = (explicitUnit ?: quantity.unit).normalizePantryUnit(),
+            quantity = quantityWithExplicitUnit.value,
+            unit = quantityWithExplicitUnit.unit.normalizePantryUnit(),
             size = firstStringOrNull("size", "package_size", "packageSize", "net_weight", "netWeight"),
             location = firstStringOrNull(
                 "location",
@@ -430,21 +431,23 @@ class GeminiPantryVisionClient(
         if (text.isBlank()) return null
 
         val match = quantityPattern.find(text) ?: wordQuantityPattern.find(text) ?: return null
-        val value = match.groupValues[1].toQuantityDoubleOrNull() ?: wordQuantities[match.groupValues[1].lowercase()]
+        val quantityText = match.groupValues[1]
+        val value = quantityText.toQuantityDoubleOrNull() ?: wordQuantities[quantityText.lowercase()]
             ?: return null
         val unit = match.groupValues.getOrNull(2)?.ifBlank { null }
-        return QuantityParts(value = value, unit = unit)
+        return QuantityParts(value = value, unit = unit).withQuantityText(quantityText)
     }
 
     private fun JsonObject.toQuantityParts(): QuantityParts? {
-        val value = firstStringOrNull(
+        val valueText = firstStringOrNull(
             "value",
             "amount",
             "quantity",
             "qty",
             "count",
             "number"
-        )?.toQuantityDoubleOrNull()
+        )
+        val value = valueText?.toQuantityDoubleOrNull()
         val unit = firstStringOrNull(
             "unit",
             "units",
@@ -455,10 +458,25 @@ class GeminiPantryVisionClient(
         )
 
         return QuantityParts(value = value, unit = unit)
+            .withQuantityText(valueText)
             .takeIf { it.value != null || it.unit != null }
     }
 
     private fun String.toQuantityDoubleOrNull(): Double? {
+        val normalized = trim()
+            .lowercase()
+            .removePrefix("a ")
+            .removePrefix("an ")
+            .replace(Regex("""\s+"""), " ")
+        wordQuantities[normalized]?.let { return it }
+        if (normalized.endsWith(" dozen")) {
+            val multiplierText = normalized.removeSuffix(" dozen").trim()
+            val multiplier = wordQuantities[multiplierText] ?: multiplierText.toDoubleOrNull()
+            if (multiplier != null) {
+                return multiplier * DOZEN_COUNT
+            }
+        }
+
         val compact = replace(" ", "").replace(',', '.')
         val fractionParts = compact.split('/').takeIf { it.size == 2 }
         if (fractionParts != null) {
@@ -469,6 +487,68 @@ class GeminiPantryVisionClient(
             }
         }
         return compact.toDoubleOrNull()
+    }
+
+    private fun QuantityParts.withExplicitUnit(explicitUnit: String?): QuantityParts {
+        if (explicitUnit == null) return this
+
+        val normalizedExplicitUnit = explicitUnit.normalizePantryUnit()
+        return if (unit == "count" && normalizedExplicitUnit !in knownQuantityUnits) {
+            this
+        } else {
+            copy(unit = explicitUnit).expandDozenUnit()
+        }
+    }
+
+    private fun QuantityParts.withQuantityText(quantityText: String?): QuantityParts {
+        val normalizedQuantityText = quantityText?.normalizeQuantityText()
+        val normalizedUnit = unit?.normalizePantryUnit()
+
+        return when {
+            unit.isDozenUnit() -> copy(
+                value = value?.times(DOZEN_COUNT) ?: DOZEN_COUNT,
+                unit = "count"
+            )
+            normalizedQuantityText.isDozenQuantityText() && unit.isNullOrBlank() -> copy(unit = "count")
+            normalizedQuantityText.isDozenQuantityText() && normalizedUnit !in knownQuantityUnits -> copy(unit = "count")
+            else -> this
+        }
+    }
+
+    private fun QuantityParts.expandDozenUnit(): QuantityParts {
+        return if (unit.isDozenUnit()) {
+            copy(
+                value = value?.times(DOZEN_COUNT) ?: DOZEN_COUNT,
+                unit = "count"
+            )
+        } else {
+            this
+        }
+    }
+
+    private fun String?.normalizeQuantityText(): String? {
+        return this
+            ?.trim()
+            ?.lowercase()
+            ?.removePrefix("a ")
+            ?.removePrefix("an ")
+            ?.replace(Regex("""\s+"""), " ")
+            ?.ifBlank { null }
+    }
+
+    private fun String?.isDozenQuantityText(): Boolean {
+        val normalized = normalizeQuantityText() ?: return false
+        return normalized == "dozen" || normalized.endsWith(" dozen")
+    }
+
+    private fun String?.isDozenUnit(): Boolean {
+        val normalized = this
+            ?.trim()
+            ?.lowercase()
+            ?.trim('.', ',', ';', ':')
+            ?.ifBlank { null }
+            ?: return false
+        return normalized == "dozen" || normalized == "dozens"
     }
 
     private fun String.toFlexibleDoubleOrNull(): Double? {
@@ -496,6 +576,7 @@ class GeminiPantryVisionClient(
             "grams", "gram" -> "g"
             "kilograms", "kilogram" -> "kg"
             "ct", "each", "ea", "item", "items", "counts" -> "count"
+            "dozen", "dozens" -> "count"
             else -> normalized
         }
     }
@@ -548,11 +629,28 @@ class GeminiPantryVisionClient(
 
     private companion object {
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
+        private const val DOZEN_COUNT = 12.0
         private const val MAX_STATUS_DETAIL_LENGTH = 180
         private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:[.,]\d+)?)\s*([A-Za-z]+)?""")
         private val wordQuantityPattern = Regex(
-            """\b(one|two|three|four|five|six|seven|eight|nine|ten|half)\b\s*([A-Za-z]+)?""",
+            """\b(one|two|three|four|five|six|seven|eight|nine|ten|half|dozen)\b\s*([A-Za-z]+)?""",
             RegexOption.IGNORE_CASE
+        )
+        private val knownQuantityUnits = setOf(
+            "can",
+            "jar",
+            "box",
+            "bag",
+            "bottle",
+            "container",
+            "cup",
+            "lb",
+            "oz",
+            "g",
+            "kg",
+            "count",
+            "ml",
+            "l"
         )
         private val wordQuantities = mapOf(
             "one" to 1.0,
@@ -565,7 +663,8 @@ class GeminiPantryVisionClient(
             "eight" to 8.0,
             "nine" to 9.0,
             "ten" to 10.0,
-            "half" to 0.5
+            "half" to 0.5,
+            "dozen" to DOZEN_COUNT
         )
 
         private val pantryPrompt = """

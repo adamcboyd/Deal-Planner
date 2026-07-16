@@ -445,6 +445,69 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with dozen quantity amount`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "eggs",
+                  "amount": "a dozen eggs",
+                  "location": "fridge"
+                },
+                {
+                  "product": "tuna",
+                  "amount": "dozen cans",
+                  "location": "pantry"
+                },
+                {
+                  "product": "tortillas",
+                  "quantity": {
+                    "value": "half dozen"
+                  }
+                },
+                {
+                  "product": "sparkling water",
+                  "quantity": 2,
+                  "unit": "dozen"
+                },
+                {
+                  "product": "eggs",
+                  "quantity": "dozen",
+                  "unit": "eggs"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(5)
+
+        val eggs = result.items.filter { it.product == "eggs" }.first()
+        assertThat(eggs.quantity).isEqualTo(12.0)
+        assertThat(eggs.unit).isEqualTo("count")
+        assertThat(eggs.location).isEqualTo("fridge")
+
+        val tuna = result.items.first { it.product == "tuna" }
+        assertThat(tuna.quantity).isEqualTo(12.0)
+        assertThat(tuna.unit).isEqualTo("can")
+
+        val tortillas = result.items.first { it.product == "tortillas" }
+        assertThat(tortillas.quantity).isEqualTo(6.0)
+        assertThat(tortillas.unit).isEqualTo("count")
+
+        val sparklingWater = result.items.first { it.product == "sparkling water" }
+        assertThat(sparklingWater.quantity).isEqualTo(24.0)
+        assertThat(sparklingWater.unit).isEqualTo("count")
+
+        val splitEggs = result.items.filter { it.product == "eggs" }.last()
+        assertThat(splitEggs.quantity).isEqualTo(12.0)
+        assertThat(splitEggs.unit).isEqualTo("count")
+    }
+
+    @Test
     fun `parse pantry vision response with comma decimal quantity and confidence`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
