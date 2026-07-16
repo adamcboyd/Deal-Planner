@@ -115,6 +115,7 @@ Deal_Planner/
 - ✅ **PantryPhraseParser**:
   - Handles quantities (numeric, comma-decimal OCR, fractions, words)
   - Extracts brands, units, sizes, locations
+  - Handles common label sizes including `16-ounce`, `12-count`, fluid-ounce, gallon, quart, and pint wording
   - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, and exp, plus unpadded year-first and two-digit dash label dates)
   - Duplicate detection and merging
   - Confidence scoring
@@ -201,7 +202,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (175 Test Cases)
+### 7. Unit Tests (178 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest

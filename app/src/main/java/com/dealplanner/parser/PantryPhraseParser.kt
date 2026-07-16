@@ -121,7 +121,7 @@ class PantryPhraseParser {
         }
 
         // Extract unit and size
-        val sizePattern = Regex("""($PANTRY_NUMBER_PATTERN)\s*((?:fl\.?\s*|fluid\s+)?oz|gallon|gallons|gal|quart|quarts|qt|pint|pints|pt|lb|lbs|kg|g|ml|l|ct|count)""")
+        val sizePattern = Regex("""($PANTRY_NUMBER_PATTERN)\s*-?\s*($PANTRY_SIZE_UNIT_PATTERN)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
             val sizeUnitText = normalizeSizeUnitText(sizeMatch.groupValues[2])
@@ -268,9 +268,11 @@ class PantryPhraseParser {
 
         return when (normalized) {
             "fl oz", "fluid oz" -> "fl oz"
+            "ounce", "ounces" -> "oz"
             "gallon", "gallons" -> "gal"
             "quart", "quarts" -> "qt"
             "pint", "pints" -> "pt"
+            "count" -> "ct"
             else -> normalized
         }
     }
@@ -324,7 +326,7 @@ class PantryPhraseParser {
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
             token.toPantryNumberOrNull() == null &&
-            !Regex("""$PANTRY_NUMBER_PATTERN(?:oz|lb|lbs|g|kg|ml|l|gal|gallon|gallons|qt|quart|quarts|pt|pint|pints|ct|count)""").matches(token) &&
+            !Regex("""$PANTRY_NUMBER_PATTERN(?:\s*-\s*)?(?:$PANTRY_SIZE_UNIT_PATTERN)""").matches(token) &&
             !DATE_TOKEN_PATTERN.matches(token)
         }
 
@@ -588,6 +590,7 @@ class PantryPhraseParser {
 
     private companion object {
         private const val PANTRY_NUMBER_PATTERN = """(?:\d+)?[.,]?\d+"""
+        private const val PANTRY_SIZE_UNIT_PATTERN = """(?:fl\.?\s*|fluid\s+)?oz|ounce|ounces|gallon|gallons|gal|quart|quarts|qt|pint|pints|pt|lb|lbs|kg|g|ml|l|ct|count"""
         private const val EXP_DATE_CUE = "exp"
         private val DATE_TOKEN_PATTERN = Regex("""(?:\d{4}[/-]\d{1,2}[/-]\d{1,2})|(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4})""")
         private val relativeDatePattern = Regex("""\b(today|yesterday|tomorrow)\b""")

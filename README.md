@@ -372,7 +372,7 @@ Run unit tests:
 ```
 
 Tests cover:
-- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce and gallon/quart/pint labels, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
+- Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce, gallon/quart/pint, and hyphenated package labels such as `16-ounce` or `12-count`, net-weight label wording, comma-decimal and leading-decimal OCR quantities/sizes)
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products
 - Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
@@ -447,7 +447,7 @@ As of the latest local pass:
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
 - Meal planning only uses recognized meal-side grocery deals for vegetable slots; household/non-food flyer deals such as detergent stay out of meals and Shopping totals.
 - Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, package `net wt` labels, common expiration label cues such as `expiration date`, `best by date`, `best if used by`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
-- Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
+- Pantry parser handles common package sizes such as `1 gal`, `1 quart`, `1 pint`, `16-ounce`, and `12-count`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows; missing, Generic, or unknown brands can merge into a known-brand row when item, size, and location match, while different known brands stay separate.

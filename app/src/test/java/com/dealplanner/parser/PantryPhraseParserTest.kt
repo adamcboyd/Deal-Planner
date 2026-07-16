@@ -149,6 +149,24 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse hyphenated label package sizes without leaking size into item name`() {
+        val peanutButter = parser.parse("Great Value peanut butter 16-ounce pantry")
+        val eggs = parser.parse("Kroger eggs 12-count fridge")
+
+        assertThat(peanutButter.item.item).isEqualTo("peanut butter")
+        assertThat(peanutButter.item.brand).isEqualTo("Great Value")
+        assertThat(peanutButter.item.size).isEqualTo("16oz")
+        assertThat(peanutButter.item.unit).isEqualTo("oz")
+        assertThat(peanutButter.item.location).isEqualTo("pantry")
+
+        assertThat(eggs.item.item).isEqualTo("eggs")
+        assertThat(eggs.item.brand).isEqualTo("Kroger")
+        assertThat(eggs.item.size).isEqualTo("12ct")
+        assertThat(eggs.item.unit).isEqualTo("count")
+        assertThat(eggs.item.location).isEqualTo("fridge")
+    }
+
+    @Test
     fun `parse common liquid package sizes`() {
         val milk = parser.parse("Kroger milk 1 gal fridge")
         val broth = parser.parse("chicken broth 1 quart pantry")
