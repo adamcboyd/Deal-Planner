@@ -42,6 +42,52 @@ function Invoke-AdbChecked {
     }
 }
 
+function Invoke-AdbOutput {
+    param(
+        [string]$Label,
+        [string]$DeviceSerial,
+        [string[]]$AdbArgs
+    )
+
+    $output = @(& adb -s $DeviceSerial @AdbArgs 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Label failed with exit code $LASTEXITCODE. $($output -join ' ')"
+    }
+
+    return $output
+}
+
+function Get-RemoteFileSize {
+    param(
+        [string]$DeviceSerial,
+        [string]$RemotePath
+    )
+
+    $output = Invoke-AdbOutput "Read remote file size" $DeviceSerial @("shell", "wc", "-c", $RemotePath)
+    $line = ($output -join " ").Trim()
+    if ($line -match "^\s*(\d+)") {
+        return [int64]$Matches[1]
+    }
+
+    throw "Could not parse remote file size for $RemotePath from: $line"
+}
+
+function Invoke-MediaScan {
+    param(
+        [string]$DeviceSerial,
+        [string]$RemotePath
+    )
+
+    $scanOutput = @(
+        & adb -s $DeviceSerial shell am broadcast `
+            -a android.intent.action.MEDIA_SCANNER_SCAN_FILE `
+            -d "file://$RemotePath" 2>&1
+    )
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Media scan request failed for $RemotePath. The file was copied, but Android's picker may take longer to show it. $($scanOutput -join ' ')"
+    }
+}
+
 function Get-AdbDeviceSerial {
     $adbCommand = Get-Command adb -ErrorAction SilentlyContinue
     if ($null -eq $adbCommand) {
@@ -215,11 +261,21 @@ Write-Host ""
 Invoke-AdbChecked "Create Android sample folder" $deviceSerial @("shell", "mkdir", "-p", $remoteSessionDir)
 
 foreach ($file in (Get-ChildItem -LiteralPath $sampleDir -File | Sort-Object Name)) {
-    Invoke-AdbChecked "Copy $($file.Name)" $deviceSerial @("push", $file.FullName, "$remoteSessionDir/$($file.Name)")
+    $remotePath = "$remoteSessionDir/$($file.Name)"
+    Invoke-AdbChecked "Copy $($file.Name)" $deviceSerial @("push", $file.FullName, $remotePath)
+
+    $remoteSize = Get-RemoteFileSize $deviceSerial $remotePath
+    if ($remoteSize -ne $file.Length) {
+        throw "Remote size mismatch for $($file.Name): local $($file.Length) byte(s), remote $remoteSize byte(s)."
+    }
+    Write-Host "Verified remote size for $($file.Name): $remoteSize byte(s)."
+
+    Invoke-MediaScan $deviceSerial $remotePath
 }
 
 Write-Host ""
 Write-Host "Copied phone test samples to:"
 Write-Host "  $remoteSessionDir"
+Write-Host "Remote file sizes were verified, and Android media scan broadcasts were requested for picker visibility."
 Write-Host ""
 Write-Host "On the phone, open Files or the Android picker at Downloads > DealPlannerPhoneTestSamples > $($sampleItem.Name)."
