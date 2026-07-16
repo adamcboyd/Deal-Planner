@@ -92,9 +92,19 @@ class BudgetEngine {
         budgetState: BudgetState,
         receiptTotal: Double
     ): BudgetState {
+        return adjustBudgetForReceiptChange(budgetState, receiptTotal)
+    }
+
+    /**
+     * Adjusts spending when a receipt line is edited or deleted.
+     */
+    fun adjustBudgetForReceiptChange(
+        budgetState: BudgetState,
+        receiptDelta: Double
+    ): BudgetState {
         return budgetState.copy(
-            spentToDate = budgetState.spentToDate + receiptTotal,
-            projectedSpend = budgetState.projectedSpend + receiptTotal
+            spentToDate = (budgetState.spentToDate + receiptDelta).coerceAtLeast(0.0),
+            projectedSpend = (budgetState.projectedSpend + receiptDelta).coerceAtLeast(0.0)
         )
     }
 }

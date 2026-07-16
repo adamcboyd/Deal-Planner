@@ -223,6 +223,7 @@ On the Receipts tab:
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Low-confidence matches are marked with a review warning.
 6. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
+7. Receipt edits and deletes adjust budget spending so the Budget tab stays in sync.
 
 ### Meal Planning
 
@@ -315,6 +316,7 @@ As of the latest local pass:
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
+- Receipt edits and deletes adjust budget spending totals.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

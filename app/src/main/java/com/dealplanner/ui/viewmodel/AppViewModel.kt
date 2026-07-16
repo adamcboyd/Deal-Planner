@@ -335,7 +335,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateReceipt(item: ReceiptItem) {
         viewModelScope.launch {
+            val existing = repository.getReceipt(item.id)
             repository.updateReceipt(item)
+            if (existing != null) {
+                updateBudgetForReceiptDelta(item.totalCost - existing.totalCost)
+            }
             updateBudgetAnalysis()
         }
     }
@@ -343,6 +347,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteReceipt(item: ReceiptItem) {
         viewModelScope.launch {
             repository.deleteReceipt(item)
+            updateBudgetForReceiptDelta(-item.totalCost)
             updateBudgetAnalysis()
         }
     }
@@ -396,6 +401,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         } catch (e: Exception) {
             _receiptScanStatus.value = "Could not process that receipt."
         }
+    }
+
+    private suspend fun updateBudgetForReceiptDelta(delta: Double) {
+        if (delta == 0.0) return
+        val currentBudget = repository.getBudget() ?: return
+        repository.updateBudget(
+            budgetEngine.adjustBudgetForReceiptChange(currentBudget, delta)
+        )
     }
 
     // Params operations

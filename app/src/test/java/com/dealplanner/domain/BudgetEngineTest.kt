@@ -63,12 +63,44 @@ class BudgetEngineTest {
         val budget = BudgetState(
             startingBudget = 300.0,
             spentToDate = 50.0,
+            projectedSpend = 50.0,
             monthStart = LocalDate.now().withDayOfMonth(1)
         )
 
         val updated = engine.updateBudgetWithReceipt(budget, 25.0)
 
         assertThat(updated.spentToDate).isEqualTo(75.0)
+        assertThat(updated.projectedSpend).isEqualTo(75.0)
+    }
+
+    @Test
+    fun `adjust budget when receipt total changes`() {
+        val budget = BudgetState(
+            startingBudget = 300.0,
+            spentToDate = 75.0,
+            projectedSpend = 75.0,
+            monthStart = LocalDate.now().withDayOfMonth(1)
+        )
+
+        val updated = engine.adjustBudgetForReceiptChange(budget, -10.0)
+
+        assertThat(updated.spentToDate).isEqualTo(65.0)
+        assertThat(updated.projectedSpend).isEqualTo(65.0)
+    }
+
+    @Test
+    fun `receipt budget adjustment does not go negative`() {
+        val budget = BudgetState(
+            startingBudget = 300.0,
+            spentToDate = 5.0,
+            projectedSpend = 5.0,
+            monthStart = LocalDate.now().withDayOfMonth(1)
+        )
+
+        val updated = engine.adjustBudgetForReceiptChange(budget, -10.0)
+
+        assertThat(updated.spentToDate).isEqualTo(0.0)
+        assertThat(updated.projectedSpend).isEqualTo(0.0)
     }
 
     @Test
