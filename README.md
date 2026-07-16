@@ -147,6 +147,14 @@ Command-line phone install helper:
 This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 
+For the final AI phone pass after adding a real Gemini key and rebuilding, run the stricter check:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini
+```
+
+Without `-RequireGemini`, missing Gemini configuration remains a warning because the app can still use on-device OCR fallback.
+
 ```powershell
 .\scripts\phone-debug-install.ps1
 ```

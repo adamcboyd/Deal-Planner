@@ -69,6 +69,12 @@ Then rebuild and reinstall:
 .\scripts\phone-debug-install.ps1
 ```
 
+Before the AI-specific phone pass, verify the key, rebuilt APK, and connected phone are all ready:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini
+```
+
 Do not commit `local.properties`.
 
 ## Baseline Smoke Test

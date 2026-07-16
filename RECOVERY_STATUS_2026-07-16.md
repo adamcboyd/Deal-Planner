@@ -988,6 +988,15 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
+Latest helper checkpoint after Gemini-required preflight mode:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1
+.\scripts\phone-debug-preflight.ps1 -RequireGemini
+```
+
+Result: normal preflight still allowed OCR fallback with a Gemini warning. `-RequireGemini` intentionally failed with `Gemini key` and `Gemini APK freshness` failures because no real `local.properties` key or `GEMINI_*` configuration was present.
+
 Additional check:
 
 ```powershell
@@ -1169,6 +1178,7 @@ Current AI configuration:
 - `local.properties` was not present in the clean `Deal_Planner` folder.
 - `GEMINI_API_KEY` environment variable was not set in this shell.
 - Therefore Gemini Vision is not live-configured yet; the app will use ML Kit OCR fallback.
+- `scripts\phone-debug-preflight.ps1 -RequireGemini` is now available for the AI-specific phone pass and intentionally fails until a real key is configured and the APK can be verified against that configuration.
 - Current default model in Gradle is `gemini-3.5-flash`, which matched the current Google AI model page checked on 2026-07-16.
 - Rebuild the debug APK after adding or changing `local.properties`; Gemini values are compiled into `BuildConfig`, and `-SkipBuild` is blocked if `local.properties` is newer than the APK.
 - Live Gemini connection testing is now available from Settings after adding a real key.
@@ -1197,6 +1207,12 @@ gemini.model=gemini-3.5-flash
 
 ```powershell
 .\scripts\phone-debug-install.ps1
+```
+
+For the final AI-specific pass after adding `local.properties` and rebuilding, require both the phone and Gemini setup:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini
 ```
 
 Optional if anything fails on the phone:

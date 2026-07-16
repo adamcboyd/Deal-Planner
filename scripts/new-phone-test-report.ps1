@@ -252,6 +252,7 @@ $adbBlock
 ## AI Verification
 
 - [ ] Without Gemini key, Settings reports OCR fallback and Test AI Connection reports key not configured.
+- [ ] .\scripts\phone-debug-preflight.ps1 -RequireGemini passed after adding the key and rebuilding the APK.
 - [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.
 - [ ] Unclear Gemini fields show VERIFY notes explaining what to review.
