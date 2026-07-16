@@ -102,6 +102,14 @@ Latest continuation gate after gallery/PDF picker cancel status work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after image-open failure status work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -142,6 +150,7 @@ Verified by build/unit tests/code inspection:
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
+- Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`.

@@ -161,8 +161,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun processPantryPhotoUri(uri: Uri) {
         viewModelScope.launch {
-            val bitmap = loadBitmapFromUri(uri)
-            importPantryPhoto(bitmap)
+            try {
+                val bitmap = loadBitmapFromUri(uri)
+                importPantryPhoto(bitmap)
+            } catch (e: Exception) {
+                _pantryPhotoStatus.value = "Could not open that pantry image. Try another photo."
+            }
         }
     }
 
@@ -305,8 +309,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun processDealsPhotoUri(uri: Uri, store: String = "Unknown") {
         viewModelScope.launch {
-            val bitmap = loadBitmapFromUri(uri)
-            importDealsPhoto(bitmap, store)
+            try {
+                val bitmap = loadBitmapFromUri(uri)
+                importDealsPhoto(bitmap, store)
+            } catch (e: Exception) {
+                _dealsScanStatus.value = "Could not open that flyer image. Try another photo or screenshot."
+            }
         }
     }
 
@@ -414,8 +422,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun processReceiptPhotoUri(uri: Uri, store: String = "Unknown") {
         viewModelScope.launch {
-            val bitmap = loadBitmapFromUri(uri)
-            importReceiptPhoto(bitmap, store)
+            try {
+                val bitmap = loadBitmapFromUri(uri)
+                importReceiptPhoto(bitmap, store)
+            } catch (e: Exception) {
+                _receiptScanStatus.value = "Could not open that receipt image. Try another photo or screenshot."
+            }
         }
     }
 

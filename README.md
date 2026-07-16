@@ -342,6 +342,7 @@ As of the latest local pass:
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.
+- Camera/gallery image open failures show on-screen recovery messages instead of failing silently.
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
