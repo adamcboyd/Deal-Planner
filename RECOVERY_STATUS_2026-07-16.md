@@ -812,6 +812,22 @@ Latest continuation gate after pantry leading-decimal quantity/size parsing work
 
 Result: `BUILD SUCCESSFUL`, with `141` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused Gemini leading-decimal quantity/confidence parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after Gemini leading-decimal quantity/confidence parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `142` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -949,7 +965,7 @@ Verified by build/unit tests/code inspection:
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal confidence such as `"0,82"`, storage aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/name aliases, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases, malformed string/list fields, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.

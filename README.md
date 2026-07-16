@@ -351,7 +351,7 @@ Tests cover:
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates, split and inline decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal OCR prices, discount/coupon line filtering)
-- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, object/array-wrapped string fields, numeric/comma-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields)
+- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields)
 
 ## Key Algorithms
 
@@ -443,7 +443,7 @@ As of the latest local pass:
 - Settings accepts comma-decimal protein-per-meal values such as `0,5`.
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31` before saving review items.
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.

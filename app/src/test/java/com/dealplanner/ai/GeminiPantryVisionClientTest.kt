@@ -534,6 +534,47 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with leading decimal quantity and confidence`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "ground beef",
+                  "amount": ".5 lb",
+                  "confidence": ".82"
+                },
+                {
+                  "product": "olive oil",
+                  "quantity": {
+                    "value": ".75",
+                    "unit": "cups"
+                  },
+                  "confidence": {
+                    "value": ".91"
+                  }
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+
+        val beef = result.items.first { it.product == "ground beef" }
+        assertThat(beef.quantity).isEqualTo(0.5)
+        assertThat(beef.unit).isEqualTo("lb")
+        assertThat(beef.confidence).isEqualTo(0.82)
+
+        val oliveOil = result.items.first { it.product == "olive oil" }
+        assertThat(oliveOil.quantity).isEqualTo(0.75)
+        assertThat(oliveOil.unit).isEqualTo("cup")
+        assertThat(oliveOil.confidence).isEqualTo(0.91)
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

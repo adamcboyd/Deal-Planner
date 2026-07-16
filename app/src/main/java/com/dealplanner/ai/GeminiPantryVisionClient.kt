@@ -477,7 +477,7 @@ class GeminiPantryVisionClient(
             }
         }
 
-        val compact = replace(" ", "").replace(',', '.')
+        val compact = replace(" ", "").replace(',', '.').withLeadingZeroForDecimal()
         val fractionParts = compact.split('/').takeIf { it.size == 2 }
         if (fractionParts != null) {
             val numerator = fractionParts[0].toDoubleOrNull()
@@ -552,7 +552,15 @@ class GeminiPantryVisionClient(
     }
 
     private fun String.toFlexibleDoubleOrNull(): Double? {
-        return trim().replace(',', '.').toDoubleOrNull()
+        return trim().replace(',', '.').withLeadingZeroForDecimal().toDoubleOrNull()
+    }
+
+    private fun String.withLeadingZeroForDecimal(): String {
+        return if (startsWith(".")) {
+            "0$this"
+        } else {
+            this
+        }
     }
 
     private fun String?.normalizePantryUnit(): String? {
@@ -631,7 +639,7 @@ class GeminiPantryVisionClient(
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
         private const val DOZEN_COUNT = 12.0
         private const val MAX_STATUS_DETAIL_LENGTH = 180
-        private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:[.,]\d+)?)\s*([A-Za-z]+)?""")
+        private val quantityPattern = Regex("""(\d+\s*/\s*\d+|(?:\d+)?[.,]\d+|\d+)\s*([A-Za-z]+)?""")
         private val wordQuantityPattern = Regex(
             """\b(one|two|three|four|five|six|seven|eight|nine|ten|half|dozen)\b\s*([A-Za-z]+)?""",
             RegexOption.IGNORE_CASE
