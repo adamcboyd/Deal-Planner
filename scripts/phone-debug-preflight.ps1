@@ -170,6 +170,7 @@ if (Test-Path ".\gradlew.bat") {
 
 if (Get-Command git -ErrorAction SilentlyContinue) {
     $branch = (& git rev-parse --abbrev-ref HEAD 2>$null)
+    $headSha = (& git rev-parse HEAD 2>$null)
     $shortStatus = @(& git status --short 2>$null)
     if ($LASTEXITCODE -eq 0) {
         if ($shortStatus.Count -eq 0) {
@@ -179,6 +180,56 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
         }
     } else {
         Add-Check $results "Git branch" "WARN" "Could not read git status."
+    }
+
+    $originUrl = (& git remote get-url origin 2>$null)
+    if ($LASTEXITCODE -eq 0 -and $originUrl) {
+        if ($originUrl -match "github\.com[:/]adamcboyd/Deal-Planner(\.git)?$") {
+            Add-Check $results "Git remote" "OK" "origin points to adamcboyd/Deal-Planner."
+        } else {
+            Add-Check $results "Git remote" "WARN" "origin points to $originUrl, not adamcboyd/Deal-Planner."
+        }
+    } else {
+        Add-Check $results "Git remote" "WARN" "Could not read origin remote."
+    }
+
+    $upstream = (& git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null)
+    if ($LASTEXITCODE -eq 0 -and $upstream) {
+        $aheadBehind = (& git rev-list --left-right --count "HEAD...@{u}" 2>$null)
+        if ($LASTEXITCODE -eq 0 -and $aheadBehind) {
+            $counts = $aheadBehind.Trim() -split "\s+"
+            $ahead = [int]$counts[0]
+            $behind = [int]$counts[1]
+            if ($ahead -eq 0 -and $behind -eq 0) {
+                Add-Check $results "Git upstream" "OK" "$branch is synced with $upstream."
+            } elseif ($ahead -gt 0 -and $behind -eq 0) {
+                Add-Check $results "Git upstream" "WARN" "$branch is $ahead commit(s) ahead of $upstream. Push before phone testing."
+            } elseif ($ahead -eq 0 -and $behind -gt 0) {
+                Add-Check $results "Git upstream" "WARN" "$branch is $behind commit(s) behind $upstream. Pull/rebase before phone testing."
+            } else {
+                Add-Check $results "Git upstream" "WARN" "$branch diverged from $upstream ($ahead ahead, $behind behind)."
+            }
+        } else {
+            Add-Check $results "Git upstream" "WARN" "Could not compare $branch with $upstream."
+        }
+    } else {
+        Add-Check $results "Git upstream" "WARN" "$branch has no configured upstream branch."
+    }
+
+    if (-not $SkipNetwork -and $originUrl -and $headSha) {
+        $remoteRef = @(& git ls-remote origin "refs/heads/$branch" 2>$null)
+        if ($LASTEXITCODE -eq 0 -and $remoteRef.Count -gt 0) {
+            $remoteSha = ($remoteRef[0] -split "\s+")[0]
+            if ($remoteSha -eq $headSha) {
+                Add-Check $results "GitHub branch" "OK" "GitHub origin/$branch matches local HEAD."
+            } else {
+                Add-Check $results "GitHub branch" "WARN" "GitHub origin/$branch differs from local HEAD. Push or pull before phone testing."
+            }
+        } else {
+            Add-Check $results "GitHub branch" "WARN" "Could not verify GitHub origin/$branch with ls-remote."
+        }
+    } elseif ($SkipNetwork) {
+        Add-Check $results "GitHub branch" "WARN" "Network check skipped; GitHub branch SHA not verified."
     }
 } else {
     Add-Check $results "Git branch" "WARN" "git was not found on PATH."

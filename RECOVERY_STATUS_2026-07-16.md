@@ -592,6 +592,14 @@ Latest continuation gate after Settings build identity display work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after GitHub sync preflight work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -638,7 +646,8 @@ Verified by build/unit tests/code inspection:
 - Room database filename is now `deal_planner_db`.
 - Settings -> About Deal Planner displays the actual Gradle version, package name, and debug/release build identity from `BuildConfig`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
-- `scripts\phone-debug-preflight.ps1` reports repo, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner` plus required `INTERNET` and `CAMERA` permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.

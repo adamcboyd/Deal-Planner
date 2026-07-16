@@ -19,7 +19,7 @@ adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Expected before install: preflight shows no failures, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
+Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
 
 If the APK is already built:
 
