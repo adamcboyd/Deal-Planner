@@ -47,6 +47,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val mealPlanningEngine = MealPlanningEngine()
     private val budgetEngine = BudgetEngine()
     private val receiptReconciler = ReceiptReconciler()
+    private val receiptAdjustmentCalculator = ReceiptAdjustmentCalculator()
     private val textRecognitionHelper = TextRecognitionHelper()
     private val pantryVisionClient = GeminiPantryVisionClient()
     private val barcodeLookupClient = OpenFoodFactsBarcodeClient()
@@ -563,8 +564,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val existing = repository.getReceipt(item.id)
             repository.updateReceipt(item)
             if (existing != null) {
-                updateBudgetForReceiptDelta(item.totalCost - existing.totalCost)
-                updatePantryForReceiptChange(existing, item)
+                updateBudgetForReceiptDelta(receiptAdjustmentCalculator.budgetDeltaForUpdate(existing, item))
+                applyPantryReceiptDeltas(receiptAdjustmentCalculator.pantryDeltasForUpdate(existing, item))
             }
             updateBudgetAnalysis()
             refreshShoppingListFromCurrentInputs()
@@ -574,8 +575,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteReceipt(item: ReceiptItem) {
         viewModelScope.launch {
             repository.deleteReceipt(item)
-            updateBudgetForReceiptDelta(-item.totalCost)
-            applyPantryReceiptDelta(item, -1.0)
+            updateBudgetForReceiptDelta(receiptAdjustmentCalculator.budgetDeltaForDelete(item))
+            applyPantryReceiptDeltas(receiptAdjustmentCalculator.pantryDeltasForDelete(item))
             updateBudgetAnalysis()
             refreshShoppingListFromCurrentInputs()
         }
@@ -656,25 +657,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private suspend fun updatePantryForReceiptChange(
-        oldReceipt: ReceiptItem,
-        newReceipt: ReceiptItem
-    ) {
-        applyPantryReceiptDelta(oldReceipt, -1.0)
-        applyPantryReceiptDelta(newReceipt, 1.0)
-    }
-
-    private suspend fun applyPantryReceiptDelta(receipt: ReceiptItem, direction: Double) {
-        if (receipt.matchedType != "pantry") return
-        val pantryItemId = receipt.matchedItemId ?: return
-        val receiptQty = receipt.qty ?: return
-        val pantryItem = repository.getPantryItem(pantryItemId) ?: return
-
-        repository.updatePantryItem(
-            pantryItem.copy(
-                qty = (pantryItem.qty + (receiptQty * direction)).coerceAtLeast(0.0)
+    private suspend fun applyPantryReceiptDeltas(deltas: List<PantryReceiptQuantityDelta>) {
+        deltas.forEach { delta ->
+            val pantryItem = repository.getPantryItem(delta.pantryItemId) ?: return@forEach
+            repository.updatePantryItem(
+                pantryItem.copy(
+                    qty = (pantryItem.qty + delta.quantityDelta).coerceAtLeast(0.0)
+                )
             )
-        )
+        }
     }
 
     private fun mealPlanStatusMessage(result: MealPlanningEngine.MealPlanResult): String {

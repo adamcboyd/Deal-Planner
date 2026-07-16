@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 50
+- **Total Kotlin Files**: 51
 - **Configuration Files**: 15
-- **Test Files**: 18 (comprehensive unit tests)
+- **Test Files**: 19 (comprehensive unit tests)
 - **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
@@ -51,6 +51,7 @@ Deal_Planner/
         │   │   ├── domain/
         │   │   │   ├── MealPlanningEngine.kt     ✅ Rules-based engine
         │   │   │   ├── BudgetEngine.kt           ✅ Budget tracking
+        │   │   │   ├── ReceiptAdjustmentCalculator.kt ✅ Receipt edit/delete deltas
         │   │   │   └── ReceiptReconciler.kt      ✅ Fuzzy matching
         │   │   ├── util/
         │   │   │   └── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
@@ -96,6 +97,7 @@ Deal_Planner/
             ├── domain/
             │   ├── MealPlanningEngineTest.kt  ✅ Meal planning tests
             │   ├── BudgetEngineTest.kt        ✅ Budget tests
+            │   ├── ReceiptAdjustmentCalculatorTest.kt ✅ Receipt edit/delete delta tests
             │   └── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
             ├── ocr/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
@@ -212,7 +214,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (220 Test Cases)
+### 7. Unit Tests (228 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -222,6 +224,7 @@ Deal_Planner/
 - ✅ DealsParserTest
 - ✅ MealPlanningEngineTest
 - ✅ BudgetEngineTest
+- ✅ ReceiptAdjustmentCalculatorTest
 - ✅ ReceiptReconcilerTest
 - ✅ BudgetInputValidatorTest
 - ✅ DealItemInputValidatorTest
@@ -478,6 +481,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Budget tracking engine
 - ✅ Budget settings edit flow
 - ✅ Receipt reconciliation engine
+- ✅ Receipt edit/delete adjustment calculator for Budget and pantry quantity deltas
 - ✅ Receipt review/edit flow with numeric validation
 - ✅ 7 Compose UI screens
 - ✅ Settings build identity display sourced from `BuildConfig`
@@ -486,7 +490,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 220 unit tests
+- ✅ 228 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
