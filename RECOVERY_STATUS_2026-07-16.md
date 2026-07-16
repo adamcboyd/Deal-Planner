@@ -470,6 +470,14 @@ Latest continuation gate after receipt-aware budget display work:
 
 Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after blank manual input status work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -553,6 +561,7 @@ Verified by build/unit tests/code inspection:
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
 - Pantry edit/review quantity fields accept comma-decimal corrections such as `1,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
+- Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Camera/gallery image-open failures show visible recovery messages instead of escaping the import coroutine.
 - Flyer photo/gallery/PDF/manual text input exists.

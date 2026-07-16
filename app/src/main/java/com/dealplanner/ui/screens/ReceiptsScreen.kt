@@ -132,8 +132,8 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
+                        viewModel.processReceiptOCR(receiptText, storeName)
                         if (receiptText.isNotBlank()) {
-                            viewModel.processReceiptOCR(receiptText, storeName)
                             receiptText = ""
                         }
                     },

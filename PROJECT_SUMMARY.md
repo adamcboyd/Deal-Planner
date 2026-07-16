@@ -136,6 +136,7 @@ Deal_Planner/
 - ✅ Camera/gallery image-open failure status feedback
 - ✅ Bounded flyer PDF page rendering for OCR reliability
 - ✅ Camera/gallery/PDF permission and cancel status feedback for phone testing
+- ✅ Blank manual input status feedback for pantry, barcode, flyer text, and receipt text actions
 - ✅ Pantry camera/gallery/barcode/manual code import
 - ✅ Open Food Facts product lookup for barcode/manual code intake with reviewable fallback
 - ✅ Flyer camera/gallery/PDF/manual text import
@@ -387,6 +388,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
 - ✅ Caps rendered flyer PDF page size before OCR processing
 - ✅ Shows clear status when camera permission is denied or capture/scan/gallery/PDF selection is canceled
+- ✅ Shows clear status when manual pantry, barcode, flyer text, or receipt text actions are blank
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans

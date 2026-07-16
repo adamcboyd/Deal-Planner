@@ -79,6 +79,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 6. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
 7. Confirm opened date and best-by date stay separate on the pantry item.
 8. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
+9. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 
@@ -90,6 +91,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 6. Edit one deal and save it.
 7. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
 8. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+9. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -103,6 +105,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 8. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
 9. Delete one receipt line and confirm Budget updates again.
 10. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+11. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ## Phone Input Tests
 
@@ -115,6 +118,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected with network/product match: item appears with product name, brand when available, package quantity when available, VERIFY status, barcode in notes, and `Product lookup: Open Food Facts`.
    - Expected without network/product match: item appears as `Scanned barcode item` with VERIFY status and barcode in notes.
    - Expected with text that has no 8-14 digit product code: visible `No barcode found.` status and no junk barcode item.
+   - Expected with a blank code field: visible `No barcode found.` status and no junk barcode item.
 2. Barcode scanner:
    - Tap `Scan`.
    - Allow camera permission.
@@ -193,7 +197,7 @@ Verify these show visible status messages instead of silent failures:
 - App installs and launches on the phone.
 - No crash during tab navigation.
 - Demo data loads repeatably.
-- Manual pantry, deals, and receipt text paths work.
+- Manual pantry, deals, and receipt text paths work and show visible status for blank input.
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.

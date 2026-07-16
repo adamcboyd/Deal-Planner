@@ -220,6 +220,7 @@ The parser handles:
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
+If the manual pantry text field is blank, **Add** shows a visible no-text status instead of silently doing nothing.
 
 ### Adding Pantry Items From Photos
 
@@ -239,7 +240,7 @@ On the Pantry tab:
 2. Deal Planner accepts plain UPC/EAN/GTIN digits or pasted label text such as `UPC: 0 12345-67890 5`, then looks up the cleaned code with Open Food Facts when the phone has network access. If pasted label text also has item numbers or dates, labeled UPC/EAN/GTIN text is preferred.
 3. If a product is found, Deal Planner creates a VERIFY pantry item with the product name, brand, package quantity, barcode, and lookup source in notes.
 4. If lookup misses or the phone is offline, Deal Planner still creates a reviewable barcode item with the code saved in notes.
-5. If the text does not contain an 8-14 digit product barcode, Deal Planner shows `No barcode found.` instead of creating a junk pantry row.
+5. If the text is blank or does not contain an 8-14 digit product barcode, Deal Planner shows `No barcode found.` instead of creating a junk pantry row.
 6. Re-scanning the same barcode merges quantity into the same pantry row. Different barcodes stay separate until reviewed.
 7. Tap the edit icon to fill in or correct the product name, brand, package size, quantity, location, and expiration details.
 
@@ -266,6 +267,7 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 - `Limit 2` (purchase limits)
 
 The built-in demo flyer covers the same formats.
+Blank pasted flyer text shows `No flyer text found.` instead of failing silently.
 
 Tap the edit icon on any deal card to correct OCR guesses for item name, price, unit, store, brand, size, deal type, limit, coupon flag, PPU, discount, score, confidence, and valid-until date. Numeric corrections accept dot or comma decimals.
 
@@ -285,6 +287,7 @@ On the Receipts tab:
 10. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 11. OCR prices work with or without dollar signs, including comma-decimal OCR such as `BLACK BEANS 1,78` or `2 @ 0,89 BLACK BEANS 1,78`.
 12. One-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` are imported with the item name, weight, and total separated.
+Blank pasted receipt text shows `No receipt text found.` instead of failing silently.
 
 ### Meal Planning
 
@@ -393,6 +396,7 @@ As of the latest local pass:
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing, including comma-decimal price, PPU, discount, score, and confidence corrections.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
+- Blank pantry, barcode, flyer text, and receipt text actions show on-screen status messages instead of silently doing nothing.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.
 - Camera/gallery image open failures show on-screen recovery messages instead of failing silently.
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.

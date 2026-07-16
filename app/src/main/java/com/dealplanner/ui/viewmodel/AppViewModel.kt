@@ -90,7 +90,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Pantry operations
     fun addPantryPhrase(phrase: String) {
         viewModelScope.launch {
-            val result = pantryParser.parse(phrase)
+            val cleanedPhrase = phrase.trim()
+            if (cleanedPhrase.isBlank()) {
+                _pantryPhotoStatus.value = "No pantry item text entered."
+                return@launch
+            }
+
+            val result = pantryParser.parse(cleanedPhrase)
             upsertPantryItem(result.item)
         }
     }

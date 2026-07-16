@@ -125,11 +125,11 @@ fun PantryScreen(viewModel: AppViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
+                        viewModel.addPantryPhrase(inputText)
                         if (inputText.isNotBlank()) {
-                            viewModel.addPantryPhrase(inputText)
-                        inputText = ""
-                    }
-                },
+                            inputText = ""
+                        }
+                    },
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
@@ -205,8 +205,8 @@ fun PantryScreen(viewModel: AppViewModel) {
                     }
                     OutlinedButton(
                         onClick = {
+                            viewModel.addPantryBarcode(barcodeText)
                             if (barcodeText.isNotBlank()) {
-                                viewModel.addPantryBarcode(barcodeText)
                                 barcodeText = ""
                             }
                         },

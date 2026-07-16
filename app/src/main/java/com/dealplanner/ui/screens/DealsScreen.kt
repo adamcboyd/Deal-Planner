@@ -124,8 +124,8 @@ fun DealsScreen(viewModel: AppViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
+                        viewModel.processDealsOCR(flyerText, storeName)
                         if (flyerText.isNotBlank()) {
-                            viewModel.processDealsOCR(flyerText, storeName)
                             flyerText = ""
                         }
                     },
