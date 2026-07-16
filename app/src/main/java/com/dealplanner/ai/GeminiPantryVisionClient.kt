@@ -685,7 +685,8 @@ class GeminiPantryVisionClient(
     }
 
     private fun String.toFlexibleDoubleOrNull(): Double? {
-        return trim().replace(',', '.').withLeadingZeroForDecimal().toDoubleOrNull()
+        val parsed = trim().replace(',', '.').withLeadingZeroForDecimal().toDoubleOrNull()
+        return parsed?.takeIf { it.isFinite() }
     }
 
     private fun String.withLeadingZeroForDecimal(): String {

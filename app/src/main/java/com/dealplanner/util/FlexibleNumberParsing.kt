@@ -4,9 +4,11 @@ fun String.toFlexibleDoubleOrNull(): Double? {
     val normalized = trim()
         .replace(',', '.')
 
-    return normalized
+    val parsed = normalized
         .withLeadingZeroForDecimal()
         .toDoubleOrNull()
+
+    return parsed?.takeIf { it.isFinite() }
 }
 
 private fun String.withLeadingZeroForDecimal(): String {

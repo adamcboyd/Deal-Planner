@@ -748,6 +748,32 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response rejects non finite numeric text`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "ground beef",
+                  "amount": "NaN lb",
+                  "confidence": "Infinity"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.product).isEqualTo("ground beef")
+        assertThat(item.quantity).isNull()
+        assertThat(item.unit).isNull()
+        assertThat(item.confidence).isEqualTo(0.5)
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-negative protein-per-meal settings validation; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-finite numeric input and AI numeric fallback validation; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1374,6 +1374,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `MealPlanningEngineTest` passed locally, then the full Gradle gate passed with `172` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Settings now blocks negative protein-per-meal input, and the meal planner falls back to the default 0.5 lb value if old/corrupt saved settings contain a negative value, preventing negative Shopping quantities or estimated costs.
 
+Latest focused non-finite numeric validation check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.util.FlexibleNumberParsingTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `FlexibleNumberParsingTest` and `GeminiPantryVisionClientTest` passed locally, then the full Gradle gate passed with `174` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Shared manual numeric parsing now rejects non-finite values such as `NaN`, `Infinity`, and `-Infinity`, and Gemini pantry response parsing treats non-finite quantity/confidence text as missing/default review data instead of saving invalid numbers.
+
 Additional check:
 
 ```powershell
@@ -1500,12 +1511,12 @@ Verified by build/unit tests/code inspection:
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`, and flyer store names are trimmed with blank values defaulted to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
-- Flyer deal edit/review numeric fields accept comma-decimal and leading-decimal corrections for price, PPU, discount, score, and confidence, and block invalid values with visible validation.
+- Flyer deal edit/review numeric fields accept comma-decimal and leading-decimal corrections for price, PPU, discount, score, and confidence, and block invalid or non-finite values with visible validation.
 - Receipt photo/gallery/PDF/manual text input exists.
 - Receipt pasted-text import shows processing status, keeps pasted text available when parsing finds no receipt line items, and clears it only after successful receipt import.
 - Receipt imports trim store names and default blank values to `Unknown`.
 - Receipt items can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
-- Receipt edit/review numeric fields accept comma-decimal and leading-decimal corrections for quantity, total, and confidence, and block invalid quantity, total, match ID, and confidence values with visible validation.
+- Receipt edit/review numeric fields accept comma-decimal and leading-decimal corrections for quantity, total, and confidence, and block invalid, non-finite quantity, total, match ID, and confidence values with visible validation.
 - Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.
 - Bundled `demo_receipt.txt` also has unit coverage for the phone checklist appended tender lines `VISA DEBIT $40.65` and `CARD TENDER $40.65`.
 - Receipt header dates such as `Date: 10/27/2025`, `Transaction Date: 2025/10/27`, and `Purchase Date: 2025-10-28` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
@@ -1531,11 +1542,11 @@ Verified by build/unit tests/code inspection:
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal and leading-decimal values such as `0,5` or `.5`.
-- Settings Save shows visible saved feedback and blocks invalid or negative protein-per-meal text instead of silently defaulting.
+- Settings Save shows visible saved feedback and blocks invalid, negative, or non-finite protein-per-meal text instead of silently defaulting.
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, debug/release build identity, and source identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, alternate review-question aliases such as `clarifying_questions` and `followUpQuestions`, warning aliases such as `review_notes`, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, non-JSON model text fallback, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, alternate review-question aliases such as `clarifying_questions` and `followUpQuestions`, warning aliases such as `review_notes`, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, non-finite numeric text fallback such as `NaN` or `Infinity`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, non-JSON model text fallback, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and `2026-7-1`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.

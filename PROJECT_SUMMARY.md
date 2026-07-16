@@ -201,7 +201,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (172 Test Cases)
+### 7. Unit Tests (174 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -393,7 +393,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls
-- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-JSON fallback, and clamped confidence
+- ✅ Parses Gemini pantry responses with fenced JSON, scalar warnings/questions, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, non-finite numeric fallback, non-JSON fallback, and clamped confidence
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
@@ -413,7 +413,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Applies receipt header dates including year-first slash/dash OCR formats such as `Transaction Date: 2025/10/27`
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines before or after the item name, with or without dollar signs and with comma decimals
-- ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields
+- ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields while rejecting non-finite values
 - ✅ Ignores receipt subtotal, tax, total, savings, saved-total, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
@@ -459,7 +459,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 172 unit tests
+- ✅ 174 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

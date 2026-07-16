@@ -31,4 +31,11 @@ class FlexibleNumberParsingTest {
         assertThat("not a number".toFlexibleDoubleOrNull()).isNull()
         assertThat("1,234.56".toFlexibleDoubleOrNull()).isNull()
     }
+
+    @Test
+    fun `reject non finite numeric text`() {
+        assertThat("NaN".toFlexibleDoubleOrNull()).isNull()
+        assertThat("Infinity".toFlexibleDoubleOrNull()).isNull()
+        assertThat("-Infinity".toFlexibleDoubleOrNull()).isNull()
+    }
 }
