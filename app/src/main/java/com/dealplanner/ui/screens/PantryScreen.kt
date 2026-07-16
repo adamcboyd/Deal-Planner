@@ -128,6 +128,22 @@ fun PantryScreen(viewModel: AppViewModel) {
         }
     }
 
+    fun requestPantryCameraPermission() {
+        try {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        } catch (e: Exception) {
+            viewModel.reportPantryCameraPermissionRequestFailed()
+        }
+    }
+
+    fun requestPantryBarcodePermission() {
+        try {
+            barcodePermissionLauncher.launch(Manifest.permission.CAMERA)
+        } catch (e: Exception) {
+            viewModel.reportPantryBarcodePermissionRequestFailed()
+        }
+    }
+
     LaunchedEffect(pantryPhotoStatus) {
         val status = pantryPhotoStatus.orEmpty()
         val barcodeImportSucceeded = status.startsWith("Added ") || status.startsWith("Updated ")
@@ -185,7 +201,7 @@ fun PantryScreen(viewModel: AppViewModel) {
                             if (hasPermission) {
                                 launchPantryCamera()
                             } else {
-                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                                requestPantryCameraPermission()
                             }
                         },
                         modifier = Modifier.weight(1f)
@@ -226,7 +242,7 @@ fun PantryScreen(viewModel: AppViewModel) {
                             if (hasPermission) {
                                 launchBarcodeScanner()
                             } else {
-                                barcodePermissionLauncher.launch(Manifest.permission.CAMERA)
+                                requestPantryBarcodePermission()
                             }
                         },
                         modifier = Modifier.weight(1f)

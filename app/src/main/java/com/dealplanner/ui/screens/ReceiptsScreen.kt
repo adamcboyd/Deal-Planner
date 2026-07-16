@@ -117,6 +117,14 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
         }
     }
 
+    fun requestReceiptCameraPermission() {
+        try {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        } catch (e: Exception) {
+            viewModel.reportReceiptCameraPermissionRequestFailed()
+        }
+    }
+
     LaunchedEffect(receiptScanStatus) {
         val status = receiptScanStatus.orEmpty()
         if (!clearReceiptTextOnSuccess) return@LaunchedEffect
@@ -188,7 +196,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                             if (hasPermission) {
                                 launchReceiptCamera()
                             } else {
-                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                                requestReceiptCameraPermission()
                             }
                         },
                         modifier = Modifier.weight(1f)

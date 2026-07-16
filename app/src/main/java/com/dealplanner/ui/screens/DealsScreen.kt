@@ -108,6 +108,14 @@ fun DealsScreen(viewModel: AppViewModel) {
         }
     }
 
+    fun requestDealsCameraPermission() {
+        try {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        } catch (e: Exception) {
+            viewModel.reportDealsCameraPermissionRequestFailed()
+        }
+    }
+
     LaunchedEffect(dealsScanStatus) {
         val status = dealsScanStatus.orEmpty()
         if (!clearFlyerTextOnSuccess) return@LaunchedEffect
@@ -187,7 +195,7 @@ fun DealsScreen(viewModel: AppViewModel) {
                             if (hasPermission) {
                                 launchDealsCamera()
                             } else {
-                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                                requestDealsCameraPermission()
                             }
                         },
                         modifier = Modifier.fillMaxWidth()

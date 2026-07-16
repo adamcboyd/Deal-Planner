@@ -169,6 +169,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _pantryPhotoStatus.value = "Camera permission is needed to take pantry photos."
     }
 
+    fun reportPantryCameraPermissionRequestFailed() {
+        _pantryPhotoStatus.value = "Could not request pantry camera permission. Enable Camera in Android Settings or use Gallery."
+    }
+
     fun reportPantryBarcodeScanCanceled() {
         _pantryPhotoStatus.value = "Barcode scan canceled."
     }
@@ -179,6 +183,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportPantryBarcodePermissionDenied() {
         _pantryPhotoStatus.value = "Camera permission is needed to scan barcodes."
+    }
+
+    fun reportPantryBarcodePermissionRequestFailed() {
+        _pantryPhotoStatus.value = "Could not request barcode camera permission. Enable Camera in Android Settings or add the UPC manually."
     }
 
     fun processPantryPhoto(bitmap: Bitmap) {
@@ -345,6 +353,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportDealsCameraPermissionDenied() {
         _dealsScanStatus.value = "Camera permission is needed to take flyer photos."
+    }
+
+    fun reportDealsCameraPermissionRequestFailed() {
+        _dealsScanStatus.value = "Could not request flyer camera permission. Enable Camera in Android Settings or use image/PDF import."
     }
 
     fun processDealsPhoto(bitmap: Bitmap, store: String = "Unknown") {
@@ -522,6 +534,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportReceiptCameraPermissionDenied() {
         _receiptScanStatus.value = "Camera permission is needed to take receipt photos."
+    }
+
+    fun reportReceiptCameraPermissionRequestFailed() {
+        _receiptScanStatus.value = "Could not request receipt camera permission. Enable Camera in Android Settings or use Gallery."
     }
 
     fun updateReceipt(item: ReceiptItem) {
