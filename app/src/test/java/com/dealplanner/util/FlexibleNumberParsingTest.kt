@@ -18,6 +18,14 @@ class FlexibleNumberParsingTest {
     }
 
     @Test
+    fun `parse leading decimal numeric text`() {
+        assertThat(".5".toFlexibleDoubleOrNull()).isEqualTo(0.5)
+        assertThat(",5".toFlexibleDoubleOrNull()).isEqualTo(0.5)
+        assertThat("-.25".toFlexibleDoubleOrNull()).isEqualTo(-0.25)
+        assertThat("+,75".toFlexibleDoubleOrNull()).isEqualTo(0.75)
+    }
+
+    @Test
     fun `reject blank non numeric and ambiguous thousands text`() {
         assertThat("".toFlexibleDoubleOrNull()).isNull()
         assertThat("not a number".toFlexibleDoubleOrNull()).isNull()

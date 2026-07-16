@@ -828,6 +828,22 @@ Latest continuation gate after Gemini leading-decimal quantity/confidence parsin
 
 Result: `BUILD SUCCESSFUL`, with `142` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused shared numeric edit leading-decimal parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.util.FlexibleNumberParsingTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after shared leading-decimal numeric edit parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `143` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -921,7 +937,7 @@ Verified by build/unit tests/code inspection:
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
-- Pantry edit/review quantity fields accept comma-decimal corrections such as `1,5`.
+- Pantry edit/review quantity fields accept comma-decimal and leading-decimal corrections such as `1,5`, `.5`, and `,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Blank manual pantry Add, barcode Add Code, flyer Process Text, and receipt Process Text taps show visible status messages instead of silently doing nothing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
@@ -931,12 +947,12 @@ Verified by build/unit tests/code inspection:
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`, and flyer store names are trimmed with blank values defaulted to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
-- Flyer deal edit/review numeric fields accept comma-decimal corrections for price, PPU, discount, score, and confidence, and block invalid values with visible validation.
+- Flyer deal edit/review numeric fields accept comma-decimal and leading-decimal corrections for price, PPU, discount, score, and confidence, and block invalid values with visible validation.
 - Receipt photo/gallery/manual text input exists.
 - Receipt pasted-text import shows processing status, keeps pasted text available when parsing finds no receipt line items, and clears it only after successful receipt import.
 - Receipt imports trim store names and default blank values to `Unknown`.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
-- Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence, and block invalid quantity, total, match ID, and confidence values with visible validation.
+- Receipt edit/review numeric fields accept comma-decimal and leading-decimal corrections for quantity, total, and confidence, and block invalid quantity, total, match ID, and confidence values with visible validation.
 - Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.
 - Bundled `demo_receipt.txt` also has unit coverage for the phone checklist appended tender lines `VISA DEBIT $40.65` and `CARD TENDER $40.65`.
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
@@ -952,7 +968,7 @@ Verified by build/unit tests/code inspection:
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
 - Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.
 - Budget screen current balance, monthly overview, and progress display use receipt-aware analysis values when available, so stale stored budget totals do not contradict current receipt history.
-- Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal support, non-negative validation, and visible saved feedback.
+- Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
@@ -960,7 +976,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
-- Settings protein-per-meal numeric input accepts comma-decimal values such as `0,5`.
+- Settings protein-per-meal numeric input accepts comma-decimal and leading-decimal values such as `0,5` or `.5`.
 - Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
@@ -1049,7 +1065,7 @@ Optional if anything fails on the phone:
    - Pantry duplicate check: add the same typed/photo item twice and confirm quantity merges.
    - Pantry barcode duplicate check: add the same UPC twice and confirm quantity merges, then add a different UPC and confirm it remains separate.
    - Pantry edit/review dialog for VERIFY items.
-   - Pantry edit/review dialog comma-decimal quantity correction such as `1,5`.
+   - Pantry edit/review dialog comma-decimal and leading-decimal quantity correction such as `1,5` or `.5`.
    - Deals flyer photo.
    - Deals camera-permission denial or canceled capture/gallery/PDF status.
    - Deals gallery image.
@@ -1060,7 +1076,7 @@ Optional if anything fails on the phone:
    - Deals bundled demo flyer text via pasted OCR.
    - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
-   - Deals edit/review dialog comma-decimal numeric correction such as price `2,99`.
+   - Deals edit/review dialog comma-decimal and leading-decimal numeric correction such as price `2,99` or `.99`.
    - Receipts photo.
    - Receipts camera-permission denial or canceled capture/gallery status.
    - Receipts gallery image.
@@ -1071,15 +1087,15 @@ Optional if anything fails on the phone:
    - Receipts one-line weighted produce rows parse item name, weight, and total.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.
-   - Receipts edit/review dialog comma-decimal numeric correction such as total `1,78`.
+   - Receipts edit/review dialog comma-decimal and leading-decimal numeric correction such as total `1,78` or `.89`.
    - Receipts edit/delete budget total adjustment.
    - Budget daily envelope changes after receipt import, receipt total edit, and receipt delete.
    - Budget projected spend reflects current-month receipt history.
-   - Budget Settings comma-decimal save such as monthly budget `292,50`, plus invalid text such as `abc`.
+   - Budget Settings comma-decimal and leading-decimal save such as monthly budget `292,50` or breakfast cost `.55`, plus invalid text such as `abc`.
    - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.
-   - Settings protein-per-meal comma-decimal value such as `0,5`.
+   - Settings protein-per-meal comma-decimal and leading-decimal value such as `0,5` or `.5`.
    - Settings invalid protein-per-meal text such as `abc`; confirm Save is disabled and a visible format message appears.
    - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, and debug build.
    - Generate meal plan.

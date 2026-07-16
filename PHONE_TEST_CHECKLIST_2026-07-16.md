@@ -95,11 +95,12 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Confirm a visible added/updated status appears and a pantry row appears or merges into an existing black beans row.
 4. Tap edit and confirm the item can be reviewed and saved.
 5. In the edit dialog, enter quantity `1,5`, save, and confirm it is accepted as 1.5.
-6. Reopen edit, enter quantity `abc`, and confirm Save disables with a non-negative number message.
-7. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
-8. Confirm opened date and best-by date stay separate on the pantry item.
-9. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
-10. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
+6. Reopen edit, enter quantity `.5` or `,5`, save, and confirm it is accepted as 0.5.
+7. Reopen edit, enter quantity `abc`, and confirm Save disables with a non-negative number message.
+8. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
+9. Confirm opened date and best-by date stay separate on the pantry item.
+10. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
+11. Clear the pantry text field and tap `Add`; confirm a visible no-text status appears.
 
 ### Deals
 
@@ -111,11 +112,12 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 6. Confirm the pasted flyer field clears after successful import.
 7. Edit one deal and save it.
 8. In the edit dialog, enter price `2,99`, save, and confirm it is accepted as 2.99.
-9. Reopen edit, enter score `7`, and confirm Save disables with a 0-to-1 value message.
-10. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
-11. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
-12. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-13. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+9. Reopen edit, enter price `.99` or `,99`, save, and confirm it is accepted as 0.99.
+10. Reopen edit, enter score `7`, and confirm Save disables with a 0-to-1 value message.
+11. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
+12. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
+13. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+14. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 
@@ -128,17 +130,19 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 7. Confirm Budget spending/projection changes after receipt import.
 8. Edit one receipt line and confirm Budget updates.
 9. In the edit dialog, enter total `1,78`, save, and confirm it is accepted as 1.78.
-10. Reopen edit, enter confidence `abc`, and confirm Save disables with a 0-to-1 value message.
-11. Optional store whitespace check: set store to ` Kroger `, import one receipt, and confirm the receipt line shows store `Kroger`.
-12. Delete one receipt line and confirm Budget updates again.
-13. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
-14. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
-15. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
+10. Reopen edit, enter total `.89` or `,89`, save, and confirm it is accepted as 0.89.
+11. Reopen edit, enter confidence `abc`, and confirm Save disables with a 0-to-1 value message.
+12. Optional store whitespace check: set store to ` Kroger `, import one receipt, and confirm the receipt line shows store `Kroger`.
+13. Delete one receipt line and confirm Budget updates again.
+14. Optional tender-line check: append `VISA DEBIT $40.65` and `CARD TENDER $40.65`, process again, and confirm those payment lines do not appear as receipt items.
+15. Paste text with no receipt line items, tap `Process Text`, and confirm the text remains available for correction.
+16. Clear the receipt text field and tap `Process Text`; confirm `No receipt text found.` appears.
 
 ### Budget
 
 1. In `Budget`, change monthly food budget to `292,50`, tap `Save Budget`, and confirm `Budget saved.` appears.
-2. Enter invalid budget text such as `abc`, and confirm Save is disabled with a visible non-negative-number message.
+2. Change breakfast anchor cost to `.55` or `,55`, tap `Save Budget`, and confirm it is accepted as 0.55.
+3. Enter invalid budget text such as `abc`, and confirm Save is disabled with a visible non-negative-number message.
 
 ## Phone Input Tests
 
@@ -219,7 +223,8 @@ In `Settings`:
 In `Settings`:
 
 1. Enter protein per meal as `0,5`, tap `Save Settings`, and confirm `Settings saved.` appears.
-2. Enter invalid protein text such as `abc`, and confirm Save is disabled with a visible number-format message.
+2. Enter protein per meal as `.5` or `,5`, tap `Save Settings`, and confirm it is accepted as 0.5.
+3. Enter invalid protein text such as `abc`, and confirm Save is disabled with a visible number-format message.
 
 ## Build Identity Check
 
@@ -253,8 +258,8 @@ Verify these show visible status messages instead of silent failures:
 - Camera/gallery/PDF/barcode paths either import data or show visible recovery status.
 - Barcode lookup enriches pantry rows when Open Food Facts has the product, and gracefully falls back when it does not.
 - Budget current balance, daily envelope, projected spend, and monthly overview update after receipt import/edit/delete.
-- Budget Settings saves valid comma-decimal values and blocks invalid numeric text.
-- Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
+- Budget Settings saves valid comma-decimal and leading-decimal values and blocks invalid numeric text.
+- Pantry, deal, receipt, budget, and settings numeric edit fields accept comma-decimal and leading-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Gemini no-key fallback is clear.

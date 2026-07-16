@@ -1,7 +1,19 @@
 package com.dealplanner.util
 
 fun String.toFlexibleDoubleOrNull(): Double? {
-    return trim()
+    val normalized = trim()
         .replace(',', '.')
+
+    return normalized
+        .withLeadingZeroForDecimal()
         .toDoubleOrNull()
+}
+
+private fun String.withLeadingZeroForDecimal(): String {
+    return when {
+        startsWith(".") -> "0$this"
+        startsWith("-.") -> "-0.${drop(2)}"
+        startsWith("+.") -> "+0.${drop(2)}"
+        else -> this
+    }
 }
