@@ -287,4 +287,38 @@ class MealPlanningEngineTest {
         assertThat(chickenItems).hasSize(1)
         assertThat(chickenItems[0].quantity).isGreaterThan(0.0)
     }
+
+    @Test
+    fun `shopping list keeps different unpersisted deals separate`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.9,
+                    pricePerUnit = 2.99
+                ),
+                DealItem(
+                    name = "Pork Shoulder",
+                    price = 3.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.8,
+                    pricePerUnit = 3.99
+                )
+            ),
+            daysToGenerate = 2
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        assertThat(result.shoppingList.map { it.dealItem.name })
+            .containsAtLeast("Chicken Breast", "Pork Shoulder")
+    }
 }

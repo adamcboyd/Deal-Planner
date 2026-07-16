@@ -89,7 +89,7 @@ Deal_Planner/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
             │   └── DealsParserTest.kt         ✅ 12 test cases
             └── domain/
-                ├── MealPlanningEngineTest.kt  ✅ 7 test cases
+                ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
                 └── ReceiptReconcilerTest.kt   ✅ 12 test cases
 ```
@@ -188,12 +188,12 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (75 Test Cases)
+### 7. Unit Tests (76 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (5 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (12 tests)
-- ✅ MealPlanningEngineTest (7 tests)
+- ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (12 tests)
 
@@ -399,6 +399,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
 - ✅ Tracks budget
 - ✅ Creates shopping lists
+- ✅ Keeps different shopping-list deal identities separate before and after Room assigns ids
 - ✅ Passes all unit tests
 
 ## 📦 Deliverables Checklist
@@ -420,7 +421,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
-- ✅ 75 unit tests
+- ✅ 76 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -174,6 +174,14 @@ Latest continuation gate after deterministic meal-plan rotation work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
 
+Latest continuation gate after shopping-list consolidation identity work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -221,6 +229,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
+- Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
@@ -256,6 +265,7 @@ Verified by build/unit tests/code inspection:
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
+- Shopping list consolidation keeps different deals separate even before Room assigns database ids.
 
 Not yet verified on a real phone:
 

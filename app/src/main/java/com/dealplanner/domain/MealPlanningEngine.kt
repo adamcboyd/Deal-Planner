@@ -267,8 +267,8 @@ class MealPlanningEngine {
     }
 
     private fun consolidateShoppingList(shoppingList: List<ShoppingListItem>): List<ShoppingListItem> {
-        // Group by deal item and sum quantities
-        val grouped = shoppingList.groupBy { it.dealItem.id }
+        // Group by persisted id when available; fall back to deal identity before Room assigns ids.
+        val grouped = shoppingList.groupBy { it.dealItem.shoppingListKey() }
 
         return grouped.map { (_, items) ->
             val first = items.first()
@@ -278,6 +278,27 @@ class MealPlanningEngine {
                 purpose = items.joinToString("; ") { it.purpose }
             )
         }
+    }
+
+    private fun DealItem.shoppingListKey(): String {
+        if (id > 0) return "id:$id"
+
+        return listOf(
+            name,
+            store,
+            brand,
+            sizeText,
+            unit,
+            dealType,
+            price.toString(),
+            pricePerUnit.toString()
+        )
+            .joinToString("|") { value ->
+                value
+                    ?.lowercase()
+                    ?.trim()
+                    .orEmpty()
+            }
     }
 
     /**
