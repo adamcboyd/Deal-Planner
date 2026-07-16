@@ -66,7 +66,7 @@ class DealsParser {
         while (i < lines.size) {
             val line = lines[i]
 
-            if (!containsDealSignal(line)) {
+            if (isFlyerMetadataLine(line) || !containsDealSignal(line)) {
                 i++
                 continue
             }
@@ -252,6 +252,12 @@ class DealsParser {
             packagePricePattern.containsMatchIn(line)
     }
 
+    private fun isFlyerMetadataLine(line: String): Boolean {
+        val normalized = line.lowercase().trim()
+        return flyerDatePattern.containsMatchIn(normalized) ||
+            flyerMetadataPrefixes.any { normalized.startsWith(it) }
+    }
+
     private fun isModifierLine(line: String): Boolean {
         val lineLower = line.lowercase()
         return limitPattern.matches(line) ||
@@ -416,5 +422,20 @@ class DealsParser {
 
     private fun findItemKeyword(name: String): String? {
         return baselinePrices.keys.firstOrNull { name.contains(it) }
+    }
+
+    private companion object {
+        private val flyerDatePattern = Regex("""\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b""")
+        private val flyerMetadataPrefixes = listOf(
+            "valid ",
+            "valid:",
+            "valid thru",
+            "valid through",
+            "sale dates",
+            "prices effective",
+            "effective ",
+            "through ",
+            "thru "
+        )
     }
 }

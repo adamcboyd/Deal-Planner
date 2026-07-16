@@ -60,6 +60,24 @@ class DealsParserTest {
     }
 
     @Test
+    fun `ignore flyer dates that look like slash multi-buy prices`() {
+        val text = """
+            Kroger Weekly Ad
+            Valid 7/16/2026 - 7/22/2026
+
+            Kroger Pasta
+            2/$5
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(1)
+        assertThat(result.deals[0].name).isEqualTo("Kroger Pasta")
+        assertThat(result.deals[0].price).isEqualTo(2.5)
+        assertThat(result.deals[0].dealType).isEqualTo("n_for_x")
+    }
+
+    @Test
     fun `parse buy N get M deal`() {
         val text = "Olive Oil\nBuy 2 Get 1 Free"
         val result = parser.parse(text, "Kroger")
