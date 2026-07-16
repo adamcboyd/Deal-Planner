@@ -36,7 +36,28 @@ class PantryOcrCandidateExtractorTest {
 
         assertThat(candidates).containsExactly(
             "Great Value Black Beans 15 oz pantry",
-            "Kroger Pasta 16 oz pantry"
+            "Kroger Pasta 16 oz pantry Best By 2026-12-31"
+        ).inOrder()
+    }
+
+    @Test
+    fun `multi item OCR attaches wrapped date continuation lines`() {
+        val text = """
+            Great Value Peanut Butter 16-ounce pantry best by
+            2027-03-04
+            Kroger Eggs 12-count fridge
+            Best By
+            2026-07-31
+            Private Selection Salsa 16 oz fridge opened
+            2026-07-01 best by 2026-08-15
+        """.trimIndent()
+
+        val candidates = PantryOcrCandidateExtractor.extractCandidates(text)
+
+        assertThat(candidates).containsExactly(
+            "Great Value Peanut Butter 16-ounce pantry best by 2027-03-04",
+            "Kroger Eggs 12-count fridge Best By 2026-07-31",
+            "Private Selection Salsa 16 oz fridge opened 2026-07-01 best by 2026-08-15"
         ).inOrder()
     }
 

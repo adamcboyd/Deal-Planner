@@ -11,9 +11,7 @@ object PantryOcrCandidateExtractor {
 
         if (lines.isEmpty()) return emptyList()
 
-        val standaloneItems = lines
-            .filter { it.looksLikeStandaloneItemLine() }
-            .take(MAX_CANDIDATES)
+        val standaloneItems = lines.extractStandaloneItemCandidates()
 
         if (standaloneItems.size >= 2) {
             return standaloneItems
@@ -25,6 +23,37 @@ object PantryOcrCandidateExtractor {
                 .joinToString(" ")
                 .trim()
         ).filter { it.isNotBlank() }
+    }
+
+    private fun List<String>.extractStandaloneItemCandidates(): List<String> {
+        val candidates = mutableListOf<String>()
+        var index = 0
+        while (index < size && candidates.size < MAX_CANDIDATES) {
+            val line = this[index]
+            if (!line.looksLikeStandaloneItemLine()) {
+                index++
+                continue
+            }
+
+            val parts = mutableListOf(line)
+            index++
+            while (index < size) {
+                val continuation = this[index]
+                if (continuation.looksLikeStandaloneItemLine()) {
+                    break
+                }
+                if (continuation.looksLikeDateContinuationLine()) {
+                    parts.add(continuation)
+                    index++
+                    continue
+                }
+                break
+            }
+
+            candidates.add(parts.joinToString(" "))
+        }
+
+        return candidates
     }
 
     private fun String.isIgnoredLine(): Boolean {
@@ -41,6 +70,10 @@ object PantryOcrCandidateExtractor {
     private fun String.looksLikeStandaloneItemLine(): Boolean {
         val normalized = lowercase()
         return normalized.hasPantrySignal() && normalized.hasProductWord()
+    }
+
+    private fun String.looksLikeDateContinuationLine(): Boolean {
+        return dateContinuationPattern.containsMatchIn(this)
     }
 
     private fun String.hasPantrySignal(): Boolean {
@@ -69,6 +102,10 @@ object PantryOcrCandidateExtractor {
     )
     private val dateCuePattern = Regex(
         """\b(?:best\s*by|best\s*before|use\s*by|use-by|sell\s*by|sell-by|exp\.?|expiration)\b""",
+        RegexOption.IGNORE_CASE
+    )
+    private val dateContinuationPattern = Regex(
+        """\b(?:best\s*by|best\s*before|use\s*by|use-by|use\s*before|sell\s*by|sell-by|exp\.?|expiration|opened(?:\s+on)?)\b|\b(?:\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\b""",
         RegexOption.IGNORE_CASE
     )
     private val locationPattern = Regex(

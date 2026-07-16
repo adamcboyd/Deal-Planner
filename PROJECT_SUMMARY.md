@@ -153,7 +153,7 @@ Deal_Planner/
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - ✅ Settings screen AI configuration status and Gemini connection test
-- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling and hyphenated package-size multi-item splitting
+- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling, hyphenated package-size multi-item splitting, and wrapped date continuation handling
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
 ### 4. Business Logic Engines
@@ -203,7 +203,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (180 Test Cases)
+### 7. Unit Tests (181 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -464,7 +464,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 180 unit tests
+- ✅ 181 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
