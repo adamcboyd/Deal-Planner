@@ -152,6 +152,7 @@ Deal_Planner/
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
+- ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
@@ -339,6 +340,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Loads demo data
 - ✅ Parses pantry items
 - ✅ Imports pantry items from camera/gallery photos
+- ✅ Lets users correct pantry OCR/AI output and verification status
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
@@ -356,6 +358,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ All Gradle files with dependencies
 - ✅ 7 Room entities + DAOs + Database
 - ✅ Production-ready pantry parser
+- ✅ Pantry item review/edit flow
 - ✅ Production-ready deals parser
 - ✅ OCR integration (ML Kit)
 - ✅ Optional Gemini Vision integration

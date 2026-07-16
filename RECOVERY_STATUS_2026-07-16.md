@@ -62,6 +62,7 @@ Verified by build/unit tests/code inspection:
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery input exists.
+- Pantry items can be edited/reviewed after manual, OCR, or AI import.
 - Flyer photo/gallery/PDF input exists.
 - Receipt photo/gallery/manual text input exists.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
@@ -115,6 +116,7 @@ gemini.model=gemini-3.5-flash
    - Pantry typed entry.
    - Pantry photo.
    - Pantry gallery image.
+   - Pantry edit/review dialog for VERIFY items.
    - Deals flyer photo.
    - Deals gallery image.
    - Deals PDF.

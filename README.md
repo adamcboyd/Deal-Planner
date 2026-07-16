@@ -190,6 +190,7 @@ On the Pantry tab:
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
 4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
+5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status.
 
 ### Scanning Flyers
 
@@ -303,6 +304,7 @@ As of the latest local pass:
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
+- Pantry cards can be edited after manual, OCR, or AI import so VERIFY items can be corrected during phone testing.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
@@ -322,6 +324,7 @@ As of the latest local pass:
 ## Future Enhancements
 
 - [x] Camera/gallery pantry photo import
+- [x] Single-item pantry review/edit flow after OCR or AI import
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Receipt photo/gallery/manual text import

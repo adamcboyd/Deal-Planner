@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -24,6 +25,8 @@ import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.PantryItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,6 +164,8 @@ fun PantryItemCard(
     onDelete: () -> Unit,
     onUpdate: (PantryItem) -> Unit
 ) {
+    var showEditDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = if (item.needsVerify) {
@@ -231,9 +236,185 @@ fun PantryItemCard(
                 }
             }
 
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+            Column(horizontalAlignment = Alignment.End) {
+                IconButton(onClick = { showEditDialog = true }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                }
             }
         }
+    }
+
+    if (showEditDialog) {
+        PantryItemEditDialog(
+            item = item,
+            onDismiss = { showEditDialog = false },
+            onSave = { updatedItem ->
+                onUpdate(updatedItem)
+                showEditDialog = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PantryItemEditDialog(
+    item: PantryItem,
+    onDismiss: () -> Unit,
+    onSave: (PantryItem) -> Unit
+) {
+    var itemName by remember(item.id) { mutableStateOf(item.item) }
+    var quantity by remember(item.id) { mutableStateOf(item.qty.toString()) }
+    var unit by remember(item.id) { mutableStateOf(item.unit.orEmpty()) }
+    var size by remember(item.id) { mutableStateOf(item.size.orEmpty()) }
+    var brand by remember(item.id) { mutableStateOf(item.brand.orEmpty()) }
+    var location by remember(item.id) { mutableStateOf(item.location.orEmpty()) }
+    var bestBy by remember(item.id) { mutableStateOf(item.bestBy?.toString().orEmpty()) }
+    var notes by remember(item.id) { mutableStateOf(item.notes.orEmpty()) }
+    var needsVerify by remember(item.id) { mutableStateOf(item.needsVerify) }
+    val parsedBestBy = bestBy.toLocalDateOrNull()
+    val isBestByValid = bestBy.isBlank() || parsedBestBy != null
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Review Pantry Item") },
+        text = {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = itemName,
+                        onValueChange = { itemName = it },
+                        label = { Text("Item") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = quantity,
+                            onValueChange = { quantity = it },
+                            label = { Text("Qty") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = unit,
+                            onValueChange = { unit = it },
+                            label = { Text("Unit") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                    }
+                }
+                item {
+                    OutlinedTextField(
+                        value = size,
+                        onValueChange = { size = it },
+                        label = { Text("Package size") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = brand,
+                        onValueChange = { brand = it },
+                        label = { Text("Brand") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { location = it },
+                        label = { Text("Location") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = bestBy,
+                        onValueChange = { bestBy = it },
+                        label = { Text("Best by YYYY-MM-DD") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isBestByValid,
+                        singleLine = true
+                    )
+                    if (!isBestByValid) {
+                        Text(
+                            "Use YYYY-MM-DD or leave blank.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+                item {
+                    OutlinedTextField(
+                        value = notes,
+                        onValueChange = { notes = it },
+                        label = { Text("Notes") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2
+                    )
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Needs verification", style = MaterialTheme.typography.bodyLarge)
+                        Switch(
+                            checked = needsVerify,
+                            onCheckedChange = { needsVerify = it }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = itemName.isNotBlank() && isBestByValid,
+                onClick = {
+                    onSave(
+                        item.copy(
+                            item = itemName.trim(),
+                            qty = quantity.toDoubleOrNull() ?: item.qty,
+                            unit = unit.trim().ifBlank { null },
+                            size = size.trim().ifBlank { null },
+                            brand = brand.trim().ifBlank { null },
+                            location = location.trim().ifBlank { null },
+                            bestBy = parsedBestBy,
+                            notes = notes.trim().ifBlank { null },
+                            needsVerify = needsVerify
+                        )
+                    )
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+private fun String.toLocalDateOrNull(): LocalDate? {
+    if (isBlank()) return null
+    return try {
+        LocalDate.parse(trim())
+    } catch (_: DateTimeParseException) {
+        null
     }
 }
