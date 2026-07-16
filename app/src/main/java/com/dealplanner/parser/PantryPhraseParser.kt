@@ -234,7 +234,7 @@ class PantryPhraseParser {
         skipWords.addAll(formKeywords)
         skipWords.addAll(
             listOf(
-                "of", "in", "the", "a", "an", "opened", "best", "by", "bestby", "before",
+                "of", "in", "on", "the", "a", "an", "opened", "best", "by", "bestby", "before",
                 "if", "use", "used", "expires", "expiration", "exp", "date",
                 "today", "yesterday", "tomorrow", "days", "day", "ago"
             )

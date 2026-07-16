@@ -154,6 +154,16 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse opened on date wording without leaking on into item name`() {
+        val result = parser.parse("Great Value peanut butter opened on 2026-07-01 best by date 2026-12-31")
+
+        assertThat(result.item.item).isEqualTo("peanut butter")
+        assertThat(result.item.brand).isEqualTo("Great Value")
+        assertThat(result.item.opened).isEqualTo(LocalDate.parse("2026-07-01"))
+        assertThat(result.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+    }
+
+    @Test
     fun `parse complex item`() {
         val result = parser.parse("2 cans Great Value black beans 15oz in pantry")
 
