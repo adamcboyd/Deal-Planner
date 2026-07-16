@@ -700,6 +700,14 @@ Latest continuation gate after barcode valid-near-date regression work:
 
 Result: `BUILD SUCCESSFUL`, with `130` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Gemini object-wrapped pantry field parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `131` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell

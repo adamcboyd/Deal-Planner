@@ -131,8 +131,8 @@ class GeminiPantryVisionClient(
         val apiError = try {
             val root = JsonParser.parseString(errorText).asJsonObject
             val error = root.getAsJsonObject("error")
-            val status = error?.getStringOrNull("status")
-            val message = error?.getStringOrNull("message")
+            val status = error?.getFlexibleStringOrNull("status")
+            val message = error?.getFlexibleStringOrNull("message")
             listOfNotNull(status, message)
                 .joinToString(": ")
                 .ifBlank { null }
@@ -272,7 +272,7 @@ class GeminiPantryVisionClient(
 
     private fun JsonObject.looksLikePantryVisionItem(): Boolean {
         return listOf("product", "item", "product_name", "name", "food", "food_name")
-            .any { name -> getStringOrNull(name) != null }
+            .any { name -> getFlexibleStringOrNull(name) != null }
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
@@ -354,19 +354,37 @@ class GeminiPantryVisionClient(
         }
     }
 
-    private fun JsonObject.getStringOrNull(name: String): String? {
-        val element = get(name) ?: return null
-        if (element.isJsonNull) return null
-        if (!element.isJsonPrimitive) return null
+    private fun JsonObject.getFlexibleStringOrNull(name: String): String? {
+        return get(name)?.asFlexibleStringOrNull()
+    }
+
+    private fun JsonElement.asFlexibleStringOrNull(): String? {
+        if (isJsonNull) return null
+        if (isJsonObject) {
+            return asJsonObject.firstStringOrNull(
+                "name",
+                "value",
+                "text",
+                "label",
+                "title",
+                "location"
+            )
+        }
+        if (isJsonArray) {
+            return asJsonArray.firstNotNullOfOrNull { element ->
+                element.asFlexibleStringOrNull()
+            }
+        }
+        if (!isJsonPrimitive) return null
         return try {
-            element.asString.trim().ifBlank { null }
+            asString.trim().ifBlank { null }
         } catch (_: Exception) {
             null
         }
     }
 
     private fun JsonObject.firstStringOrNull(vararg names: String): String? {
-        return names.firstNotNullOfOrNull { name -> getStringOrNull(name) }
+        return names.firstNotNullOfOrNull { name -> getFlexibleStringOrNull(name) }
     }
 
     private fun JsonObject.firstQuantityParts(vararg names: String): QuantityParts {
@@ -379,10 +397,19 @@ class GeminiPantryVisionClient(
 
     private fun JsonElement.asFlexibleDoubleOrNull(): Double? {
         return try {
-            if (isJsonNull || !isJsonPrimitive) {
-                null
-            } else {
-                asString.toFlexibleDoubleOrNull()
+            when {
+                isJsonNull -> null
+                isJsonPrimitive -> asString.toFlexibleDoubleOrNull()
+                isJsonObject -> asJsonObject.firstStringOrNull(
+                    "value",
+                    "amount",
+                    "confidence",
+                    "score"
+                )?.toFlexibleDoubleOrNull()
+                isJsonArray -> asJsonArray.firstNotNullOfOrNull { element ->
+                    element.asFlexibleDoubleOrNull()
+                }
+                else -> null
             }
         } catch (_: Exception) {
             null

@@ -344,6 +344,41 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with object and array wrapped string fields`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "brand": {"name": "Great Value"},
+                  "product": {"name": "black beans"},
+                  "quantity": {"value": "2", "unit": "cans"},
+                  "unit": ["cans"],
+                  "size": {"value": "15 oz"},
+                  "storage": {"location": "Refrigerator"},
+                  "bestBy": {"text": "2026-12-31"},
+                  "confidence": {"value": "0.89"}
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.brand).isEqualTo("Great Value")
+        assertThat(item.product).isEqualTo("black beans")
+        assertThat(item.quantity).isEqualTo(2.0)
+        assertThat(item.unit).isEqualTo("can")
+        assertThat(item.size).isEqualTo("15 oz")
+        assertThat(item.location).isEqualTo("fridge")
+        assertThat(item.expirationDate).isEqualTo("2026-12-31")
+        assertThat(item.confidence).isEqualTo(0.89)
+    }
+
+    @Test
     fun `parse pantry vision response with object quantity fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
@@ -443,14 +478,14 @@ class GeminiPantryVisionClientTest {
               "items": [
                 {
                   "brand": {"name": "bad shape"},
-                  "product": {"name": "not a string"},
+                  "product": {"name": {"bad": true}},
                   "quantity": 1,
                   "unit": "box",
                   "confidence": 0.8,
                   "questions": ["Keep this question", {"bad": true}, null, 7]
                 },
                 {
-                  "brand": ["bad shape"],
+                  "brand": [{"bad": true}],
                   "product": "corn flakes",
                   "quantity": 1,
                   "unit": "box",
