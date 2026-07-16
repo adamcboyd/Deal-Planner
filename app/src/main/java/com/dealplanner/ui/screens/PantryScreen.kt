@@ -27,8 +27,8 @@ import com.dealplanner.data.model.PantryItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
+import com.dealplanner.ui.state.PantryItemInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleDoubleOrNull
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.time.LocalDate
@@ -411,8 +411,8 @@ fun PantryItemEditDialog(
     var bestBy by remember(item.id) { mutableStateOf(item.bestBy?.toString().orEmpty()) }
     var notes by remember(item.id) { mutableStateOf(item.notes.orEmpty()) }
     var needsVerify by remember(item.id) { mutableStateOf(item.needsVerify) }
-    val parsedQuantity = quantity.toFlexibleDoubleOrNull()
-    val isQuantityValid = parsedQuantity != null && parsedQuantity >= 0.0
+    val quantityValidation = PantryItemInputValidator.validateQuantity(quantity)
+    val isQuantityValid = quantityValidation.isValid
     val parsedBestBy = bestBy.toLocalDateOrNull()
     val isBestByValid = bestBy.isBlank() || parsedBestBy != null
 
@@ -452,7 +452,7 @@ fun PantryItemEditDialog(
                     }
                     if (!isQuantityValid) {
                         Text(
-                            "Use a non-negative number like 1.5 or 1,5.",
+                            quantityValidation.message,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -533,7 +533,7 @@ fun PantryItemEditDialog(
                     onSave(
                         item.copy(
                             item = itemName.trim(),
-                            qty = parsedQuantity ?: item.qty,
+                            qty = quantityValidation.parsedValue ?: item.qty,
                             unit = unit.trim().ifBlank { null },
                             size = size.trim().ifBlank { null },
                             brand = brand.trim().ifBlank { null },
