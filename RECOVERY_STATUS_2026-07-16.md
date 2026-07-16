@@ -1791,3 +1791,30 @@ Optional before the phone test run:
    - Review budget.
 
 After those pass, decide whether to polish current flows or add optional features such as nutrition lookup, guided multi-photo flyer capture, price history, and monetization/convenience features.
+
+Latest continuation note after phone starter help refresh:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+```
+
+Result: help output now matches the real deterministic sample bundle: TXT, PDF, PNG, pantry-label, and UPC-A barcode samples. The starter help also states that sample transfer verifies the copy after placing files on the phone.
+
+PowerShell helper parse check:
+
+```powershell
+scripts\start-phone-test-run.ps1
+scripts\new-phone-test-samples.ps1
+scripts\send-phone-test-samples.ps1
+scripts\new-phone-test-report.ps1
+```
+
+Result: all listed helpers parsed successfully.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `181` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
