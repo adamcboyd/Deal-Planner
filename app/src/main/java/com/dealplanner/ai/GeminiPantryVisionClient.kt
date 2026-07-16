@@ -455,7 +455,14 @@ class GeminiPantryVisionClient(
                 "text",
                 "label",
                 "title",
-                "location"
+                "location",
+                "question",
+                "message",
+                "warning",
+                "note",
+                "reason",
+                "description",
+                "prompt"
             )
         }
         if (isJsonArray) {
@@ -701,14 +708,9 @@ class GeminiPantryVisionClient(
         return when {
             isJsonNull -> emptyList()
             isJsonArray -> asJsonArray.mapNotNull { element ->
-                if (!element.isJsonPrimitive) {
-                    null
-                } else {
-                    element.asString.trim().ifBlank { null }
-                }
+                element.asFlexibleStringOrNull()
             }
-            isJsonPrimitive -> listOfNotNull(asString.trim().ifBlank { null })
-            else -> emptyList()
+            else -> listOfNotNull(asFlexibleStringOrNull())
         }
     }
 

@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after flyer multibuy hardening; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after AI question/warning preservation work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1177,6 +1177,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed, then the full Gradle gate passed. The flyer parser now ignores impossible or unsafe multibuy counts such as `0 for $5` and oversized OCR counts instead of importing bad deals or throwing, and pasted flyer processing now reports `Could not process that flyer text.` if an unexpected parser error occurs.
 
+Latest focused AI parser check after object-wrapped question/warning preservation:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `GeminiPantryVisionClientTest` passed, then the full Gradle gate passed. Gemini pantry response parsing now preserves object-wrapped `questions` and `warnings` values, such as `{"question":"..."}`, `{"message":"..."}`, and `{"warning":"..."}`, so AI review prompts remain available for imported VERIFY rows.
+
 Additional check:
 
 ```powershell
@@ -1330,7 +1341,7 @@ Verified by build/unit tests/code inspection:
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, debug/release build identity, and source identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, and `2026/12/31`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
