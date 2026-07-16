@@ -134,6 +134,22 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `bundled demo receipt ignores appended card tender lines`() {
+        val ocrText = java.io.File("src/main/assets/demo_receipt.txt").readText() + """
+
+            VISA DEBIT ${'$'}40.65
+            CARD TENDER ${'$'}40.65
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(8)
+        assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("VISA DEBIT ${'$'}40.65")
+        assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("CARD TENDER ${'$'}40.65")
+        assertThat(result.total).isEqualTo(40.65)
+    }
+
+    @Test
     fun `calculate VPP for proteins`() {
         val vpp = reconciler.calculateVPP(packagePrice = 10.0, packageWeight = 2.0, servingSize = 0.5)
 

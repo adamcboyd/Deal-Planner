@@ -89,11 +89,11 @@ Deal_Planner/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 8 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
-            │   └── DealsParserTest.kt         ✅ 20 test cases
+            │   └── DealsParserTest.kt         ✅ 21 test cases
             ├── domain/
             │   ├── MealPlanningEngineTest.kt  ✅ 9 test cases
             │   ├── BudgetEngineTest.kt        ✅ 10 test cases
-            │   └── ReceiptReconcilerTest.kt   ✅ 18 test cases
+            │   └── ReceiptReconcilerTest.kt   ✅ 19 test cases
             └── util/
                 └── FlexibleNumberParsingTest.kt ✅ 3 test cases
 ```
@@ -195,14 +195,14 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (115 Test Cases)
+### 7. Unit Tests (117 Test Cases)
 - ✅ GeminiPantryVisionClientTest (21 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
-- ✅ DealsParserTest (20 tests)
+- ✅ DealsParserTest (21 tests)
 - ✅ MealPlanningEngineTest (9 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (18 tests)
+- ✅ ReceiptReconcilerTest (19 tests)
 - ✅ FlexibleNumberParsingTest (3 tests)
 
 ## 🔧 Technology Stack
@@ -437,7 +437,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper with stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 115 unit tests
+- ✅ 117 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

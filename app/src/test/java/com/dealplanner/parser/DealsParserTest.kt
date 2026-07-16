@@ -343,6 +343,24 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse phone checklist cent price text`() {
+        val text = """
+            Roma Tomatoes
+            99c/lb
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(1)
+        val tomatoes = result.deals.first()
+        assertThat(tomatoes.name).isEqualTo("Roma Tomatoes")
+        assertThat(tomatoes.price).isEqualTo(0.99)
+        assertThat(tomatoes.unit).isEqualTo("lb")
+        assertThat(tomatoes.dealType).isEqualTo("per_pound")
+        assertThat(tomatoes.store).isEqualTo("Kroger")
+    }
+
+    @Test
     fun `parse demo flyer style multiline modifiers`() {
         val text = """
             Pork Shoulder Roast
