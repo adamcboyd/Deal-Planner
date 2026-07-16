@@ -283,6 +283,23 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `ignore snap ebt and wic tender lines`() {
+        val ocrText = """
+            BLACK BEANS      $1.78
+            SNAP EBT         $1.78
+            EBT FOOD         $1.78
+            WIC BENEFIT      $1.78
+            TOTAL            $1.78
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].rawLine).isEqualTo("BLACK BEANS      $1.78")
+        assertThat(result.total).isEqualTo(1.78)
+    }
+
+    @Test
     fun `ignore coupon discount refund and reward lines`() {
         val ocrText = """
             BLACK BEANS      $1.78

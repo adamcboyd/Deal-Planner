@@ -310,6 +310,14 @@ Latest continuation gate after BOGO percent-off flyer shorthand parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `92` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after SNAP/EBT/WIC receipt tender filtering work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `93` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -403,6 +411,7 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
+- Receipt reconciliation ignores SNAP/EBT/WIC benefit tender lines such as `SNAP EBT`, `EBT FOOD`, and `WIC BENEFIT` so they do not inflate grocery spending.
 - Receipt reconciliation ignores coupon, discount, reward, refund, return, promo, markdown, and adjustment lines so those OCR rows do not increase spending.
 - Receipt totals are rounded to cents before budget updates.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.

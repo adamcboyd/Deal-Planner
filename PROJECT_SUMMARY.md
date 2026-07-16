@@ -91,7 +91,7 @@ Deal_Planner/
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 14 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 15 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -189,14 +189,14 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (92 Test Cases)
+### 7. Unit Tests (93 Test Cases)
 - ✅ GeminiPantryVisionClientTest (14 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
 - ✅ PantryPhraseParserTest (22 tests)
 - ✅ DealsParserTest (17 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (14 tests)
+- ✅ ReceiptReconcilerTest (15 tests)
 
 ## 🔧 Technology Stack
 
@@ -390,7 +390,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs
-- ✅ Ignores receipt subtotal, tax, total, savings, and tender/payment/card-tender lines
+- ✅ Ignores receipt subtotal, tax, total, savings, SNAP/EBT/WIC benefit tender, and tender/payment/card-tender lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Recalculates budget daily envelope and projected spend from current-month receipt history
@@ -423,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 92 unit tests
+- ✅ 93 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
