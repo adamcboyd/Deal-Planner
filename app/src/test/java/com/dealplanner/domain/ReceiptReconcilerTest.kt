@@ -5,6 +5,7 @@ import com.dealplanner.data.model.DealItem
 import com.dealplanner.data.model.PantryItem
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDate
 
 class ReceiptReconcilerTest {
 
@@ -47,6 +48,25 @@ class ReceiptReconcilerTest {
         assertThat(result.receiptItems).hasSize(2)
         assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("TOTAL            $12.95")
         assertThat(result.total).isEqualTo(12.95)
+    }
+
+    @Test
+    fun `receipt header date applies to imported receipt items`() {
+        val ocrText = """
+            KROGER
+            Date: 10/27/2025
+            Time: 14:32
+
+            BLACK BEANS      $1.78
+            KROGER PASTA     $3.00
+            TOTAL            $4.78
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.date })
+            .containsExactly(LocalDate.of(2025, 10, 27), LocalDate.of(2025, 10, 27))
     }
 
     @Test

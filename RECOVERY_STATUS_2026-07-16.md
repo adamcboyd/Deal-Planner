@@ -206,6 +206,14 @@ Latest continuation gate after slash-style flyer multi-buy parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `79` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt header-date parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `80` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -288,6 +296,7 @@ Verified by build/unit tests/code inspection:
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
+- Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.

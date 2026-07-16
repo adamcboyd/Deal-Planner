@@ -2,6 +2,8 @@ package com.dealplanner.domain
 
 import com.dealplanner.data.model.*
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 /**
  * Receipt reconciliation engine.
@@ -41,6 +43,7 @@ class ReceiptReconciler {
         var total = 0.0
 
         val lines = ocrText.lines().filter { it.trim().isNotEmpty() }
+        val receiptDate = extractReceiptDate(lines) ?: LocalDate.now()
 
         var lineIndex = 0
         while (lineIndex < lines.size) {
@@ -74,7 +77,7 @@ class ReceiptReconciler {
                     matchedType = if (useDealMatch) "deal" else if (pantryMatch != null) "pantry" else null,
                     qty = qty,
                     totalCost = price,
-                    date = LocalDate.now(),
+                    date = receiptDate,
                     confidence = confidence,
                     store = store,
                     needsReview = needsReview
@@ -270,6 +273,29 @@ class ReceiptReconciler {
             adjustmentTerms.any { normalized.contains(it) }
     }
 
+    private fun extractReceiptDate(lines: List<String>): LocalDate? {
+        return lines.firstNotNullOfOrNull { line ->
+            val trimmed = line.trim()
+            val headerMatch = receiptDateHeaderPattern.find(trimmed)
+            val standaloneMatch = receiptDateStandalonePattern.matchEntire(trimmed)
+            val value = headerMatch?.groupValues?.getOrNull(1)
+                ?: standaloneMatch?.groupValues?.getOrNull(1)
+
+            value?.let { parseReceiptDateValue(it) }
+        }
+    }
+
+    private fun parseReceiptDateValue(value: String): LocalDate? {
+        val cleaned = value.trim()
+        return receiptDateFormats.firstNotNullOfOrNull { formatter ->
+            try {
+                LocalDate.parse(cleaned, formatter)
+            } catch (_: DateTimeParseException) {
+                null
+            }
+        }
+    }
+
     private fun isQuantityDetailLine(line: String): Boolean {
         return splitQuantityPattern.matches(line.trim())
     }
@@ -348,6 +374,21 @@ class ReceiptReconciler {
     }
 
     private companion object {
+        private val receiptDateHeaderPattern = Regex(
+            """(?i)\b(?:date|transaction date|trans date|purchase date)\s*[:#-]?\s*(\d{1,4}[/-]\d{1,2}[/-]\d{1,4})\b"""
+        )
+        private val receiptDateStandalonePattern = Regex(
+            """(\d{1,4}[/-]\d{1,2}[/-]\d{1,4})"""
+        )
+        private val receiptDateFormats = listOf(
+            DateTimeFormatter.ofPattern("M/d/yyyy"),
+            DateTimeFormatter.ofPattern("M/d/yy"),
+            DateTimeFormatter.ofPattern("MM/dd/yyyy"),
+            DateTimeFormatter.ofPattern("MM/dd/yy"),
+            DateTimeFormatter.ofPattern("M-d-yyyy"),
+            DateTimeFormatter.ofPattern("M-d-yy"),
+            DateTimeFormatter.ISO_LOCAL_DATE
+        )
         private val splitQuantityPattern = Regex(
             """(?i)^(\d+(?:\.\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
         )
