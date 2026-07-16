@@ -499,6 +499,32 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse receipt lines with explicit whole dollar prices`() {
+        val ocrText = """
+            RICE 5 LB        ${'$'}3
+            2 @ ${'$'}1 BLACK BEANS ${'$'}2
+            KROGER PASTA     ${'$'}3
+            3 @ ${'$'}1
+            BANANAS 1 lb @ ${'$'}1/lb ${'$'}1
+            TOTAL            ${'$'}9
+            KROGER FLOUR 5 LB
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(4)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "RICE 5 LB        ${'$'}3",
+            "2 @ ${'$'}1 BLACK BEANS ${'$'}2",
+            "KROGER PASTA     ${'$'}3",
+            "BANANAS 1 lb @ ${'$'}1/lb ${'$'}1"
+        ).inOrder()
+        assertThat(result.receiptItems.map { it.totalCost }).containsExactly(3.0, 2.0, 3.0, 1.0).inOrder()
+        assertThat(result.receiptItems.map { it.qty }).containsExactly(null, 2.0, 3.0, 1.0).inOrder()
+        assertThat(result.total).isEqualTo(9.0)
+    }
+
+    @Test
     fun `receipt pantry match wins over weaker deal match`() {
         val ocrText = "BLACK BEANS       $1.78"
         val deals = listOf(
