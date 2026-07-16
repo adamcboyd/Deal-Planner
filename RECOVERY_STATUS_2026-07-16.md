@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `3ef066f feat: show source commit in app about`
-- The branch may include later helper/docs recovery commits, but `3ef066f` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `0e596dc feat: add receipt PDF import`
+- The branch may include later helper/docs recovery commits, but `0e596dc` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
@@ -1006,6 +1006,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 ```
 
 Result: both helpers printed usage/options successfully, including `-RequirePhone`, `-RequireGemini`, `-SkipNetwork`, `-SkipBuild`, and `-NoLaunch`.
+
+Latest continuation gate after receipt PDF import work:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat compileDebugKotlin
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
+Receipt PDF checkpoint:
+
+- Receipts screen now has a `PDF` picker action.
+- Receipt PDFs render through the existing capped local PDF renderer and ML Kit OCR path.
+- Parsed PDF text uses the same receipt reconciliation, pantry update, budget update, and review flow as receipt photos/gallery/manual text.
+- Phone checklist and generated phone-test report now include receipt PDF pass/fail evidence.
 
 Latest continuation gate after helper/report source-identity work:
 
