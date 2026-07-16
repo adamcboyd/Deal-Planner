@@ -173,6 +173,14 @@ Before reproducing a phone-only failure, use:
 
 Logs are saved under `phone-test-logs\`, which is ignored by Git. Start with `logcat-dealplanner-filtered.txt` when debugging a failure.
 
+Phone test report helper:
+
+```powershell
+.\scripts\new-phone-test-report.ps1
+```
+
+Reports are saved under ignored `phone-test-results\` folders and capture the current commit, APK, Gemini configuration state, ADB/device snapshot when available, and pass/fail sections for the phone checklist.
+
 Debug APK output:
 
 ```text
@@ -401,6 +409,7 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, and matches the GitHub branch SHA when network checks are enabled.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
+- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, source commit, APK, Gemini setup, and device context.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Settings -> About Deal Planner shows the actual Gradle version, package name, and debug/release build identity from `BuildConfig`.
 - Pasted flyer and receipt OCR text shows a processing status, stays in the field when parsing fails, and clears only after a successful import.

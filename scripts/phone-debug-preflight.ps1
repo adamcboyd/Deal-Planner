@@ -414,6 +414,12 @@ if (Test-Path ".\scripts\phone-debug-logs.ps1") {
     Add-Check $results "Phone log helper" "WARN" "Log helper not found; phone failures may be harder to diagnose."
 }
 
+if (Test-Path ".\scripts\new-phone-test-report.ps1") {
+    Add-Check $results "Phone test report helper" "OK" "scripts\new-phone-test-report.ps1 is present for timestamped pass/fail evidence capture."
+} else {
+    Add-Check $results "Phone test report helper" "WARN" "Phone test report helper not found; test evidence may end up only in chat."
+}
+
 Write-Host ""
 $failCount = @($results | Where-Object { $_.Status -eq "FAIL" }).Count
 $warnCount = @($results | Where-Object { $_.Status -eq "WARN" }).Count

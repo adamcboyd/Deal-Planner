@@ -957,6 +957,17 @@ Latest APK permission helper check:
 
 Result: preflight reported `APK permissions` and `APK storage permissions` as OK. The install helper verified `com.dealplanner / Deal Planner` scoped permissions before stopping at the expected no-phone-connected condition.
 
+Latest phone test report helper checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -Help
+.\scripts\new-phone-test-report.ps1
+.\scripts\phone-debug-preflight.ps1
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: report helper help printed successfully, generated an ignored `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` file without requiring a connected phone, preflight recognized the report helper, and the Gradle gate stayed `BUILD SUCCESSFUL` with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Additional check:
 
 ```powershell
@@ -1008,6 +1019,7 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner`, required `INTERNET` and `CAMERA` permissions, and no broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
+- `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture and writes local reports under ignored `phone-test-results\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
@@ -1167,6 +1179,12 @@ Optional if anything fails on the phone:
 
 ```powershell
 .\scripts\phone-debug-logs.ps1 -Clear -Launch -DurationSeconds 90
+```
+
+Optional before the phone test run:
+
+```powershell
+.\scripts\new-phone-test-report.ps1
 ```
 
 7. Test in this order:

@@ -46,6 +46,14 @@ To clear old logs, launch the app, wait while you reproduce the issue, and then 
 
 Start debugging with `phone-test-logs\<timestamp>\logcat-dealplanner-filtered.txt`.
 
+To create a timestamped report before or during the phone run:
+
+```powershell
+.\scripts\new-phone-test-report.ps1
+```
+
+Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups.
+
 ## Optional Gemini Setup
 
 The app works without Gemini by using on-device ML Kit OCR fallback. To test Gemini pantry photo recognition, create `local.properties` locally:
