@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after non-finite numeric input and AI numeric fallback validation; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after AI non-positive quantity review validation; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1385,6 +1385,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `FlexibleNumberParsingTest` and `GeminiPantryVisionClientTest` passed locally, then the full Gradle gate passed with `174` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Shared manual numeric parsing now rejects non-finite values such as `NaN`, `Infinity`, and `-Infinity`, and Gemini pantry response parsing treats non-finite quantity/confidence text as missing/default review data instead of saving invalid numbers.
 
+Latest focused AI pantry quantity mapping check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.PantryVisionItemMapperTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `PantryVisionItemMapperTest` passed locally, then the full Gradle gate passed with `175` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. AI pantry photo mapping now treats non-positive model quantities as missing amount details, defaults the saved review item to quantity `1.0`, and adds `Review amount/unit.` instead of saving a zero or negative pantry quantity.
+
 Additional check:
 
 ```powershell
@@ -1549,7 +1560,7 @@ Verified by build/unit tests/code inspection:
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, alternate review-question aliases such as `clarifying_questions` and `followUpQuestions`, warning aliases such as `review_notes`, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, liquid-unit aliases such as gallon/quart/pint, comma-decimal and leading-decimal confidence such as `"0,82"` or `".82"`, non-finite numeric text fallback such as `NaN` or `Infinity`, storage aliases including cabinet/cold-storage wording, malformed string/list fields, non-JSON model text fallback, and confidence clamping.
 - AI pantry photo date conversion has unit coverage for common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and `2026-7-1`, so Gemini-provided best-by/opened dates are not limited to strict ISO text.
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
-- AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
+- AI pantry photo item mapping has unit coverage for unknown or non-positive amount details; the item requires review instead of being treated as fully verified or saving a zero/negative pantry quantity.
 - AI pantry photo item mapping has unit coverage for Generic or unknown brand values; the item requires review so missing label brand details stay visible.
 - AI pantry photo item mapping has unit coverage for missing or unknown storage location; the item defaults to `pantry` but requires review so pantry/fridge/freezer placement can be corrected.
 - AI pantry photo VERIFY notes include explicit review reasons for missing brand, amount/unit, storage location, and best-by date details, so the phone review flow tells the user what needs correction.

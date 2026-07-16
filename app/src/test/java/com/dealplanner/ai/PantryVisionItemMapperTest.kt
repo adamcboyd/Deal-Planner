@@ -125,6 +125,30 @@ class PantryVisionItemMapperTest {
     }
 
     @Test
+    fun `negative vision quantity defaults to reviewable amount`() {
+        val item = GeminiPantryVisionClient.PantryVisionItem(
+            brand = "Kroger",
+            product = "ground beef",
+            quantity = -1.0,
+            unit = "lb",
+            size = null,
+            location = "fridge",
+            expirationDate = "2026-12-31",
+            openedDate = null,
+            confidence = 0.95,
+            questions = emptyList()
+        )
+
+        val pantryItem = item.toPantryItem(warnings = emptyList())
+
+        assertThat(pantryItem).isNotNull()
+        assertThat(pantryItem!!.qty).isEqualTo(1.0)
+        assertThat(pantryItem.unit).isEqualTo("lb")
+        assertThat(pantryItem.needsVerify).isTrue()
+        assertThat(pantryItem.notes).contains("Review amount/unit.")
+    }
+
+    @Test
     fun `generic or unknown vision brand requires review`() {
         val genericItem = completeVisionItem().copy(brand = "Generic")
         val unknownItem = completeVisionItem().copy(brand = "unknown")

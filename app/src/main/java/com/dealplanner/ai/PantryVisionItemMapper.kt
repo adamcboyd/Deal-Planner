@@ -12,7 +12,8 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     val questionNotes = questions.joinToString(" ")
     val warningNotes = warnings.joinToString(" ")
     val missingBrand = brand.isMissingBrand()
-    val missingAmount = quantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
+    val safeQuantity = quantity?.takeIf { it > 0.0 }
+    val missingAmount = safeQuantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
     val missingLocation = location.isMissingLocation()
     val missingDate = parsedBestBy == null
     val reviewNotes = buildReviewNotes(
@@ -24,7 +25,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
 
     return PantryItem(
         item = productName,
-        qty = quantity ?: 1.0,
+        qty = safeQuantity ?: 1.0,
         unit = unit?.takeUnless { it.equals("unknown", ignoreCase = true) },
         size = size,
         brand = brand?.takeUnless { it.equals("unknown", ignoreCase = true) } ?: "Generic",
