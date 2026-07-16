@@ -254,6 +254,14 @@ Latest continuation gate after cent-style flyer price parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `85` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after label-style pantry expiration cue parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `86` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -312,6 +320,7 @@ Verified by build/unit tests/code inspection:
 - Pantry natural-language parser has unit tests.
 - Pantry manual text input parses the phone-checklist `best by 2026-12-31` ISO date format without treating the date as part of the item name.
 - Pantry manual text input keeps `opened` and `best by` dates independent when both appear in one phrase, such as `opened yesterday best by 2026-12-31`.
+- Pantry manual text input parses common label-style expiration cues such as `best before`, `use by`, and `exp`.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.

@@ -86,7 +86,7 @@ Deal_Planner/
             ├── lookup/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 21 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ 22 test cases
             │   └── DealsParserTest.kt         ✅ 15 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
@@ -107,7 +107,7 @@ Deal_Planner/
 - ✅ **PantryPhraseParser**:
   - Handles quantities (numeric, fractions, words)
   - Extracts brands, units, sizes, locations
-  - Parses dates (relative and absolute)
+  - Parses dates (relative and absolute, including label cues such as best before, use by, and exp)
   - Duplicate detection and merging
   - Confidence scoring
 
@@ -189,10 +189,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (85 Test Cases)
+### 7. Unit Tests (86 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
-- ✅ PantryPhraseParserTest (21 tests)
+- ✅ PantryPhraseParserTest (22 tests)
 - ✅ DealsParserTest (15 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
@@ -423,7 +423,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 85 unit tests
+- ✅ 86 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

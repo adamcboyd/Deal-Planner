@@ -75,6 +75,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 4. Tap edit and confirm the item can be reviewed and saved.
 5. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
 6. Confirm opened date and best-by date stay separate on the pantry item.
+7. Optional label-date check: enter `Kroger yogurt best before 2026-12-31`, `milk use by 12/31/2026`, or `pasta exp 12/31/2026`, then confirm the best-by date is captured.
 
 ### Deals
 

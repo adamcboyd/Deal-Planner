@@ -194,6 +194,9 @@ Great Value peanut butter 16oz in pantry
 1.5 lb ground beef in freezer best by 12/25
 2 cans black beans 15oz pantry best by 2026-12-31
 Great Value peanut butter opened yesterday best by 2026-12-31
+Kroger yogurt best before 2026-12-31
+milk use by 12/31/2026
+pasta exp 12/31/2026
 rice 5 lb bag
 frozen broccoli 12oz
 ```
@@ -203,7 +206,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened and best by independently, including `YYYY-MM-DD`)
+- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, `best before`, `use by`, and `exp`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
@@ -362,7 +365,7 @@ As of the latest local pass:
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids.
-- Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
+- Pantry parser handles quantity, brand, size, location, common expiration label cues, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.

@@ -125,6 +125,23 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse label style expiration date cues`() {
+        val bestBefore = parser.parse("Kroger yogurt best before 2026-12-31")
+        val useBy = parser.parse("milk use by 12/31/2026")
+        val exp = parser.parse("pasta exp 12/31/2026")
+
+        assertThat(bestBefore.item.item).isEqualTo("yogurt")
+        assertThat(bestBefore.item.brand).isEqualTo("Kroger")
+        assertThat(bestBefore.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+
+        assertThat(useBy.item.item).isEqualTo("milk")
+        assertThat(useBy.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        assertThat(exp.item.item).isEqualTo("pasta")
+        assertThat(exp.item.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+    }
+
+    @Test
     fun `parse complex item`() {
         val result = parser.parse("2 cans Great Value black beans 15oz in pantry")
 

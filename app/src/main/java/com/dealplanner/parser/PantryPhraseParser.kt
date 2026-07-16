@@ -149,8 +149,8 @@ class PantryPhraseParser {
             }
         }
 
-        if (inputLower.contains("best by") || inputLower.contains("bestby") || inputLower.contains("expires")) {
-            bestBy = extractDate(input, "best by", "bestby", "expires")
+        if (containsBestByCue(inputLower)) {
+            bestBy = extractDate(input, *bestByDateCueKeywords.toTypedArray(), EXP_DATE_CUE)
             if (bestBy == null) {
                 warnings.add("Could not parse 'best by' date")
                 needsVerify = true
@@ -234,7 +234,8 @@ class PantryPhraseParser {
         skipWords.addAll(formKeywords)
         skipWords.addAll(
             listOf(
-                "of", "in", "the", "a", "an", "opened", "best", "by", "bestby", "expires",
+                "of", "in", "the", "a", "an", "opened", "best", "by", "bestby", "before",
+                "if", "use", "used", "expires", "expiration", "exp",
                 "today", "yesterday", "tomorrow", "days", "day", "ago"
             )
         )
@@ -272,6 +273,11 @@ class PantryPhraseParser {
             !normalized.any { it in "aeiou" }
     }
 
+    private fun containsBestByCue(inputLower: String): Boolean {
+        return bestByDateCueKeywords.any { inputLower.contains(it) } ||
+            expDateCuePattern.containsMatchIn(inputLower)
+    }
+
     private fun extractDate(input: String, vararg keywords: String): LocalDate? {
         val dateFormats = listOf(
             DateTimeFormatter.ofPattern("M/d/yyyy"),
@@ -285,17 +291,14 @@ class PantryPhraseParser {
 
         val inputLower = input.lowercase()
 
-        for (keyword in keywords) {
-            val keywordIndex = inputLower.indexOf(keyword)
-            if (keywordIndex != -1) {
-                val afterKeywordStart = (keywordIndex + keyword.length).coerceAtMost(input.length)
-                val afterKeyword = input.substring(
-                    afterKeywordStart,
-                    nextDateCueIndex(inputLower, afterKeywordStart) ?: input.length
-                )
+        for (cue in findDateCueRanges(inputLower, keywords.asList())) {
+            val afterKeywordStart = (cue.last + 1).coerceAtMost(input.length)
+            val afterKeyword = input.substring(
+                afterKeywordStart,
+                nextDateCueIndex(inputLower, afterKeywordStart) ?: input.length
+            )
 
-                findFirstDateInSegment(afterKeyword, dateFormats)?.let { return it }
-            }
+            findFirstDateInSegment(afterKeyword, dateFormats)?.let { return it }
         }
 
         return null
@@ -350,13 +353,40 @@ class PantryPhraseParser {
     }
 
     private fun nextDateCueIndex(inputLower: String, afterKeywordStart: Int): Int? {
-        return dateCueKeywords
-            .mapNotNull { cue ->
-                inputLower
-                    .indexOf(cue, startIndex = afterKeywordStart)
-                    .takeIf { it >= 0 }
-            }
+        return findDateCueRanges(inputLower, dateCueKeywords, afterKeywordStart)
+            .map { it.first }
             .minOrNull()
+    }
+
+    private fun findDateCueRanges(
+        inputLower: String,
+        keywords: List<String>,
+        startIndex: Int = 0
+    ): List<IntRange> {
+        return keywords.flatMap { keyword ->
+            if (keyword == EXP_DATE_CUE) {
+                expDateCuePattern.findAll(inputLower)
+                    .map { it.range }
+                    .filter { it.first >= startIndex }
+                    .toList()
+            } else {
+                keywordRanges(inputLower, keyword, startIndex)
+            }
+        }.sortedBy { it.first }
+    }
+
+    private fun keywordRanges(
+        inputLower: String,
+        keyword: String,
+        startIndex: Int
+    ): List<IntRange> {
+        val ranges = mutableListOf<IntRange>()
+        var index = inputLower.indexOf(keyword, startIndex)
+        while (index >= 0) {
+            ranges.add(index until index + keyword.length)
+            index = inputLower.indexOf(keyword, index + 1)
+        }
+        return ranges
     }
 
     /**
@@ -472,9 +502,20 @@ class PantryPhraseParser {
     )
 
     private companion object {
+        private const val EXP_DATE_CUE = "exp"
         private val DATE_TOKEN_PATTERN = Regex("""(?:\d{4}[/-]\d{1,2}[/-]\d{1,2})|(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4})""")
         private val relativeDatePattern = Regex("""\b(today|yesterday|tomorrow)\b""")
         private val daysAgoPattern = Regex("""\b(\d+)\s*days?\s*ago\b""")
-        private val dateCueKeywords = listOf("opened", "best by", "bestby", "expires")
+        private val expDateCuePattern = Regex("""\bexp\.?\b""")
+        private val bestByDateCueKeywords = listOf(
+            "best if used by",
+            "best before",
+            "best by",
+            "bestby",
+            "use by",
+            "expires",
+            "expiration"
+        )
+        private val dateCueKeywords = listOf("opened") + bestByDateCueKeywords + EXP_DATE_CUE
     }
 }
