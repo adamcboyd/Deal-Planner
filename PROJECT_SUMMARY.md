@@ -492,7 +492,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone test report includes latest sample folder/manifest evidence when available
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks plus local manifest/hash verification
-- ✅ Phone sample transfer requires the generated sample manifest before copying files to a phone
+- ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ 231 unit tests
 - ✅ Comprehensive README

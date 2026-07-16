@@ -20,6 +20,7 @@ function Show-Usage {
     Write-Host "  -SamplesDir PATH Copy this local sample folder instead of the latest generated folder."
     Write-Host "  -RemoteRoot PATH Android destination root. Default: /sdcard/Download/DealPlannerPhoneTestSamples"
     Write-Host "                   Sample folders must include SAMPLE_MANIFEST.md from new-phone-test-samples.ps1."
+    Write-Host "                   Manifest byte counts and SHA-256 hashes are verified before transfer."
     Write-Host ""
     Write-Host "Set ANDROID_SERIAL when more than one authorized Android device is connected."
 }
@@ -182,6 +183,59 @@ function Test-PngFile {
     return $signature -eq "89504E470D0A1A0A"
 }
 
+function Assert-SampleManifest {
+    param([string]$Path)
+
+    $manifestPath = Join-Path $Path "SAMPLE_MANIFEST.md"
+    if (-not (Test-Path $manifestPath)) {
+        throw "Sample folder is missing SAMPLE_MANIFEST.md. Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly first."
+    }
+
+    $entries = @{}
+    foreach ($line in (Get-Content -LiteralPath $manifestPath)) {
+        if ($line -match "^\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|\s*([A-Fa-f0-9]{64})\s*\|$") {
+            $fileName = $Matches[1].Trim()
+            if ($fileName -eq "File") {
+                continue
+            }
+            $entries[$fileName] = [pscustomobject]@{
+                Bytes = [int64]$Matches[2]
+                Hash = $Matches[3].ToUpperInvariant()
+            }
+        }
+    }
+
+    if ($entries.Count -eq 0) {
+        throw "SAMPLE_MANIFEST.md did not contain any file hash entries. Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly first."
+    }
+
+    $sampleFiles = Get-ChildItem -LiteralPath $Path -File |
+        Where-Object { $_.Name -notin @("SAMPLE_MANIFEST.md", "PHONE_SAMPLE_TRANSFER.md") } |
+        Sort-Object Name
+
+    foreach ($file in $sampleFiles) {
+        if (-not $entries.ContainsKey($file.Name)) {
+            throw "SAMPLE_MANIFEST.md is missing an entry for $($file.Name). Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly first."
+        }
+
+        $entry = $entries[$file.Name]
+        if ($file.Length -ne $entry.Bytes) {
+            throw "Sample manifest byte mismatch for $($file.Name): manifest $($entry.Bytes), local $($file.Length)."
+        }
+
+        $actualHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToUpperInvariant()
+        if ($actualHash -ne $entry.Hash) {
+            throw "Sample manifest hash mismatch for $($file.Name). Run .\scripts\new-phone-test-samples.ps1 -VerifyOnly first."
+        }
+    }
+
+    foreach ($fileName in $entries.Keys) {
+        if (-not (Test-Path (Join-Path $Path $fileName))) {
+            throw "SAMPLE_MANIFEST.md lists missing file $fileName. Regenerate or verify the sample folder."
+        }
+    }
+}
+
 function Assert-SampleFolder {
     param([string]$Path)
 
@@ -224,6 +278,8 @@ function Assert-SampleFolder {
             throw "$pngName is not a valid generated PNG sample."
         }
     }
+
+    Assert-SampleManifest $Path
 }
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
@@ -249,6 +305,7 @@ if (-not $sampleDir) {
 }
 
 Assert-SampleFolder $sampleDir
+Write-Host "Verified sample manifest hashes: $(Join-Path $sampleDir "SAMPLE_MANIFEST.md")"
 
 $deviceSerial = Get-AdbDeviceSerial
 $sampleItem = Get-Item -LiteralPath $sampleDir

@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone report setup-status work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: phone starter failure-report work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer manifest-hash verification work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: phone report setup-status work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2195,6 +2195,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-r
 ```
 
 Result: PowerShell parse checks passed for both helper scripts, report help documented `SetupStatus`/`SetupFailure`, manual report `phone-test-results\20260716-155539\PHONE_TEST_REPORT.md` included `Setup status: Manual` and `Setup failure: manual verification`, and the expected no-phone starter run created failure report `phone-test-results\20260716-155600\PHONE_TEST_REPORT.md` with `Setup status: Failed` plus `Setup failure: Phone preflight failed with exit code 1.`
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after sample transfer manifest-hash verification work:
+
+Helper checkpoint:
+
+- `scripts\send-phone-test-samples.ps1` now verifies `SAMPLE_MANIFEST.md` byte counts and SHA-256 hashes before requesting an Android device.
+- The transfer helper fails before ADB if the manifest is missing entries, lists missing files, or no longer matches local sample file size/hash values.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so phone sample transfer evidence is manifest-hash backed.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\send-phone-test-samples.ps1')); 'send-phone-test-samples.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\send-phone-test-samples.ps1 -Help
+.\scripts\send-phone-test-samples.ps1 -SamplesDir phone-test-samples\20260716-152321
+```
+
+Result: PowerShell parse check passed, help output documented manifest byte-count/SHA-256 verification, and `send-phone-test-samples.ps1 -SamplesDir phone-test-samples\20260716-152321` printed `Verified sample manifest hashes` before stopping at the expected no connected/authorized Android phone condition.
 
 Full local gate:
 
