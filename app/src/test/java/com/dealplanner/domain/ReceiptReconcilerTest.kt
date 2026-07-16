@@ -259,4 +259,26 @@ class ReceiptReconcilerTest {
         ).inOrder()
         assertThat(result.total).isEqualTo(4.78)
     }
+
+    @Test
+    fun `ignore coupon discount refund and reward lines`() {
+        val ocrText = """
+            BLACK BEANS      $1.78
+            MFR COUPON      -$1.00
+            STORE DISCOUNT   $0.50
+            DIGITAL COUPON   0.25
+            REWARDS SAVINGS  0.75
+            REFUND          -2.00
+            KROGER PASTA     $3.00
+            TOTAL            $3.53
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS      $1.78",
+            "KROGER PASTA     $3.00"
+        ).inOrder()
+        assertThat(result.total).isEqualTo(4.78)
+    }
 }

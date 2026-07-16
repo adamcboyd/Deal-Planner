@@ -196,7 +196,26 @@ class ReceiptReconciler {
             "snap",
             "wic",
             "savings",
-            "total savings"
+            "total savings",
+            "coupon",
+            "mfr coupon",
+            "manufacturer coupon",
+            "digital coupon",
+            "ecoupon",
+            "store coupon",
+            "store discount",
+            "discount",
+            "refund",
+            "return",
+            "void",
+            "promo",
+            "promotion",
+            "reward",
+            "rewards",
+            "reward savings",
+            "rewards savings",
+            "markdown",
+            "adjustment"
         )
 
         val prefixes = listOf(
@@ -210,10 +229,45 @@ class ReceiptReconciler {
             "credit card ",
             "debit card ",
             "ebt card ",
-            "total savings "
+            "total savings ",
+            "coupon ",
+            "mfr coupon ",
+            "manufacturer coupon ",
+            "digital coupon ",
+            "ecoupon ",
+            "store coupon ",
+            "store discount ",
+            "discount ",
+            "refund ",
+            "return ",
+            "void ",
+            "promo ",
+            "promotion ",
+            "reward ",
+            "rewards ",
+            "reward savings ",
+            "rewards savings ",
+            "markdown ",
+            "adjustment "
+        )
+        val adjustmentTerms = listOf(
+            " coupon",
+            "discount",
+            "savings",
+            "refund",
+            "return",
+            "void",
+            "promo",
+            "promotion",
+            "reward",
+            "rewards",
+            "markdown",
+            "adjustment"
         )
 
-        return normalized in exactMatches || prefixes.any { normalized.startsWith(it) }
+        return normalized in exactMatches ||
+            prefixes.any { normalized.startsWith(it) } ||
+            adjustmentTerms.any { normalized.contains(it) }
     }
 
     private fun isQuantityDetailLine(line: String): Boolean {

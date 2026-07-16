@@ -190,6 +190,14 @@ Latest continuation gate after pantry ISO best-by date parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `77` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after receipt discount/refund filtering work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `78` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -274,6 +282,7 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.
+- Receipt reconciliation ignores coupon, discount, reward, refund, return, promo, markdown, and adjustment lines so those OCR rows do not increase spending.
 - Receipt totals are rounded to cents before budget updates.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
 - Budget analysis loads actual receipts and uses current-month receipt history when calculating projected spend.

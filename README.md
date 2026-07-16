@@ -262,7 +262,7 @@ On the Receipts tab:
 5. Low-confidence matches are marked with a review warning.
 6. Tap the edit icon on any receipt item to correct the line text, quantity, total, store, match metadata, confidence, date, and review status.
 7. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
-8. Subtotal, tax, total, payment, and EBT/card lines are ignored so only grocery items affect spending.
+8. Subtotal, tax, total, payment, EBT/card, coupon, discount, savings, reward, and refund lines are ignored so only grocery purchase items affect spending.
 9. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
 10. OCR prices work with or without dollar signs, such as `BLACK BEANS 1.78` or `2 @ 0.89 BLACK BEANS 1.78`.
 
@@ -310,7 +310,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
+- Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, malformed string/list fields)
 
 ## Key Algorithms
@@ -376,7 +376,7 @@ As of the latest local pass:
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
-- Receipt reconciliation ignores subtotal, tax, total, savings, and payment/tender lines.
+- Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, and payment/tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
