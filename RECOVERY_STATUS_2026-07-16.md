@@ -430,6 +430,14 @@ Latest continuation gate after Gemini single-item response parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `108` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after bundled demo receipt coverage work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `109` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -522,6 +530,7 @@ Verified by build/unit tests/code inspection:
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt edit/review numeric fields accept comma-decimal corrections for quantity, total, and confidence.
+- Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.
 - Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; rows fall back to today's date when no receipt date is found.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation parses one-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` and comma-decimal variants such as `APPLES 1,25 lb @ 1,99/lb 2,49`.

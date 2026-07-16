@@ -91,9 +91,9 @@ Deal_Planner/
             │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
             │   └── DealsParserTest.kt         ✅ 20 test cases
             ├── domain/
-                ├── MealPlanningEngineTest.kt  ✅ 8 test cases
-                ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 17 test cases
+            │   ├── MealPlanningEngineTest.kt  ✅ 8 test cases
+            │   ├── BudgetEngineTest.kt        ✅ 10 test cases
+            │   └── ReceiptReconcilerTest.kt   ✅ 18 test cases
             └── util/
                 └── FlexibleNumberParsingTest.kt ✅ 3 test cases
 ```
@@ -193,14 +193,14 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (108 Test Cases)
+### 7. Unit Tests (109 Test Cases)
 - ✅ GeminiPantryVisionClientTest (16 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (17 tests)
+- ✅ ReceiptReconcilerTest (18 tests)
 - ✅ FlexibleNumberParsingTest (3 tests)
 
 ## 🔧 Technology Stack
@@ -395,6 +395,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
+- ✅ Parses the bundled demo receipt used by the phone test checklist
 - ✅ Attaches split quantity and one-line weighted price-per-pound lines to their grocery items
 - ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs and with comma decimals
 - ✅ Accepts comma-decimal manual corrections in pantry, deal, receipt, and settings numeric edit fields
@@ -431,7 +432,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper with stale Gemini APK warnings
-- ✅ 108 unit tests
+- ✅ 109 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

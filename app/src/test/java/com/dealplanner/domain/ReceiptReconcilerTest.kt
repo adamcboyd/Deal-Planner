@@ -70,6 +70,70 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse bundled demo receipt for phone checklist`() {
+        val ocrText = java.io.File("src/main/assets/demo_receipt.txt").readText()
+        val deals = listOf(
+            DealItem(
+                name = "Pork Shoulder",
+                price = 3.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 3.99
+            ),
+            DealItem(
+                name = "Chicken Breast",
+                price = 2.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 2.99
+            ),
+            DealItem(
+                name = "Broccoli Crowns",
+                price = 1.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 1.99
+            ),
+            DealItem(
+                name = "Mandarin Oranges",
+                price = 3.99,
+                unit = "bag",
+                dealType = "per_unit",
+                store = "Kroger",
+                pricePerUnit = 3.99
+            )
+        )
+        val pantry = listOf(
+            PantryItem(id = 7, item = "Black Beans", qty = 4.0, unit = "can"),
+            PantryItem(id = 8, item = "Kroger Pasta", qty = 1.0, unit = "box"),
+            PantryItem(id = 9, item = "Rice", qty = 5.0, unit = "lb"),
+            PantryItem(id = 10, item = "Carrots", qty = 2.0, unit = "lb")
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, pantry, "Kroger")
+
+        assertThat(result.receiptItems).hasSize(8)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "PORK SHOULDER    $12.95",
+            "CHICKEN BREAST   $8.97",
+            "BROCCOLI CROWNS  $3.98",
+            "MANDARIN ORANGES $3.99",
+            "BLACK BEANS      $1.78",
+            "KROGER PASTA     $3.00",
+            "RICE 5 LB        $3.99",
+            "CARROTS 2LB      $1.99"
+        ).inOrder()
+        assertThat(result.receiptItems.map { it.date }.distinct()).containsExactly(LocalDate.of(2025, 10, 27))
+        assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("EBT/CARD        $40.65")
+        assertThat(result.total).isEqualTo(40.65)
+        assertThat(result.dealMatches).hasSize(4)
+        assertThat(result.pantryUpdates.map { it.item }).containsAtLeast("Black Beans", "Kroger Pasta")
+    }
+
+    @Test
     fun `calculate VPP for proteins`() {
         val vpp = reconciler.calculateVPP(packagePrice = 10.0, packageWeight = 2.0, servingSize = 0.5)
 

@@ -331,7 +331,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Shopping list consolidation with persisted and pre-database deal identities
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (fuzzy matching, VPP, receipt header dates, split and inline weighted quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
+- Receipt reconciliation (bundled demo receipt, fuzzy matching, VPP, receipt header dates, split and inline weighted quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases, storage aliases, malformed string/list fields)
 
 ## Key Algorithms
@@ -398,6 +398,7 @@ As of the latest local pass:
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
+- The bundled demo receipt used by the phone checklist is covered by unit tests.
 - Receipt reconciliation handles fuzzy matching and split or inline weighted receipt quantity lines, including price-per-pound produce lines.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs or uses comma decimals.
