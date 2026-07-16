@@ -151,14 +151,17 @@ class ReceiptReconciler {
     private fun parseReceiptLine(line: String): Triple<String, Double, Double?>? {
         // Pattern: optional qty, item name, price
         val itemFirstWeightedPattern = Regex(
-            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*@\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
+            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
             RegexOption.IGNORE_CASE
         )
         val itemFirstInlineQuantityPattern = Regex(
-            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*@\s*$RECEIPT_PRICE_TOKEN_PATTERN\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
+            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*$RECEIPT_PRICE_TOKEN_PATTERN\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
             RegexOption.IGNORE_CASE
         )
-        val pattern1 = Regex("""($QUANTITY_AMOUNT_PATTERN)\s*@\s*($RECEIPT_PRICE_TOKEN_PATTERN)\s+(.+?)\s+($RECEIPT_PRICE_TOKEN_PATTERN)""")
+        val pattern1 = Regex(
+            """($QUANTITY_AMOUNT_PATTERN)\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*($RECEIPT_PRICE_TOKEN_PATTERN)\s+(.+?)\s+($RECEIPT_PRICE_TOKEN_PATTERN)""",
+            RegexOption.IGNORE_CASE
+        )
         val pattern2 = Regex("""(.+?)\s+($RECEIPT_PRICE_TOKEN_PATTERN)""")
 
         itemFirstWeightedPattern.find(line)?.let { match ->
@@ -523,8 +526,9 @@ class ReceiptReconciler {
         private const val QUANTITY_AMOUNT_PATTERN = """\d+(?:[.,]\d+)?"""
         private const val RECEIPT_PRICE_PATTERN = """(?:\d+)?[.,]\d{2}"""
         private const val RECEIPT_PRICE_TOKEN_PATTERN = """(?:\$?$RECEIPT_PRICE_PATTERN|\$\d+)"""
+        private const val QUANTITY_PRICE_SEPARATOR_PATTERN = """(?:@|x)"""
         private val splitQuantityPattern = Regex(
-            """(?i)^($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
+            """(?i)^($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*$QUANTITY_PRICE_SEPARATOR_PATTERN\s*$RECEIPT_PRICE_TOKEN_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
         )
         private const val MIN_MATCH_CONFIDENCE = 0.55
         private val receiptMatchStopWords = setOf(

@@ -461,6 +461,28 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse receipt quantity lines when OCR uses x separator`() {
+        val ocrText = """
+            BLACK BEANS       1.78
+            2 x 0.89
+            3 X 1.00 KROGER PASTA 3.00
+            APPLES 1,25 lb x 1,99/lb 2,49
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(3)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS       1.78",
+            "3 X 1.00 KROGER PASTA 3.00",
+            "APPLES 1,25 lb x 1,99/lb 2,49"
+        ).inOrder()
+        assertThat(result.receiptItems.map { it.qty }).containsExactly(2.0, 3.0, 1.25).inOrder()
+        assertThat(result.receiptItems.map { it.totalCost }).containsExactly(1.78, 3.0, 2.49).inOrder()
+        assertThat(result.total).isEqualTo(7.27)
+    }
+
+    @Test
     fun `split weighted quantity line attaches to previous deal and is not imported`() {
         val ocrText = """
             PORK SHOULDER    $12.95

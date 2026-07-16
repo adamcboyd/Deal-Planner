@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after flyer each-price parser validation; confirm the exact commit with `git log -1 --oneline`.
-- Latest helper/docs checkpoint before that app-code work: generated phone-test report AI checklist sync.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after receipt `x` quantity separator validation; confirm the exact commit with `git log -1 --oneline`.
+- Previous app-code checkpoint before that work: flyer each-price parser validation.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1415,6 +1415,16 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed locally, then the full Gradle gate passed with `176` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Flyer text/OCR parsing now accepts `$3.99 each`, `$1.25 per ea`, and `88c each` as per-unit deals without appending `each` or `ea` to the imported item name. This strengthens pasted flyer text plus flyer photo/gallery/PDF OCR paths because all route through the same parser.
 
+Latest focused receipt `x` quantity separator check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.domain.ReceiptReconcilerTest
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `ReceiptReconcilerTest` passed locally, then the full Gradle gate passed with `177` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Receipt OCR parsing now accepts split, quantity-first inline, and item-first weighted quantity rows with `x` or `X` separators, such as `2 x 0.89`, `3 X 1.00 KROGER PASTA 3.00`, and `APPLES 1,25 lb x 1,99/lb 2,49`. This strengthens pasted receipt text plus receipt photo/gallery/PDF OCR paths because all route through the same reconciler.
+
 Additional check:
 
 ```powershell
@@ -1557,6 +1567,7 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation accepts leading-decimal receipt prices such as `.89` in weighted produce rows, inline quantity rows, split quantity rows, and plain item-total rows.
 - Receipt reconciliation accepts item totals and split quantity lines when OCR uses comma decimals, such as `BLACK BEANS 1,78` plus `2 @ 0,89`.
 - Receipt reconciliation accepts explicit whole-dollar OCR receipt prices such as `$3`, including inline quantity, split quantity, and weighted produce rows, without treating bare integer package-size text as prices.
+- Receipt reconciliation accepts `x`/`X` quantity-price separators as well as `@` in split, quantity-first inline, and item-first weighted OCR rows.
 - Receipt reconciliation ignores subtotal, tax, total, savings, saved-total lines such as `YOU SAVED`, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
 - Receipt reconciliation ignores SNAP/EBT/WIC benefit tender lines such as `SNAP EBT`, `EBT FOOD`, and `WIC BENEFIT` so they do not inflate grocery spending.
 - Receipt reconciliation ignores coupon, discount, reward, refund, return, promo, markdown, and adjustment lines so those OCR rows do not increase spending.

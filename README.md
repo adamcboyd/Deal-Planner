@@ -474,7 +474,7 @@ As of the latest local pass:
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with trimmed, store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, PDFs, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names.
 - The bundled demo receipt used by the phone checklist is covered by unit tests.
-- Receipt reconciliation handles fuzzy matching and split or inline receipt quantity lines, including quantity-first rows, item-first rows, and price-per-pound produce rows.
+- Receipt reconciliation handles fuzzy matching and split or inline receipt quantity lines, including quantity-first rows, item-first rows, price-per-pound produce rows, and OCR separators such as `@` or `x`.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available, including common `Date: 10/27/2025`, `Transaction Date: 2025/10/27`, and `Purchase Date: 2025-10-28` formats.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, puts the quantity before or after the item name, omits leading zeroes in prices such as `.89`, uses comma decimals, or returns explicit whole-dollar prices such as `$3`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, saved-total, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
