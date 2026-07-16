@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,45 +63,39 @@ fun MainScreen(viewModel: AppViewModel) {
                 val items = listOf(
                     NavigationItem(
                         screen = Screen.Pantry,
-                        icon = Icons.Default.Kitchen,
-                        label = "Pantry"
+                        icon = Icons.Default.Kitchen
                     ),
                     NavigationItem(
                         screen = Screen.Deals,
-                        icon = Icons.Default.LocalOffer,
-                        label = "Deals"
+                        icon = Icons.Default.LocalOffer
                     ),
                     NavigationItem(
                         screen = Screen.Receipts,
-                        icon = Icons.Default.ReceiptLong,
-                        label = "Receipts"
+                        icon = Icons.Default.ReceiptLong
                     ),
                     NavigationItem(
                         screen = Screen.ShoppingList,
-                        icon = Icons.Default.ShoppingCart,
-                        label = "Shopping"
+                        icon = Icons.Default.ShoppingCart
                     ),
                     NavigationItem(
                         screen = Screen.Menu,
-                        icon = Icons.Default.Restaurant,
-                        label = "Menu"
+                        icon = Icons.Default.Restaurant
                     ),
                     NavigationItem(
                         screen = Screen.Budget,
-                        icon = Icons.Default.AccountBalance,
-                        label = "Budget"
+                        icon = Icons.Default.AccountBalance
                     ),
                     NavigationItem(
                         screen = Screen.Params,
-                        icon = Icons.Default.Settings,
-                        label = "Settings"
+                        icon = Icons.Default.Settings
                     )
                 )
 
                 items.forEach { item ->
+                    val label = stringResource(item.screen.labelRes)
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) },
+                        icon = { Icon(item.icon, contentDescription = label) },
+                        label = { Text(label) },
                         selected = currentRoute == item.screen.route,
                         onClick = {
                             navController.navigate(item.screen.route) {
@@ -154,6 +149,5 @@ fun NavigationHost(navController: NavHostController, viewModel: AppViewModel) {
 
 data class NavigationItem(
     val screen: Screen,
-    val icon: ImageVector,
-    val label: String
+    val icon: ImageVector
 )
