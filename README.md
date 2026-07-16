@@ -448,6 +448,7 @@ As of the latest local pass:
 - AI pantry photo review items keep unparseable best-by/opened dates in notes and require review instead of silently dropping the date text.
 - AI pantry photo items with an unknown amount unit require review instead of being treated as fully verified.
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
+- AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions

@@ -876,6 +876,22 @@ Latest continuation gate after AI pantry Generic/unknown brand review work:
 
 Result: `BUILD SUCCESSFUL`, with `145` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused AI pantry missing/unknown location review check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.PantryVisionItemMapperTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after AI pantry missing/unknown location review work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `146` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -1018,6 +1034,7 @@ Verified by build/unit tests/code inspection:
 - AI pantry photo item mapping has unit coverage for unparseable best-by/opened date text; bad date text is preserved in notes and the item requires review.
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
 - AI pantry photo item mapping has unit coverage for Generic or unknown brand values; the item requires review so missing label brand details stay visible.
+- AI pantry photo item mapping has unit coverage for missing or unknown storage location; the item defaults to `pantry` but requires review so pantry/fridge/freezer placement can be corrected.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.

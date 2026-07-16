@@ -13,6 +13,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
     val warningNotes = warnings.joinToString(" ")
     val missingBrand = brand.isMissingBrand()
     val missingAmount = quantity == null || unit.isNullOrBlank() || unit.equals("unknown", ignoreCase = true)
+    val missingLocation = location.isMissingLocation()
     val missingDate = parsedBestBy == null
 
     return PantryItem(
@@ -29,6 +30,7 @@ fun GeminiPantryVisionClient.PantryVisionItem.toPantryItem(warnings: List<String
             questions.isNotEmpty() ||
             missingBrand ||
             missingAmount ||
+            missingLocation ||
             missingDate ||
             unparsedOpenedNote != null ||
             unparsedBestByNote != null
@@ -40,6 +42,11 @@ private fun String?.toParsedDate() = this?.toFlexibleLocalDateOrNull()
 private fun String?.isMissingBrand(): Boolean {
     val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
     return normalized == "unknown" || normalized == "generic"
+}
+
+private fun String?.isMissingLocation(): Boolean {
+    val normalized = this?.trim()?.lowercase()?.ifBlank { null } ?: return true
+    return normalized == "unknown"
 }
 
 private fun String?.toUnparsedDateNote(label: String, parsed: Boolean): String? {

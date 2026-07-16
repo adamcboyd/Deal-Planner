@@ -121,6 +121,23 @@ class PantryVisionItemMapperTest {
         assertThat(unknownPantryItem.needsVerify).isTrue()
     }
 
+    @Test
+    fun `missing or unknown vision location requires review`() {
+        val missingLocation = completeVisionItem().copy(location = null)
+        val unknownLocation = completeVisionItem().copy(location = "unknown")
+
+        val missingLocationPantryItem = missingLocation.toPantryItem(warnings = emptyList())
+        val unknownLocationPantryItem = unknownLocation.toPantryItem(warnings = emptyList())
+
+        assertThat(missingLocationPantryItem).isNotNull()
+        assertThat(missingLocationPantryItem!!.location).isEqualTo("pantry")
+        assertThat(missingLocationPantryItem.needsVerify).isTrue()
+
+        assertThat(unknownLocationPantryItem).isNotNull()
+        assertThat(unknownLocationPantryItem!!.location).isEqualTo("pantry")
+        assertThat(unknownLocationPantryItem.needsVerify).isTrue()
+    }
+
     private fun completeVisionItem() = GeminiPantryVisionClient.PantryVisionItem(
         brand = "Kroger",
         product = "rolled oats",
