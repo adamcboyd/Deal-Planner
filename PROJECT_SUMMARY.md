@@ -84,14 +84,14 @@ Deal_Planner/
             ├── ai/
             │   └── GeminiPantryVisionClientTest.kt ✅ 10 test cases
             ├── lookup/
-            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 5 test cases
+            │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
-            │   └── DealsParserTest.kt         ✅ 12 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ 21 test cases
+            │   └── DealsParserTest.kt         ✅ 14 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 12 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 14 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -188,10 +188,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (83 Test Cases)
+### 7. Unit Tests (84 Test Cases)
 - ✅ GeminiPantryVisionClientTest (10 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
-- ✅ PantryPhraseParserTest (20 tests)
+- ✅ PantryPhraseParserTest (21 tests)
 - ✅ DealsParserTest (14 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
@@ -422,7 +422,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 83 unit tests
+- ✅ 84 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

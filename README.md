@@ -193,6 +193,7 @@ Enter natural language descriptions:
 Great Value peanut butter 16oz in pantry
 1.5 lb ground beef in freezer best by 12/25
 2 cans black beans 15oz pantry best by 2026-12-31
+Great Value peanut butter opened yesterday best by 2026-12-31
 rice 5 lb bag
 frozen broccoli 12oz
 ```
@@ -202,7 +203,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened, best by, including `YYYY-MM-DD`)
+- Dates (opened and best by independently, including `YYYY-MM-DD`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
@@ -227,7 +228,7 @@ On the Pantry tab:
 4. If lookup misses or the phone is offline, Deal Planner still creates a reviewable barcode item with the code saved in notes.
 5. If the text does not contain an 8-14 digit product barcode, Deal Planner shows `No barcode found.` instead of creating a junk pantry row.
 6. Re-scanning the same barcode merges quantity into the same pantry row. Different barcodes stay separate until reviewed.
-6. Tap the edit icon to fill in or correct the product name, brand, package size, quantity, location, and expiration details.
+7. Tap the edit icon to fill in or correct the product name, brand, package size, quantity, location, and expiration details.
 
 ### Scanning Flyers
 

@@ -279,48 +279,84 @@ class PantryPhraseParser {
             DateTimeFormatter.ofPattern("MM/dd/yyyy"),
             DateTimeFormatter.ofPattern("MM/dd/yy"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("yyyy/M/d"),
             DateTimeFormatter.ofPattern("M-d-yyyy")
         )
 
-        // Look for relative dates
         val inputLower = input.lowercase()
-        when {
-            inputLower.contains("today") -> return LocalDate.now()
-            inputLower.contains("yesterday") -> return LocalDate.now().minusDays(1)
-            inputLower.contains("tomorrow") -> return LocalDate.now().plusDays(1)
-        }
 
-        // Look for "X days ago"
-        val daysAgoPattern = Regex("""(\d+)\s*days?\s*ago""")
-        daysAgoPattern.find(inputLower)?.let { match ->
-            val days = match.groupValues[1].toLongOrNull()
-            if (days != null) {
-                return LocalDate.now().minusDays(days)
-            }
-        }
-
-        // Look for explicit dates near keywords
         for (keyword in keywords) {
             val keywordIndex = inputLower.indexOf(keyword)
             if (keywordIndex != -1) {
-                val afterKeyword = input.substring((keywordIndex + keyword.length).coerceAtMost(input.length))
+                val afterKeywordStart = (keywordIndex + keyword.length).coerceAtMost(input.length)
+                val afterKeyword = input.substring(
+                    afterKeywordStart,
+                    nextDateCueIndex(inputLower, afterKeywordStart) ?: input.length
+                )
 
-                // Extract potential date strings
-                val dateMatch = DATE_TOKEN_PATTERN.find(afterKeyword)
-
-                if (dateMatch != null) {
-                    for (formatter in dateFormats) {
-                        try {
-                            return LocalDate.parse(dateMatch.value, formatter)
-                        } catch (e: DateTimeParseException) {
-                            // Try next format
-                        }
-                    }
-                }
+                findFirstDateInSegment(afterKeyword, dateFormats)?.let { return it }
             }
         }
 
         return null
+    }
+
+    private fun findFirstDateInSegment(
+        segment: String,
+        dateFormats: List<DateTimeFormatter>
+    ): LocalDate? {
+        val candidates = mutableListOf<Pair<Int, LocalDate>>()
+        val segmentLower = segment.lowercase()
+
+        relativeDatePattern.findAll(segmentLower).forEach { match ->
+            val date = when (match.value) {
+                "today" -> LocalDate.now()
+                "yesterday" -> LocalDate.now().minusDays(1)
+                "tomorrow" -> LocalDate.now().plusDays(1)
+                else -> null
+            }
+            if (date != null) {
+                candidates.add(match.range.first to date)
+            }
+        }
+
+        daysAgoPattern.findAll(segmentLower).forEach { match ->
+            val days = match.groupValues[1].toLongOrNull()
+            if (days != null) {
+                candidates.add(match.range.first to LocalDate.now().minusDays(days))
+            }
+        }
+
+        DATE_TOKEN_PATTERN.findAll(segment).forEach { match ->
+            parseAbsoluteDate(match.value, dateFormats)?.let { date ->
+                candidates.add(match.range.first to date)
+            }
+        }
+
+        return candidates.minByOrNull { it.first }?.second
+    }
+
+    private fun parseAbsoluteDate(
+        value: String,
+        dateFormats: List<DateTimeFormatter>
+    ): LocalDate? {
+        return dateFormats.firstNotNullOfOrNull { formatter ->
+            try {
+                LocalDate.parse(value, formatter)
+            } catch (_: DateTimeParseException) {
+                null
+            }
+        }
+    }
+
+    private fun nextDateCueIndex(inputLower: String, afterKeywordStart: Int): Int? {
+        return dateCueKeywords
+            .mapNotNull { cue ->
+                inputLower
+                    .indexOf(cue, startIndex = afterKeywordStart)
+                    .takeIf { it >= 0 }
+            }
+            .minOrNull()
     }
 
     /**
@@ -437,5 +473,8 @@ class PantryPhraseParser {
 
     private companion object {
         private val DATE_TOKEN_PATTERN = Regex("""(?:\d{4}[/-]\d{1,2}[/-]\d{1,2})|(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4})""")
+        private val relativeDatePattern = Regex("""\b(today|yesterday|tomorrow)\b""")
+        private val daysAgoPattern = Regex("""\b(\d+)\s*days?\s*ago\b""")
+        private val dateCueKeywords = listOf("opened", "best by", "bestby", "expires")
     }
 }

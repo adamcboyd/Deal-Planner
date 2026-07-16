@@ -73,6 +73,8 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 2. Tap `Add`.
 3. Confirm a pantry row appears or merges into an existing black beans row.
 4. Tap edit and confirm the item can be reviewed and saved.
+5. Also enter `Great Value peanut butter opened yesterday best by 2026-12-31`.
+6. Confirm opened date and best-by date stay separate on the pantry item.
 
 ### Deals
 

@@ -102,6 +102,16 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse opened and best by dates independently`() {
+        val result = parser.parse("Great Value peanut butter opened yesterday best by 2026-12-31")
+
+        assertThat(result.item.item).isEqualTo("peanut butter")
+        assertThat(result.item.brand).isEqualTo("Great Value")
+        assertThat(result.item.opened).isEqualTo(LocalDate.now().minusDays(1))
+        assertThat(result.item.bestBy).isEqualTo(LocalDate.parse("2026-12-31"))
+    }
+
+    @Test
     fun `parse checklist pantry entry with iso best by date`() {
         val result = parser.parse("2 cans black beans 15oz pantry best by 2026-12-31")
 
