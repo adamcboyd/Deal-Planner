@@ -206,6 +206,44 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with single item object shapes`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val rootItemResponse = """
+            {
+              "product": "canned corn",
+              "quantity": 2,
+              "unit": "cans",
+              "warnings": ["single object response"]
+            }
+        """.trimIndent()
+        val singularWrappedResponse = """
+            {
+              "pantry_item": {
+                "name": "frozen peas",
+                "amount": "1 bag",
+                "storage": "freezer"
+              },
+              "warnings": "singular wrapper response"
+            }
+        """.trimIndent()
+
+        val rootItemResult = client.parseVisionResult(rootItemResponse)
+        val singularWrappedResult = client.parseVisionResult(singularWrappedResponse)
+
+        assertThat(rootItemResult.items).hasSize(1)
+        assertThat(rootItemResult.items.first().product).isEqualTo("canned corn")
+        assertThat(rootItemResult.items.first().unit).isEqualTo("can")
+        assertThat(rootItemResult.warnings).containsExactly("single object response")
+
+        assertThat(singularWrappedResult.items).hasSize(1)
+        assertThat(singularWrappedResult.items.first().product).isEqualTo("frozen peas")
+        assertThat(singularWrappedResult.items.first().quantity).isEqualTo(1.0)
+        assertThat(singularWrappedResult.items.first().unit).isEqualTo("bag")
+        assertThat(singularWrappedResult.items.first().location).isEqualTo("freezer")
+        assertThat(singularWrappedResult.warnings).containsExactly("singular wrapper response")
+    }
+
+    @Test
     fun `parse pantry vision response with quantity and storage aliases`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

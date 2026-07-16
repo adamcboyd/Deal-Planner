@@ -226,12 +226,32 @@ class GeminiPantryVisionClient(
         if (!isJsonObject) return null
 
         val root = asJsonObject
-        return listOf("items", "pantry_items", "pantryItems", "foods", "food_items")
+        listOf("items", "pantry_items", "pantryItems", "foods", "food_items")
             .firstNotNullOfOrNull { name ->
                 root.get(name)
                     ?.takeIf { it.isJsonArray }
                     ?.asJsonArray
             }
+            ?.let { return it }
+
+        listOf("item", "pantry_item", "pantryItem", "food", "food_item")
+            .firstNotNullOfOrNull { name ->
+                root.get(name)
+                    ?.takeIf { it.isJsonObject }
+                    ?.let { JsonArray().apply { add(it) } }
+            }
+            ?.let { return it }
+
+        return if (root.looksLikePantryVisionItem()) {
+            JsonArray().apply { add(root) }
+        } else {
+            null
+        }
+    }
+
+    private fun JsonObject.looksLikePantryVisionItem(): Boolean {
+        return listOf("product", "item", "product_name", "name", "food", "food_name")
+            .any { name -> getStringOrNull(name) != null }
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
