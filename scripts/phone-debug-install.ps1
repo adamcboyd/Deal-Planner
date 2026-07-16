@@ -1,4 +1,5 @@
 param(
+    [switch]$Help,
     [switch]$SkipBuild,
     [switch]$NoLaunch,
     [string]$PackageName = "com.dealplanner",
@@ -7,6 +8,29 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+function Show-Usage {
+    Write-Host "Deal Planner debug APK phone install"
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\scripts\phone-debug-install.ps1"
+    Write-Host "  .\scripts\phone-debug-install.ps1 -SkipBuild"
+    Write-Host "  .\scripts\phone-debug-install.ps1 -SkipBuild -NoLaunch"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  -SkipBuild       Reuse the existing debug APK after freshness checks."
+    Write-Host "  -NoLaunch        Install but do not launch the app with adb monkey."
+    Write-Host "  -PackageName ID  Expected Android package. Default: com.dealplanner"
+    Write-Host "  -AppLabel NAME   Expected app label. Default: Deal Planner"
+    Write-Host "  -JavaHome PATH   Java home used for Gradle builds. Default: C:\Program Files\Java\jdk-20"
+    Write-Host ""
+    Write-Host "Set ANDROID_SERIAL when more than one authorized Android device is connected."
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
 
 function Invoke-Checked {
     param(

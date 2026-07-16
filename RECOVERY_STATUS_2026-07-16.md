@@ -997,6 +997,15 @@ Latest helper checkpoint after Gemini-required preflight mode:
 
 Result: normal preflight still allowed OCR fallback with a Gemini warning. `-RequireGemini` intentionally failed with `Gemini key` and `Gemini APK freshness` failures because no real `local.properties` key or `GEMINI_*` configuration was present.
 
+Latest helper usage checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-install.ps1 -Help
+```
+
+Result: both helpers printed usage/options successfully, including `-RequirePhone`, `-RequireGemini`, `-SkipNetwork`, `-SkipBuild`, and `-NoLaunch`.
+
 Additional check:
 
 ```powershell
@@ -1029,6 +1038,7 @@ Phone install helper:
 
 Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and app source/resources/build config plus Gemini/local configuration have not changed.
+Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-install.ps1 -Help` if the exact helper options are lost.
 Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
 
 Phone test checklist:

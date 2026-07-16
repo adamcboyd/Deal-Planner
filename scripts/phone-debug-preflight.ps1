@@ -1,4 +1,5 @@
 param(
+    [switch]$Help,
     [switch]$RequirePhone,
     [switch]$RequireGemini,
     [switch]$SkipNetwork,
@@ -8,6 +9,23 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+function Show-Usage {
+    Write-Host "Deal Planner phone preflight"
+    Write-Host ""
+    Write-Host "Usage:"
+    Write-Host "  .\scripts\phone-debug-preflight.ps1"
+    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone"
+    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  -RequirePhone    Fail if no connected and authorized Android phone is visible."
+    Write-Host "  -RequireGemini   Fail if a real Gemini key/build cannot be verified for AI testing."
+    Write-Host "  -SkipNetwork     Skip GitHub and Open Food Facts network checks."
+    Write-Host "  -JavaHome PATH   Java home used for readiness checks. Default: C:\Program Files\Java\jdk-20"
+    Write-Host "  -PackageName ID  Expected Android package. Default: com.dealplanner"
+    Write-Host "  -AppLabel NAME   Expected app label. Default: Deal Planner"
+}
 
 function Add-Check {
     param(
@@ -25,6 +43,11 @@ function Add-Check {
     }) | Out-Null
 
     Write-Host ("[{0}] {1} - {2}" -f $Status, $Name, $Detail)
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
 }
 
 function Get-LocalPropertyValue {
