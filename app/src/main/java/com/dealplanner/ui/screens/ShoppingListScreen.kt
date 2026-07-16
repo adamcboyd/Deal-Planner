@@ -80,7 +80,7 @@ fun ShoppingListScreen(viewModel: AppViewModel) {
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             val total = shoppingList.sumOf {
-                                it.dealItem.price * it.quantity
+                                it.estimatedCost
                             }
                             Text(
                                 "Estimated Total: ${"$%.2f".format(total)}",
@@ -122,12 +122,12 @@ fun ShoppingListItemCard(item: com.dealplanner.domain.MealPlanningEngine.Shoppin
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "${"$%.2f".format(item.dealItem.price)}",
+                        text = "${"$%.2f".format(item.estimatedCost)}",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "× ${"%.1f".format(item.quantity)}",
+                        text = "${"%.1f".format(item.quantity)} ${item.dealItem.unit ?: "unit"}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

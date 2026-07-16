@@ -321,4 +321,32 @@ class MealPlanningEngineTest {
         assertThat(result.shoppingList.map { it.dealItem.name })
             .containsAtLeast("Chicken Breast", "Pork Shoulder")
     }
+
+    @Test
+    fun `shopping list estimated cost uses planned quantity and price per unit`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast Family Pack 4 lb",
+                    price = 10.0,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.9,
+                    pricePerUnit = 2.5
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 1
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        val chickenItem = result.shoppingList.single { it.dealItem.name == "Chicken Breast Family Pack 4 lb" }
+        assertThat(chickenItem.quantity).isEqualTo(1.0)
+        assertThat(chickenItem.estimatedCost).isWithin(0.001).of(2.5)
+        assertThat(result.shoppingList.sumOf { it.estimatedCost }).isWithin(0.001).of(2.5)
+    }
 }

@@ -19,7 +19,7 @@ Parameters → Deals + Pantry → Meals
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
-- **Shopping Lists**: Consolidated lists with PPU, deal scores, and coupon tracking
+- **Shopping Lists**: Consolidated lists with planned-quantity estimated costs, PPU, deal scores, and coupon tracking
 - **Offline-First**: All data stored locally in Room/SQLite
 
 ### 🎯 Core Algorithms
@@ -180,7 +180,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
-   - **Shopping**: See consolidated shopping list with PPU
+   - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
    - **Settings**: Configure dietary preferences and verify AI setup status
@@ -329,7 +329,7 @@ Tests cover:
 - Flexible numeric edit parsing for comma-decimal manual corrections in pantry, deal, receipt, and settings fields
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
-- Shopping list consolidation with persisted and pre-database deal identities
+- Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy matching, VPP, receipt header dates, split and inline weighted quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases, storage aliases, malformed string/list fields)
@@ -379,7 +379,7 @@ As of the latest local pass:
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.
-- Shopping list consolidation keeps different deals separate even before Room assigns database ids.
+- Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - Pantry parser handles quantity, comma-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.

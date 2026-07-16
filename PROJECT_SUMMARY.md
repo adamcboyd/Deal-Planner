@@ -91,7 +91,7 @@ Deal_Planner/
             │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
             │   └── DealsParserTest.kt         ✅ 20 test cases
             ├── domain/
-            │   ├── MealPlanningEngineTest.kt  ✅ 8 test cases
+            │   ├── MealPlanningEngineTest.kt  ✅ 9 test cases
             │   ├── BudgetEngineTest.kt        ✅ 10 test cases
             │   └── ReceiptReconcilerTest.kt   ✅ 18 test cases
             └── util/
@@ -153,7 +153,7 @@ Deal_Planner/
   - GERD-friendly filtering
   - Pantry anchor utilization
   - Freezer directive calculation
-  - Shopping list consolidation
+  - Shopping list consolidation and planned-quantity estimated costs
   - Freshness reordering
 
 - ✅ **BudgetEngine**:
@@ -179,7 +179,7 @@ Deal_Planner/
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
-- ✅ **ShoppingListScreen**: Consolidated list with PPU
+- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs and PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
@@ -193,12 +193,12 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (109 Test Cases)
+### 7. Unit Tests (110 Test Cases)
 - ✅ GeminiPantryVisionClientTest (16 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (8 tests)
 - ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
-- ✅ MealPlanningEngineTest (8 tests)
+- ✅ MealPlanningEngineTest (9 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (18 tests)
 - ✅ FlexibleNumberParsingTest (3 tests)
@@ -432,7 +432,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper with stale source/Gemini APK warnings
-- ✅ 109 unit tests
+- ✅ 110 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

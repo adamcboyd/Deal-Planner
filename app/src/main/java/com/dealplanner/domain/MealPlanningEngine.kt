@@ -34,7 +34,8 @@ class MealPlanningEngine {
     data class ShoppingListItem(
         val dealItem: DealItem,
         val quantity: Double,
-        val purpose: String // e.g., "Monday dinner protein"
+        val purpose: String, // e.g., "Monday dinner protein"
+        val estimatedCost: Double
     )
 
     private val gerdFriendlyVegetables = setOf(
@@ -261,9 +262,15 @@ class MealPlanningEngine {
             ShoppingListItem(
                 dealItem = deal,
                 quantity = quantity,
-                purpose = purpose
+                purpose = purpose,
+                estimatedCost = calculateShoppingItemCost(deal, quantity)
             )
         )
+    }
+
+    private fun calculateShoppingItemCost(deal: DealItem, quantity: Double): Double {
+        val unitPrice = deal.pricePerUnit.takeIf { it > 0.0 } ?: deal.price
+        return unitPrice * quantity
     }
 
     private fun consolidateShoppingList(shoppingList: List<ShoppingListItem>): List<ShoppingListItem> {
@@ -275,7 +282,8 @@ class MealPlanningEngine {
             ShoppingListItem(
                 dealItem = first.dealItem,
                 quantity = items.sumOf { it.quantity },
-                purpose = items.joinToString("; ") { it.purpose }
+                purpose = items.joinToString("; ") { it.purpose },
+                estimatedCost = items.sumOf { it.estimatedCost }
             )
         }
     }

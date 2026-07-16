@@ -199,6 +199,6 @@ Verify these show visible status messages instead of silent failures:
 - Budget updates after receipt import/edit/delete.
 - Pantry, deal, receipt, and settings numeric edit fields accept comma-decimal corrections.
 - Menu generation is deterministic for the same pantry/deals/settings inputs and replaces the active generated week instead of stacking duplicate meal-plan rows.
-- Shopping list generation works from current pantry/deals/settings and keeps different deals separate.
+- Shopping list generation works from current pantry/deals/settings, keeps different deals separate, and estimates totals from planned quantities and normalized price-per-unit values.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.

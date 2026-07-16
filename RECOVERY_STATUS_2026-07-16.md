@@ -446,6 +446,14 @@ Latest continuation gate after debug APK source freshness guard work:
 
 Result: `BUILD SUCCESSFUL`, with `109` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after shopping-list planned-cost work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `110` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -516,6 +524,7 @@ Verified by build/unit tests/code inspection:
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
 - Shopping list consolidation has unit coverage for pre-database deal identities before Room assigns ids.
+- Shopping list estimated costs use planned quantities and normalized price-per-unit values instead of multiplying sticker price by planned quantity in the UI.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery/barcode/manual code input exists.
@@ -562,7 +571,7 @@ Verified by build/unit tests/code inspection:
 - Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, or `amount: "two cans"`, comma-decimal confidence such as `"0,82"`, storage aliases, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
-- Shopping list consolidation keeps different deals separate even before Room assigns database ids.
+- Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.
 
 Not yet verified on a real phone:
 
