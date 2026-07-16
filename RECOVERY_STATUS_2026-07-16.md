@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest pushed recovery checkpoint verified during source audit: `43a7094 fix: preserve valid barcode near label dates`
-- GitHub branch `origin/codex/deal-planner-baseline` matched local `HEAD` at `43a7094`.
+- Latest validated app-code checkpoint during source audit: `43a7094 fix: preserve valid barcode near label dates`
+- GitHub branch `origin/codex/deal-planner-baseline` matched local app-code `HEAD` at `43a7094` before the docs-only source-audit commit.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
