@@ -97,6 +97,35 @@ function Get-LocalPropertyValue {
     return ($line -replace "^\s*$escapedName\s*=\s*", "").Trim()
 }
 
+function Get-BuildConfigValue {
+    param(
+        [string]$Path,
+        [string]$Name
+    )
+
+    if (-not (Test-Path $Path)) {
+        return $null
+    }
+
+    $escapedName = [regex]::Escape($Name)
+    $line = Get-Content -LiteralPath $Path |
+        Where-Object { $_ -match "^\s+public static final .* $escapedName = " } |
+        Select-Object -First 1
+    if (-not $line) {
+        return $null
+    }
+
+    if ($line -match '=\s+"([^"]*)";') {
+        return $Matches[1]
+    }
+
+    if ($line -match '=\s+(true|false);') {
+        return $Matches[1]
+    }
+
+    return $null
+}
+
 function Test-RealGeminiKey {
     param([string]$Value)
 
@@ -160,6 +189,19 @@ $branch = Get-CommandOutput { git rev-parse --abbrev-ref HEAD }
 $head = Get-CommandOutput { git rev-parse --short HEAD }
 $status = Get-CommandOutput { git status --short --branch }
 $remote = Get-CommandOutput { git remote get-url origin }
+$buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
+$apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
+$apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
+$apkSourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
+if ([string]::IsNullOrWhiteSpace($apkSourceBranch)) {
+    $apkSourceBranch = "UNKNOWN"
+}
+if ([string]::IsNullOrWhiteSpace($apkSourceSha)) {
+    $apkSourceSha = "UNKNOWN"
+}
+if ([string]::IsNullOrWhiteSpace($apkSourceDirty)) {
+    $apkSourceDirty = "UNKNOWN"
+}
 
 if ($apkInfo) {
     $apkLine = "- Debug APK: $apkPath ($($apkInfo.Length) bytes, $($apkInfo.LastWriteTime))"
@@ -183,6 +225,9 @@ $report = @"
 - Commit: $head
 - Remote: $remote
 $apkLine
+- APK source branch: $apkSourceBranch
+- APK source commit: $apkSourceSha
+- APK source dirty: $apkSourceDirty
 - Package: $PackageName
 - Gemini configured: $geminiConfigured
 - Gemini model setting: $($geminiModel.Trim())

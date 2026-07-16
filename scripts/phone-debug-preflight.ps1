@@ -69,6 +69,35 @@ function Get-LocalPropertyValue {
     return ($line -replace "^\s*$escapedName\s*=\s*", "").Trim()
 }
 
+function Get-BuildConfigValue {
+    param(
+        [string]$Path,
+        [string]$Name
+    )
+
+    if (-not (Test-Path $Path)) {
+        return $null
+    }
+
+    $escapedName = [regex]::Escape($Name)
+    $line = Get-Content -LiteralPath $Path |
+        Where-Object { $_ -match "^\s+public static final .* $escapedName = " } |
+        Select-Object -First 1
+    if (-not $line) {
+        return $null
+    }
+
+    if ($line -match '=\s+"([^"]*)";') {
+        return $Matches[1]
+    }
+
+    if ($line -match '=\s+(true|false);') {
+        return $Matches[1]
+    }
+
+    return $null
+}
+
 function Test-RealKey {
     param([string]$Value)
 
@@ -274,6 +303,18 @@ if (Test-Path $apkPath) {
     Add-Check $results "Debug APK" "OK" ("{0} bytes, last written {1}" -f $apkInfo.Length, $apkInfo.LastWriteTime)
 } else {
     Add-Check $results "Debug APK" "WARN" "Debug APK not found. Run .\gradlew.bat assembleDebug or .\scripts\phone-debug-install.ps1."
+}
+
+$buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
+$apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
+$apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
+$apkSourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
+if ($apkSourceBranch -and $apkSourceSha) {
+    $dirtyLabel = if ($apkSourceDirty -eq "true") { "dirty" } else { "clean" }
+    $status = if ($apkSourceDirty -eq "true") { "WARN" } else { "OK" }
+    Add-Check $results "APK source identity" $status "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig)."
+} else {
+    Add-Check $results "APK source identity" "WARN" "Generated BuildConfig source identity not found. Rebuild the debug APK before phone identity checks."
 }
 
 if ($apkInfo) {

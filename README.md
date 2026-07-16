@@ -144,7 +144,7 @@ Command-line phone install helper:
 .\scripts\phone-debug-preflight.ps1
 ```
 
-This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
+This checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration without printing secrets, and Open Food Facts barcode lookup reachability.
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-install.ps1 -Help` to list available phone-test options.
 
@@ -416,9 +416,9 @@ As of the latest local pass:
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
-- `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, and matches the GitHub branch SHA when network checks are enabled.
+- `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity that Settings -> About should show on the phone.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
-- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, source commit, APK, Gemini setup, and device context.
+- `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, Gemini setup, and device context.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Settings -> About Deal Planner shows the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
 - Pasted flyer and receipt OCR text shows a processing status, stays in the field when parsing fails, and clears only after a successful import.

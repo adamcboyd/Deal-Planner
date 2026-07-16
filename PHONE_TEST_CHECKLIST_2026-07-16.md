@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `0a7548c fix: handle camera permission request failures`
+- Current validated app-code checkpoint: `3ef066f feat: show source commit in app about`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -20,7 +20,7 @@ adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
+Expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. During install, the helper should also print that `com.dealplanner` was verified on the device.
 Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:
@@ -52,7 +52,7 @@ To create a timestamped report before or during the phone run:
 .\scripts\new-phone-test-report.ps1
 ```
 
-Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups.
+Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes both the repo commit and the compiled APK source branch/commit/dirty state.
 
 ## Optional Gemini Setup
 

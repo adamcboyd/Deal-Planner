@@ -8,7 +8,8 @@
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
 - Latest validated app-code checkpoint: `3ef066f feat: show source commit in app about`
-- The branch may include later docs-only recovery commits, but `3ef066f` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- The branch may include later helper/docs recovery commits, but `3ef066f` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -1006,7 +1007,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 
 Result: both helpers printed usage/options successfully, including `-RequirePhone`, `-RequireGemini`, `-SkipNetwork`, `-SkipBuild`, and `-NoLaunch`.
 
-Latest continuation gate after Settings source-identity display work:
+Latest continuation gate after helper/report source-identity work:
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-20'
@@ -1016,13 +1017,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`, with `153` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
 
-Generated debug `BuildConfig` source identity:
-
-```text
-GIT_BRANCH = codex/deal-planner-baseline
-GIT_SHA = 3ef066f
-GIT_DIRTY = false
-```
+Generated debug `BuildConfig` source identity is intentionally commit-dependent. Use `.\scripts\phone-debug-preflight.ps1` (`APK source identity`), `.\scripts\new-phone-test-report.ps1` (Source Snapshot), or Settings -> About in the installed app to read the current APK branch/commit/dirty state after each clean rebuild.
 
 Additional check:
 
@@ -1058,6 +1053,7 @@ Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode l
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and app source/resources/build config plus Gemini/local configuration have not changed.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-install.ps1 -Help` if the exact helper options are lost.
 Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
+Use `.\scripts\new-phone-test-report.ps1` before or during phone testing; its Source Snapshot now records both the repo HEAD and the compiled APK source branch/commit/dirty state from generated debug `BuildConfig`.
 
 Phone test checklist:
 
@@ -1071,12 +1067,12 @@ Verified by build/unit tests/code inspection:
 - Room database filename is now `deal_planner_db`.
 - Settings -> About Deal Planner displays the actual Gradle version, package name, debug/release build identity, source branch, source commit, and dirty-build state from `BuildConfig`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, confirm the package on-device, and launch the debug APK once ADB sees an authorized phone.
-- `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` reports repo, GitHub origin/upstream sync, APK, APK identity/permissions, generated debug `BuildConfig` source identity, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` confirms origin points at `adamcboyd/Deal-Planner`, compares the branch with its configured upstream, and checks the GitHub branch SHA with `git ls-remote` when network checks are enabled.
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner`, required `INTERNET` and `CAMERA` permissions, and no broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
-- `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture and writes local reports under ignored `phone-test-results\`.
+- `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture, records repo HEAD plus compiled APK source branch/commit/dirty state, and writes local reports under ignored `phone-test-results\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
