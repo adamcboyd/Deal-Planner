@@ -71,13 +71,38 @@ fun DealsScreen(viewModel: AppViewModel) {
         }
     }
 
+    fun launchDealsCamera() {
+        try {
+            val uri = CapturePhotoUriFactory.create(context, "flyer")
+            pendingCameraUri = uri
+            cameraLauncher.launch(uri)
+        } catch (e: Exception) {
+            pendingCameraUri = null
+            viewModel.reportDealsPhotoLaunchFailed()
+        }
+    }
+
+    fun launchDealsGalleryPicker() {
+        try {
+            photoPickerLauncher.launch("image/*")
+        } catch (e: Exception) {
+            viewModel.reportDealsGalleryLaunchFailed()
+        }
+    }
+
+    fun launchDealsPdfPicker() {
+        try {
+            pdfPickerLauncher.launch("application/pdf")
+        } catch (e: Exception) {
+            viewModel.reportDealsPdfLaunchFailed()
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            val uri = CapturePhotoUriFactory.create(context, "flyer")
-            pendingCameraUri = uri
-            cameraLauncher.launch(uri)
+            launchDealsCamera()
         } else {
             viewModel.reportDealsCameraPermissionDenied()
         }
@@ -160,9 +185,7 @@ fun DealsScreen(viewModel: AppViewModel) {
                             ) == PackageManager.PERMISSION_GRANTED
 
                             if (hasPermission) {
-                                val uri = CapturePhotoUriFactory.create(context, "flyer")
-                                pendingCameraUri = uri
-                                cameraLauncher.launch(uri)
+                                launchDealsCamera()
                             } else {
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
@@ -174,7 +197,7 @@ fun DealsScreen(viewModel: AppViewModel) {
                         Text("Take Flyer Photo")
                     }
                     OutlinedButton(
-                        onClick = { photoPickerLauncher.launch("image/*") },
+                        onClick = { launchDealsGalleryPicker() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
@@ -182,7 +205,7 @@ fun DealsScreen(viewModel: AppViewModel) {
                         Text("Choose Flyer Image")
                     }
                     OutlinedButton(
-                        onClick = { pdfPickerLauncher.launch("application/pdf") },
+                        onClick = { launchDealsPdfPicker() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Default.PictureAsPdf, contentDescription = null)

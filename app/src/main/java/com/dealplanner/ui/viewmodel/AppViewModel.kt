@@ -153,8 +153,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _pantryPhotoStatus.value = "Pantry photo canceled."
     }
 
+    fun reportPantryPhotoLaunchFailed() {
+        _pantryPhotoStatus.value = "Could not open pantry camera. Try Gallery or add manually."
+    }
+
     fun reportPantryGallerySelectionCanceled() {
         _pantryPhotoStatus.value = "Pantry gallery selection canceled."
+    }
+
+    fun reportPantryGalleryLaunchFailed() {
+        _pantryPhotoStatus.value = "Could not open pantry gallery. Try Photo or add manually."
     }
 
     fun reportPantryCameraPermissionDenied() {
@@ -163,6 +171,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportPantryBarcodeScanCanceled() {
         _pantryPhotoStatus.value = "Barcode scan canceled."
+    }
+
+    fun reportPantryBarcodeScannerLaunchFailed() {
+        _pantryPhotoStatus.value = "Could not open barcode scanner. Add the UPC manually."
     }
 
     fun reportPantryBarcodePermissionDenied() {
@@ -311,12 +323,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _dealsScanStatus.value = "Flyer photo canceled."
     }
 
+    fun reportDealsPhotoLaunchFailed() {
+        _dealsScanStatus.value = "Could not open flyer camera. Try image/PDF import or paste text."
+    }
+
     fun reportDealsGallerySelectionCanceled() {
         _dealsScanStatus.value = "Flyer image selection canceled."
     }
 
+    fun reportDealsGalleryLaunchFailed() {
+        _dealsScanStatus.value = "Could not open flyer image picker. Try photo, PDF, or pasted text."
+    }
+
     fun reportDealsPdfSelectionCanceled() {
         _dealsScanStatus.value = "Flyer PDF selection canceled."
+    }
+
+    fun reportDealsPdfLaunchFailed() {
+        _dealsScanStatus.value = "Could not open flyer PDF picker. Try photo, image, or pasted text."
     }
 
     fun reportDealsCameraPermissionDenied() {
@@ -484,8 +508,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _receiptScanStatus.value = "Receipt photo canceled."
     }
 
+    fun reportReceiptPhotoLaunchFailed() {
+        _receiptScanStatus.value = "Could not open receipt camera. Try Gallery or pasted text."
+    }
+
     fun reportReceiptGallerySelectionCanceled() {
         _receiptScanStatus.value = "Receipt gallery selection canceled."
+    }
+
+    fun reportReceiptGalleryLaunchFailed() {
+        _receiptScanStatus.value = "Could not open receipt gallery. Try Photo or pasted text."
     }
 
     fun reportReceiptCameraPermissionDenied() {

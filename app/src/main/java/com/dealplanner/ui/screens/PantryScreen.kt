@@ -77,12 +77,35 @@ fun PantryScreen(viewModel: AppViewModel) {
     }
 
     fun launchBarcodeScanner() {
-        val options = ScanOptions()
-            .setDesiredBarcodeFormats(ScanOptions.PRODUCT_CODE_TYPES)
-            .setPrompt("Scan pantry barcode")
-            .setBeepEnabled(false)
-            .setOrientationLocked(false)
-        barcodeLauncher.launch(options)
+        try {
+            val options = ScanOptions()
+                .setDesiredBarcodeFormats(ScanOptions.PRODUCT_CODE_TYPES)
+                .setPrompt("Scan pantry barcode")
+                .setBeepEnabled(false)
+                .setOrientationLocked(false)
+            barcodeLauncher.launch(options)
+        } catch (e: Exception) {
+            viewModel.reportPantryBarcodeScannerLaunchFailed()
+        }
+    }
+
+    fun launchPantryCamera() {
+        try {
+            val uri = CapturePhotoUriFactory.create(context, "pantry")
+            pendingCameraUri = uri
+            cameraLauncher.launch(uri)
+        } catch (e: Exception) {
+            pendingCameraUri = null
+            viewModel.reportPantryPhotoLaunchFailed()
+        }
+    }
+
+    fun launchPantryGalleryPicker() {
+        try {
+            photoPickerLauncher.launch("image/*")
+        } catch (e: Exception) {
+            viewModel.reportPantryGalleryLaunchFailed()
+        }
     }
 
     val barcodePermissionLauncher = rememberLauncherForActivityResult(
@@ -99,9 +122,7 @@ fun PantryScreen(viewModel: AppViewModel) {
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            val uri = CapturePhotoUriFactory.create(context, "pantry")
-            pendingCameraUri = uri
-            cameraLauncher.launch(uri)
+            launchPantryCamera()
         } else {
             viewModel.reportPantryCameraPermissionDenied()
         }
@@ -162,9 +183,7 @@ fun PantryScreen(viewModel: AppViewModel) {
                             ) == PackageManager.PERMISSION_GRANTED
 
                             if (hasPermission) {
-                                val uri = CapturePhotoUriFactory.create(context, "pantry")
-                                pendingCameraUri = uri
-                                cameraLauncher.launch(uri)
+                                launchPantryCamera()
                             } else {
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
@@ -176,7 +195,7 @@ fun PantryScreen(viewModel: AppViewModel) {
                         Text("Photo")
                     }
                     OutlinedButton(
-                        onClick = { photoPickerLauncher.launch("image/*") },
+                        onClick = { launchPantryGalleryPicker() },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)

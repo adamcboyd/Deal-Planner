@@ -88,13 +88,30 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
         }
     }
 
+    fun launchReceiptCamera() {
+        try {
+            val uri = CapturePhotoUriFactory.create(context, "receipt")
+            pendingCameraUri = uri
+            cameraLauncher.launch(uri)
+        } catch (e: Exception) {
+            pendingCameraUri = null
+            viewModel.reportReceiptPhotoLaunchFailed()
+        }
+    }
+
+    fun launchReceiptGalleryPicker() {
+        try {
+            photoPickerLauncher.launch("image/*")
+        } catch (e: Exception) {
+            viewModel.reportReceiptGalleryLaunchFailed()
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            val uri = CapturePhotoUriFactory.create(context, "receipt")
-            pendingCameraUri = uri
-            cameraLauncher.launch(uri)
+            launchReceiptCamera()
         } else {
             viewModel.reportReceiptCameraPermissionDenied()
         }
@@ -169,9 +186,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                             ) == PackageManager.PERMISSION_GRANTED
 
                             if (hasPermission) {
-                                val uri = CapturePhotoUriFactory.create(context, "receipt")
-                                pendingCameraUri = uri
-                                cameraLauncher.launch(uri)
+                                launchReceiptCamera()
                             } else {
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
@@ -183,7 +198,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                         Text("Photo")
                     }
                     OutlinedButton(
-                        onClick = { photoPickerLauncher.launch("image/*") },
+                        onClick = { launchReceiptGalleryPicker() },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
