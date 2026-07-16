@@ -19,6 +19,7 @@ import com.dealplanner.data.repository.AppRepository
 import com.dealplanner.domain.*
 import com.dealplanner.lookup.OpenFoodFactsBarcodeClient
 import com.dealplanner.lookup.OpenFoodFactsBarcodeClient.BarcodeLookupResult
+import com.dealplanner.ocr.PantryOcrCandidateExtractor
 import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
@@ -228,47 +229,47 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun importPantryOcrText(ocrText: String) {
-        val phrase = ocrText.lines()
-            .map { it.trim() }
-            .filter { it.length >= 2 }
-            .filterNot { line ->
-                line.contains("nutrition", ignoreCase = true) ||
-                    line.contains("calories", ignoreCase = true) ||
-                    line.contains("serving", ignoreCase = true) ||
-                    line.matches(Regex("""\d+%"""))
-            }
-            .distinct()
-            .take(8)
-            .joinToString(" ")
+        val phrases = PantryOcrCandidateExtractor.extractCandidates(ocrText)
 
-        if (phrase.isBlank()) {
+        if (phrases.isEmpty()) {
             _pantryPhotoStatus.value = "No readable label text found. Add manually or try another photo."
             return
         }
 
-        val result = pantryParser.parse(phrase)
-        val questions = mutableListOf<String>()
-        if (result.item.brand == null) questions.add("What is the brand? Use Generic if none.")
-        if (result.item.size == null && result.item.unit == null) questions.add("How much is there?")
-        if (result.item.bestBy == null) questions.add("What is the expiration or best-by date?")
+        val importedItems = phrases.map { phrase ->
+            val result = pantryParser.parse(phrase)
+            val questions = buildPantryOcrQuestions(result.item)
 
-        val importedItem = result.item.copy(
-            brand = result.item.brand ?: "Generic",
-            needsVerify = true,
-            notes = mergeNotes(
-                result.item.notes,
-                "Photo OCR import",
-                questions.joinToString(" ")
+            result.item.copy(
+                brand = result.item.brand ?: "Generic",
+                needsVerify = true,
+                notes = mergeNotes(
+                    result.item.notes,
+                    "Photo OCR import",
+                    questions.joinToString(" ")
+                )
             )
-        )
-        val mergedExisting = upsertPantryItem(importedItem)
+        }
+
+        val upsertResult = upsertPantryItems(importedItems)
         refreshShoppingListFromCurrentInputs()
 
-        _pantryPhotoStatus.value = if (mergedExisting) {
-            "Updated photo item with VERIFY checks"
-        } else {
-            "Added photo item with VERIFY checks"
+        _pantryPhotoStatus.value = buildString {
+            append("Added/updated ${importedItems.size} photo item")
+            if (importedItems.size != 1) append("s")
+            append(" with VERIFY checks")
+            if (upsertResult.updated > 0) {
+                append(" (${upsertResult.updated} merged)")
+            }
         }
+    }
+
+    private fun buildPantryOcrQuestions(item: PantryItem): List<String> {
+        val questions = mutableListOf<String>()
+        if (item.brand == null) questions.add("What is the brand? Use Generic if none.")
+        if (item.size == null && item.unit == null) questions.add("How much is there?")
+        if (item.bestBy == null) questions.add("What is the expiration or best-by date?")
+        return questions
     }
 
     // Deals operations

@@ -673,6 +673,9 @@ class GeminiPantryVisionClient(
             "ct", "each", "ea", "item", "items", "counts", "pack", "packs", "package", "packages", "pk" -> "count"
             "milliliters", "milliliter" -> "ml"
             "liters", "liter" -> "l"
+            "gallons", "gallon" -> "gal"
+            "quarts", "quart" -> "qt"
+            "pints", "pint" -> "pt"
             "dozen", "dozens" -> "count"
             else -> normalized
         }

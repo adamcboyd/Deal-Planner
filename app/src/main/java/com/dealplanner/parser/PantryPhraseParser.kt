@@ -28,6 +28,7 @@ class PantryPhraseParser {
     private val formKeywords = listOf("canned", "frozen", "fresh", "dried", "boxed", "bagged")
     private val unitKeywords = listOf(
         "lb", "lbs", "pound", "pounds", "oz", "ounce", "ounces", "g", "gram", "grams", "kg",
+        "gal", "gallon", "gallons", "qt", "quart", "quarts", "pt", "pint", "pints",
         "ml", "l", "can", "cans", "jar", "jars", "box", "boxes", "bag", "bags",
         "bottle", "bottles", "carton", "cartons", "container", "containers", "cup", "cups",
         "pack", "packs", "package", "packages", "pkg", "pkgs", "ct", "count", "ea", "each"
@@ -120,7 +121,7 @@ class PantryPhraseParser {
         }
 
         // Extract unit and size
-        val sizePattern = Regex("""($PANTRY_NUMBER_PATTERN)\s*((?:fl\.?\s*|fluid\s+)?oz|lb|lbs|g|kg|ml|l|ct|count)""")
+        val sizePattern = Regex("""($PANTRY_NUMBER_PATTERN)\s*((?:fl\.?\s*|fluid\s+)?oz|gallon|gallons|gal|quart|quarts|qt|pint|pints|pt|lb|lbs|kg|g|ml|l|ct|count)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
             val sizeUnitText = normalizeSizeUnitText(sizeMatch.groupValues[2])
@@ -241,6 +242,9 @@ class PantryPhraseParser {
             "ounce", "ounces" -> "oz"
             "gram", "grams" -> "g"
             "fl oz", "fluid oz" -> "oz"
+            "gallon", "gallons" -> "gal"
+            "quart", "quarts" -> "qt"
+            "pint", "pints" -> "pt"
             "can", "cans" -> "can"
             "jar", "jars" -> "jar"
             "box", "boxes" -> "box"
@@ -264,6 +268,9 @@ class PantryPhraseParser {
 
         return when (normalized) {
             "fl oz", "fluid oz" -> "fl oz"
+            "gallon", "gallons" -> "gal"
+            "quart", "quarts" -> "qt"
+            "pint", "pints" -> "pt"
             else -> normalized
         }
     }
@@ -317,7 +324,7 @@ class PantryPhraseParser {
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
             token.toPantryNumberOrNull() == null &&
-            !Regex("""$PANTRY_NUMBER_PATTERN(?:oz|lb|lbs|g|kg|ml|l|ct|count)""").matches(token) &&
+            !Regex("""$PANTRY_NUMBER_PATTERN(?:oz|lb|lbs|g|kg|ml|l|gal|gallon|gallons|qt|quart|quarts|pt|pint|pints|ct|count)""").matches(token) &&
             !DATE_TOKEN_PATTERN.matches(token)
         }
 

@@ -149,6 +149,29 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse common liquid package sizes`() {
+        val milk = parser.parse("Kroger milk 1 gal fridge")
+        val broth = parser.parse("chicken broth 1 quart pantry")
+        val cream = parser.parse("cream 1 pint fridge")
+
+        assertThat(milk.item.item).isEqualTo("milk")
+        assertThat(milk.item.brand).isEqualTo("Kroger")
+        assertThat(milk.item.size).isEqualTo("1gal")
+        assertThat(milk.item.unit).isEqualTo("gal")
+        assertThat(milk.item.location).isEqualTo("fridge")
+
+        assertThat(broth.item.item).isEqualTo("chicken broth")
+        assertThat(broth.item.size).isEqualTo("1qt")
+        assertThat(broth.item.unit).isEqualTo("qt")
+        assertThat(broth.item.location).isEqualTo("pantry")
+
+        assertThat(cream.item.item).isEqualTo("cream")
+        assertThat(cream.item.size).isEqualTo("1pt")
+        assertThat(cream.item.unit).isEqualTo("pt")
+        assertThat(cream.item.location).isEqualTo("fridge")
+    }
+
+    @Test
     fun `parse item with fraction word`() {
         val result = parser.parse("half lb butter")
 

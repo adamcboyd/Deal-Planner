@@ -396,6 +396,40 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with liquid unit aliases`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "milk",
+                  "quantity": 1,
+                  "unit": "gallon"
+                },
+                {
+                  "product": "broth",
+                  "quantity": 1,
+                  "unit": "quarts"
+                },
+                {
+                  "product": "cream",
+                  "quantity": 1,
+                  "unit": "pint"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(3)
+        assertThat(result.items.first { it.product == "milk" }.unit).isEqualTo("gal")
+        assertThat(result.items.first { it.product == "broth" }.unit).isEqualTo("qt")
+        assertThat(result.items.first { it.product == "cream" }.unit).isEqualTo("pt")
+    }
+
+    @Test
     fun `parse pantry vision response with object and array wrapped string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
