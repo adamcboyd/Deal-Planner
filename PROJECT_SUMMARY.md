@@ -431,6 +431,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Deal review/edit flow
 - ✅ OCR integration (ML Kit)
 - ✅ Optional Gemini Vision integration
+- ✅ Settings save feedback and protein input validation
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
 - ✅ Receipt reconciliation engine

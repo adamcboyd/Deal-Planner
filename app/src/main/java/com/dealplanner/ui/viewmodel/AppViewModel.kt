@@ -83,6 +83,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _aiVisionConnectionStatus = MutableStateFlow<String?>(null)
     val aiVisionConnectionStatus: StateFlow<String?> = _aiVisionConnectionStatus.asStateFlow()
 
+    private val _settingsStatus = MutableStateFlow<String?>(null)
+    val settingsStatus: StateFlow<String?> = _settingsStatus.asStateFlow()
+
     init {
         viewModelScope.launch {
             initializeDefaults()
@@ -598,8 +601,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Params operations
     fun updateParams(params: Params) {
         viewModelScope.launch {
+            _settingsStatus.value = "Saving settings..."
             repository.updateParams(params)
             refreshShoppingListFromCurrentInputs()
+            _settingsStatus.value = "Settings saved."
         }
     }
 

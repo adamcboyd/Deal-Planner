@@ -438,6 +438,7 @@ As of the latest local pass:
 - Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Settings can test the Gemini API key/model connection from the running app.
 - Settings accepts comma-decimal protein-per-meal values such as `0,5`.
+- Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.

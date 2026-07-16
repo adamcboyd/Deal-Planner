@@ -15,11 +15,15 @@ import com.dealplanner.util.toFlexibleDoubleOrNull
 fun ParamsScreen(viewModel: AppViewModel) {
     val params by viewModel.params.collectAsState()
     val aiVisionConnectionStatus by viewModel.aiVisionConnectionStatus.collectAsState()
+    val settingsStatus by viewModel.settingsStatus.collectAsState()
 
     var gerdFriendly by remember { mutableStateOf(params?.gerdFriendly ?: false) }
     var avoidPeppers by remember { mutableStateOf(params?.avoidPeppers ?: false) }
     var breakfastAnchor by remember { mutableStateOf(params?.breakfastAnchor ?: true) }
     var proteinPerMeal by remember { mutableStateOf(params?.proteinPerMealLb?.toString() ?: "0.5") }
+    var settingsEdited by remember { mutableStateOf(false) }
+    val parsedProteinPerMeal = proteinPerMeal.toFlexibleDoubleOrNull()
+    val isProteinPerMealValid = parsedProteinPerMeal != null
 
     LaunchedEffect(params) {
         params?.let {
@@ -27,6 +31,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
             avoidPeppers = it.avoidPeppers
             breakfastAnchor = it.breakfastAnchor
             proteinPerMeal = it.proteinPerMealLb.toString()
+            settingsEdited = false
         }
     }
 
@@ -59,7 +64,10 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         Text("GERD-Friendly", style = MaterialTheme.typography.bodyLarge)
                         Switch(
                             checked = gerdFriendly,
-                            onCheckedChange = { gerdFriendly = it }
+                            onCheckedChange = {
+                                gerdFriendly = it
+                                settingsEdited = true
+                            }
                         )
                     }
 
@@ -78,7 +86,10 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         Text("Avoid Peppers", style = MaterialTheme.typography.bodyLarge)
                         Switch(
                             checked = avoidPeppers,
-                            onCheckedChange = { avoidPeppers = it }
+                            onCheckedChange = {
+                                avoidPeppers = it
+                                settingsEdited = true
+                            }
                         )
                     }
 
@@ -108,7 +119,10 @@ fun ParamsScreen(viewModel: AppViewModel) {
                         Text("Breakfast Anchor", style = MaterialTheme.typography.bodyLarge)
                         Switch(
                             checked = breakfastAnchor,
-                            onCheckedChange = { breakfastAnchor = it }
+                            onCheckedChange = {
+                                breakfastAnchor = it
+                                settingsEdited = true
+                            }
                         )
                     }
 
@@ -127,14 +141,26 @@ fun ParamsScreen(viewModel: AppViewModel) {
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = proteinPerMeal,
-                        onValueChange = { proteinPerMeal = it },
+                        onValueChange = {
+                            proteinPerMeal = it
+                            settingsEdited = true
+                        },
                         label = { Text("Pounds") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = !isProteinPerMealValid
                     )
                     Text(
-                        "Default: 0.5 lb per meal",
+                        if (isProteinPerMealValid) {
+                            "Default: 0.5 lb per meal"
+                        } else {
+                            "Use a number like 0.5 or 0,5."
+                        },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isProteinPerMealValid) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
                     )
                 }
             }
@@ -144,17 +170,28 @@ fun ParamsScreen(viewModel: AppViewModel) {
         item {
             Button(
                 onClick = {
+                    val proteinValue = parsedProteinPerMeal ?: return@Button
                     val updatedParams = Params(
                         gerdFriendly = gerdFriendly,
                         avoidPeppers = avoidPeppers,
                         breakfastAnchor = breakfastAnchor,
-                        proteinPerMealLb = proteinPerMeal.toFlexibleDoubleOrNull() ?: 0.5
+                        proteinPerMealLb = proteinValue
                     )
                     viewModel.updateParams(updatedParams)
+                    settingsEdited = false
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isProteinPerMealValid
             ) {
                 Text("Save Settings")
+            }
+            if (settingsStatus != null && !settingsEdited) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    settingsStatus.orEmpty(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
 

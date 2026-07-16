@@ -201,6 +201,13 @@ In `Settings`:
 6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 7. With key configured, test pantry photo recognition against a real pantry item label.
 
+## Settings Save Check
+
+In `Settings`:
+
+1. Enter protein per meal as `0,5`, tap `Save Settings`, and confirm `Settings saved.` appears.
+2. Enter invalid protein text such as `abc`, and confirm Save is disabled with a visible number-format message.
+
 ## Build Identity Check
 
 In `Settings` -> `About Deal Planner`, confirm:

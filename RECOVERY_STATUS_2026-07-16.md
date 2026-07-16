@@ -616,6 +616,14 @@ Latest continuation gate after typed pantry success status work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Settings save feedback work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -743,6 +751,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal values such as `0,5`.
+- Settings Save shows visible saved feedback and blocks invalid protein-per-meal text instead of silently defaulting.
 - Settings About displays version `1.0 (1)`, package `com.dealplanner`, and debug/release build identity from the installed build.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
@@ -857,6 +866,7 @@ Optional if anything fails on the phone:
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.
    - Settings protein-per-meal comma-decimal value such as `0,5`.
+   - Settings invalid protein-per-meal text such as `abc`; confirm Save is disabled and a visible format message appears.
    - Settings About build identity: version `1.0 (1)`, package `com.dealplanner`, and debug build.
    - Generate meal plan.
    - Review shopping list.
