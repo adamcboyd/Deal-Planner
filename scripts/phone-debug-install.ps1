@@ -2,6 +2,7 @@ param(
     [switch]$SkipBuild,
     [switch]$NoLaunch,
     [string]$PackageName = "com.dealplanner",
+    [string]$AppLabel = "Deal Planner",
     [string]$JavaHome = "C:\Program Files\Java\jdk-20"
 )
 
@@ -76,6 +77,89 @@ function Get-LatestBuildInput {
     return @($items | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
 }
 
+function Get-AndroidBuildTool {
+    param([string]$ToolName)
+
+    $pathCommand = Get-Command $ToolName -ErrorAction SilentlyContinue
+    if ($pathCommand) {
+        return $pathCommand.Source
+    }
+
+    $sdkRoots = @(
+        $env:ANDROID_HOME,
+        $env:ANDROID_SDK_ROOT,
+        (Join-Path $env:LOCALAPPDATA "Android\Sdk")
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+
+    foreach ($sdkRoot in $sdkRoots) {
+        $buildToolsRoot = Join-Path $sdkRoot "build-tools"
+        if (-not (Test-Path $buildToolsRoot)) {
+            continue
+        }
+
+        $tool = Get-ChildItem -LiteralPath $buildToolsRoot -Recurse -Filter $ToolName -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+        if ($tool) {
+            return $tool.FullName
+        }
+    }
+
+    return $null
+}
+
+function Assert-ApkIdentity {
+    param(
+        [string]$ApkPath,
+        [string]$ExpectedPackageName,
+        [string]$ExpectedAppLabel
+    )
+
+    $aaptPath = Get-AndroidBuildTool "aapt.exe"
+    if (-not $aaptPath) {
+        Write-Warning "aapt.exe was not found; package/permission inspection skipped."
+        return
+    }
+
+    $badging = @(& $aaptPath dump badging $ApkPath 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect app-debug.apk with aapt dump badging."
+    }
+
+    $permissions = @(& $aaptPath dump permissions $ApkPath 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect app-debug.apk with aapt dump permissions."
+    }
+
+    $packageLine = $badging | Where-Object { $_ -match "^package:" } | Select-Object -First 1
+    $labelLine = $badging | Where-Object { $_ -match "^application-label:" } | Select-Object -First 1
+    $packageOk = $packageLine -match "name='$([regex]::Escape($ExpectedPackageName))'"
+    $labelOk = $labelLine -match "application-label:'$([regex]::Escape($ExpectedAppLabel))'"
+
+    if (-not ($packageOk -and $labelOk)) {
+        throw "Expected APK identity $ExpectedPackageName / $ExpectedAppLabel, but app-debug.apk reported: $packageLine $labelLine"
+    }
+
+    $requiredPermissions = @(
+        "android.permission.INTERNET",
+        "android.permission.CAMERA"
+    )
+    $missingPermissions = @(
+        foreach ($permission in $requiredPermissions) {
+            if (-not ($permissions | Where-Object { $_ -match "name='$([regex]::Escape($permission))'" })) {
+                $permission
+            }
+        }
+    )
+
+    if ($missingPermissions.Count -gt 0) {
+        throw "app-debug.apk is missing required permission(s): $($missingPermissions -join ', ')"
+    }
+
+    Write-Host "Verified APK identity and required permissions: $ExpectedPackageName / $ExpectedAppLabel"
+}
+
 function Assert-ApkFreshForBuildInputs {
     param(
         [string]$ApkPath,
@@ -147,6 +231,7 @@ if (-not (Test-Path $apkPath)) {
     throw "Debug APK not found at $apkPath. Run without -SkipBuild first."
 }
 
+Assert-ApkIdentity -ApkPath $apkPath -ExpectedPackageName $PackageName -ExpectedAppLabel $AppLabel
 Assert-ApkFreshForBuildInputs -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 Assert-ApkFreshForGeminiConfig -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 

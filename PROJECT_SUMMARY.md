@@ -435,7 +435,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
-- ✅ PowerShell phone/Gemini/barcode preflight helper with stale source/Gemini APK warnings
+- ✅ PowerShell phone/Gemini/barcode preflight helper with APK identity/permission checks and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ 117 unit tests
 - ✅ Comprehensive README

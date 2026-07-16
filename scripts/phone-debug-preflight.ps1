@@ -2,7 +2,8 @@ param(
     [switch]$RequirePhone,
     [switch]$SkipNetwork,
     [string]$JavaHome = "C:\Program Files\Java\jdk-20",
-    [string]$PackageName = "com.dealplanner"
+    [string]$PackageName = "com.dealplanner",
+    [string]$AppLabel = "Deal Planner"
 )
 
 $ErrorActionPreference = "Stop"
@@ -99,6 +100,60 @@ function Get-LatestBuildInput {
     return @($items | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
 }
 
+function Get-AndroidBuildTool {
+    param([string]$ToolName)
+
+    $pathCommand = Get-Command $ToolName -ErrorAction SilentlyContinue
+    if ($pathCommand) {
+        return $pathCommand.Source
+    }
+
+    $sdkRoots = @(
+        $env:ANDROID_HOME,
+        $env:ANDROID_SDK_ROOT,
+        (Join-Path $env:LOCALAPPDATA "Android\Sdk")
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+
+    foreach ($sdkRoot in $sdkRoots) {
+        $buildToolsRoot = Join-Path $sdkRoot "build-tools"
+        if (-not (Test-Path $buildToolsRoot)) {
+            continue
+        }
+
+        $tool = Get-ChildItem -LiteralPath $buildToolsRoot -Recurse -Filter $ToolName -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+        if ($tool) {
+            return $tool.FullName
+        }
+    }
+
+    return $null
+}
+
+function Read-ApkAaptInfo {
+    param(
+        [string]$AaptPath,
+        [string]$ApkPath
+    )
+
+    $badging = @(& $AaptPath dump badging $ApkPath 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+        throw "aapt dump badging failed."
+    }
+
+    $permissions = @(& $AaptPath dump permissions $ApkPath 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+        throw "aapt dump permissions failed."
+    }
+
+    return [pscustomobject]@{
+        Badging = $badging
+        Permissions = $permissions
+    }
+}
+
 $results = [System.Collections.Generic.List[object]]::new()
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
@@ -144,6 +199,47 @@ if (Test-Path $apkPath) {
     Add-Check $results "Debug APK" "OK" ("{0} bytes, last written {1}" -f $apkInfo.Length, $apkInfo.LastWriteTime)
 } else {
     Add-Check $results "Debug APK" "WARN" "Debug APK not found. Run .\gradlew.bat assembleDebug or .\scripts\phone-debug-install.ps1."
+}
+
+if ($apkInfo) {
+    $aaptPath = Get-AndroidBuildTool "aapt.exe"
+    if ($aaptPath) {
+        try {
+            $apkAaptInfo = Read-ApkAaptInfo $aaptPath $apkPath
+            $packageLine = $apkAaptInfo.Badging | Where-Object { $_ -match "^package:" } | Select-Object -First 1
+            $labelLine = $apkAaptInfo.Badging | Where-Object { $_ -match "^application-label:" } | Select-Object -First 1
+            $packageOk = $packageLine -match "name='$([regex]::Escape($PackageName))'"
+            $labelOk = $labelLine -match "application-label:'$([regex]::Escape($AppLabel))'"
+
+            if ($packageOk -and $labelOk) {
+                Add-Check $results "APK identity" "OK" "$PackageName / $AppLabel verified in app-debug.apk."
+            } else {
+                Add-Check $results "APK identity" "FAIL" "Expected $PackageName / $AppLabel, but APK reported: $packageLine $labelLine"
+            }
+
+            $requiredPermissions = @(
+                "android.permission.INTERNET",
+                "android.permission.CAMERA"
+            )
+            $missingPermissions = @(
+                foreach ($permission in $requiredPermissions) {
+                    if (-not ($apkAaptInfo.Permissions | Where-Object { $_ -match "name='$([regex]::Escape($permission))'" })) {
+                        $permission
+                    }
+                }
+            )
+
+            if ($missingPermissions.Count -eq 0) {
+                Add-Check $results "APK permissions" "OK" "Required network and camera permissions are present."
+            } else {
+                Add-Check $results "APK permissions" "FAIL" "Missing required permission(s): $($missingPermissions -join ', ')"
+            }
+        } catch {
+            Add-Check $results "APK identity" "WARN" "Could not inspect app-debug.apk with aapt: $($_.Exception.Message)"
+        }
+    } else {
+        Add-Check $results "APK identity" "WARN" "aapt.exe was not found; package/permission inspection skipped."
+    }
 }
 
 $adbCommand = Get-Command adb -ErrorAction SilentlyContinue

@@ -551,6 +551,23 @@ Latest continuation gate after manual OCR field-retention work:
 
 Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
 
+Latest APK identity/permission helper checks:
+
+```powershell
+.\scripts\phone-debug-preflight.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-install.ps1 -SkipBuild -NoLaunch
+```
+
+Result: preflight reported `APK identity` and `APK permissions` as OK. The install helper verified `com.dealplanner / Deal Planner` and required permissions before stopping at the expected no-phone-connected condition.
+
+Latest continuation gate after APK identity/permission guard work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `117` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -596,7 +613,8 @@ Verified by build/unit tests/code inspection:
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room database filename is now `deal_planner_db`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
-- `scripts\phone-debug-preflight.ps1` reports repo, APK, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` reports repo, APK, APK identity/permissions, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
+- `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, verifying `com.dealplanner` / `Deal Planner` plus required `INTERNET` and `CAMERA` permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
