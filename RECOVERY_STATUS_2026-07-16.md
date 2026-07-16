@@ -454,6 +454,14 @@ Latest continuation gate after shopping-list planned-cost work:
 
 Result: `BUILD SUCCESSFUL`, with `110` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Gemini object-shaped response parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `112` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -568,7 +576,7 @@ Verified by build/unit tests/code inspection:
 - Settings protein-per-meal numeric input accepts comma-decimal values such as `0,5`.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, or `amount: "two cans"`, comma-decimal confidence such as `"0,82"`, storage aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural and singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, or `quantity: { value: "2", unit: "cans" }`, comma-decimal confidence such as `"0,82"`, storage aliases, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.

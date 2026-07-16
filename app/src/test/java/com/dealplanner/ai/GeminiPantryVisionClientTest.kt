@@ -244,6 +244,29 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with plural item wrapper holding one object`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": {
+                "product": "brown rice",
+                "quantity": 1,
+                "unit": "bags"
+              },
+              "warnings": "items object response"
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        assertThat(result.items.first().product).isEqualTo("brown rice")
+        assertThat(result.items.first().quantity).isEqualTo(1.0)
+        assertThat(result.items.first().unit).isEqualTo("bag")
+        assertThat(result.warnings).containsExactly("items object response")
+    }
+
+    @Test
     fun `parse pantry vision response with quantity and storage aliases`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
@@ -277,6 +300,47 @@ class GeminiPantryVisionClientTest {
         assertThat(item.expirationDate).isEqualTo("2027-02-03")
         assertThat(item.openedDate).isEqualTo("2026-07-16")
         assertThat(item.confidence).isEqualTo(0.82)
+    }
+
+    @Test
+    fun `parse pantry vision response with object quantity fields`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "black beans",
+                  "quantity": {
+                    "value": "2",
+                    "unit": "cans"
+                  },
+                  "confidence": 0.9
+                },
+                {
+                  "product": "ground turkey",
+                  "amount": {
+                    "amount": "1,5",
+                    "units": "pounds"
+                  },
+                  "storage": "refrigerator"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+
+        val beans = result.items.first { it.product == "black beans" }
+        assertThat(beans.quantity).isEqualTo(2.0)
+        assertThat(beans.unit).isEqualTo("can")
+
+        val turkey = result.items.first { it.product == "ground turkey" }
+        assertThat(turkey.quantity).isEqualTo(1.5)
+        assertThat(turkey.unit).isEqualTo("lb")
+        assertThat(turkey.location).isEqualTo("fridge")
     }
 
     @Test

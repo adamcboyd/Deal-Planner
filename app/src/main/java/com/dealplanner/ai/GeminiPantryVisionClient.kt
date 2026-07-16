@@ -228,9 +228,13 @@ class GeminiPantryVisionClient(
         val root = asJsonObject
         listOf("items", "pantry_items", "pantryItems", "foods", "food_items")
             .firstNotNullOfOrNull { name ->
-                root.get(name)
-                    ?.takeIf { it.isJsonArray }
-                    ?.asJsonArray
+                root.get(name)?.let { element ->
+                    when {
+                        element.isJsonArray -> element.asJsonArray
+                        element.isJsonObject -> JsonArray().apply { add(element) }
+                        else -> null
+                    }
+                }
             }
             ?.let { return it }
 
@@ -369,7 +373,9 @@ class GeminiPantryVisionClient(
     }
 
     private fun JsonElement.toQuantityParts(): QuantityParts? {
-        if (isJsonNull || !isJsonPrimitive) return null
+        if (isJsonNull) return null
+        if (isJsonObject) return asJsonObject.toQuantityParts()
+        if (!isJsonPrimitive) return null
 
         asFlexibleDoubleOrNull()?.let { value -> return QuantityParts(value = value) }
         val text = try {
@@ -384,6 +390,28 @@ class GeminiPantryVisionClient(
             ?: return null
         val unit = match.groupValues.getOrNull(2)?.ifBlank { null }
         return QuantityParts(value = value, unit = unit)
+    }
+
+    private fun JsonObject.toQuantityParts(): QuantityParts? {
+        val value = firstStringOrNull(
+            "value",
+            "amount",
+            "quantity",
+            "qty",
+            "count",
+            "number"
+        )?.toQuantityDoubleOrNull()
+        val unit = firstStringOrNull(
+            "unit",
+            "units",
+            "item_unit",
+            "itemUnit",
+            "package_unit",
+            "packageUnit"
+        )
+
+        return QuantityParts(value = value, unit = unit)
+            .takeIf { it.value != null || it.unit != null }
     }
 
     private fun String.toQuantityDoubleOrNull(): Double? {

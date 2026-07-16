@@ -332,7 +332,7 @@ Tests cover:
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy matching, VPP, receipt header dates, split and inline weighted quantities, dollar/no-dollar/comma-decimal OCR prices, discount/coupon line filtering)
-- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word quantity aliases, storage aliases, malformed string/list fields)
+- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields)
 
 ## Key Algorithms
 
@@ -410,7 +410,7 @@ As of the latest local pass:
 - Settings can test the Gemini API key/model connection from the running app.
 - Settings accepts comma-decimal protein-per-meal values such as `0,5`.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, or `amount: "two cans"`, storage aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: "two cans"`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, and confidence clamping.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions
