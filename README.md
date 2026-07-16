@@ -329,6 +329,7 @@ As of the latest local pass:
 
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
+- App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.

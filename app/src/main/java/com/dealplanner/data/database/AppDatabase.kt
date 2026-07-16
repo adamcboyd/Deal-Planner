@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "snap_optimizer_db"
+                    "deal_planner_db"
                 )
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -58,7 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         // Example migration for future versions
         val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // Add migration logic here when needed
             }
         }

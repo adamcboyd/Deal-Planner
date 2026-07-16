@@ -95,7 +95,7 @@ Deal_Planner/
 ### 1. Data Layer (Room Database)
 - ✅ 7 Entity classes with proper TypeConverters
 - ✅ 7 DAO interfaces with Flow support
-- ✅ AppDatabase with singleton pattern
+- ✅ AppDatabase with singleton pattern and `deal_planner_db` filename
 - ✅ Repository pattern implementation
 - ✅ Migration support structure
 

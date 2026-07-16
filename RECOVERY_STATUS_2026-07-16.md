@@ -118,6 +118,14 @@ Latest continuation gate after Gemini pantry response parser hardening:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after Deal Planner database naming cleanup:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -143,6 +151,7 @@ Debug APK:
 Verified by build/unit tests/code inspection:
 
 - App name/package is now Deal Planner: `com.dealplanner`.
+- Room database filename is now `deal_planner_db`.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
