@@ -279,6 +279,12 @@ fun ParamsScreen(viewModel: AppViewModel) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
+                        "Source: ${BuildConfig.GIT_BRANCH} @ ${BuildConfig.GIT_SHA}${if (BuildConfig.GIT_DIRTY) " (dirty)" else ""}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
                         "Core principle: Deals drive the meals.\nOffline-first grocery optimization.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.io.ByteArrayOutputStream
 
 plugins {
     id("com.android.application")
@@ -8,6 +9,34 @@ plugins {
 
 fun String.asBuildConfigString(): String {
     return "\"" + replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+}
+
+fun gitOutput(vararg args: String): String {
+    return gitOutputOrNull(*args) ?: "unknown"
+}
+
+fun gitOutputOrNull(vararg args: String): String? {
+    val output = ByteArrayOutputStream()
+    val errors = ByteArrayOutputStream()
+    return try {
+        val result = exec {
+            commandLine("git", *args)
+            standardOutput = output
+            errorOutput = errors
+            isIgnoreExitValue = true
+        }
+        if (result.exitValue == 0) {
+            output.toString().trim()
+        } else {
+            null
+        }
+    } catch (_: Exception) {
+        null
+    }
+}
+
+fun gitDirty(): Boolean {
+    return gitOutputOrNull("status", "--porcelain").orEmpty().isNotBlank()
 }
 
 val localProperties = Properties().apply {
@@ -42,6 +71,9 @@ android {
 
         buildConfigField("String", "GEMINI_API_KEY", geminiApiKey.asBuildConfigString())
         buildConfigField("String", "GEMINI_MODEL", geminiModel.asBuildConfigString())
+        buildConfigField("String", "GIT_BRANCH", gitOutput("rev-parse", "--abbrev-ref", "HEAD").asBuildConfigString())
+        buildConfigField("String", "GIT_SHA", gitOutput("rev-parse", "--short", "HEAD").asBuildConfigString())
+        buildConfigField("boolean", "GIT_DIRTY", gitDirty().toString())
     }
 
     buildTypes {
