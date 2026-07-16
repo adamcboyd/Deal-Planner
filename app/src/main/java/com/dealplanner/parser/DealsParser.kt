@@ -9,7 +9,7 @@ import kotlin.math.abs
  * Handles various deal formats:
  * - $X.XX/lb
  * - (N) for $X or N for $X
- * - Buy N Get M, BOGO Free, BOGO X% off, B1G1
+ * - Buy N Get M, Buy N Get M X% off, BOGO Free, BOGO X% off, B1G1
  * - X% off
  * - Member Price, Digital Coupon
  */
@@ -28,6 +28,10 @@ class DealsParser {
     private val slashNForXPattern = Regex("""(?<![\d.])(\d+)\s*/\s*\$?(\d+(?:\.\d{2})?)""", RegexOption.IGNORE_CASE)
     private val buyNGetMPattern = Regex(
         """buy\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*get\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s*free)?""",
+        RegexOption.IGNORE_CASE
+    )
+    private val buyNGetMPercentPattern = Regex(
+        """buy\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*get\s*(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(\d+)%\s*off""",
         RegexOption.IGNORE_CASE
     )
     private val bogoPercentPattern = Regex("""\bbogo\s*(\d+)%\s*off\b""", RegexOption.IGNORE_CASE)
@@ -203,6 +207,27 @@ class DealsParser {
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
+        buyNGetMPercentPattern.find(line)?.let { match ->
+            val buyN = match.groupValues[1].toDealCount() ?: return null
+            val getM = match.groupValues[2].toDealCount() ?: return null
+            val secondItemDiscount = match.groupValues[3].toDouble()
+            dealType = "buy_n_get_m"
+            unit = "ea"
+
+            val priceMatch = packagePricePattern.find(line)
+            price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
+
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.7
+            }
+
+            discountPercent = (secondItemDiscount * getM) / (buyN + getM)
+
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
         // 5. Buy N Get M: Buy 2 Get 1
         buyNGetMPattern.find(line)?.let { match ->
             val buyN = match.groupValues[1].toDealCount() ?: return null
@@ -320,6 +345,7 @@ class DealsParser {
             name = name.replace(keyword, "", ignoreCase = true)
         }
         name = name.replace(buyNGetMPattern, "")
+        name = name.replace(buyNGetMPercentPattern, "")
         name = name.replace(bogoPercentPattern, "")
         name = name.replace(bogoPattern, "")
         name = name.replace(priceTextPattern, "")
@@ -333,6 +359,7 @@ class DealsParser {
             centsPricePerUnitPattern.containsMatchIn(line) ||
             nForXPattern.containsMatchIn(line) ||
             slashNForXPattern.containsMatchIn(line) ||
+            buyNGetMPercentPattern.containsMatchIn(line) ||
             buyNGetMPattern.containsMatchIn(line) ||
             bogoPercentPattern.containsMatchIn(line) ||
             bogoPattern.containsMatchIn(line) ||
@@ -351,6 +378,7 @@ class DealsParser {
         val lineLower = line.lowercase()
         return limitPattern.matches(line) ||
             percentOffPattern.matches(line) ||
+            buyNGetMPercentPattern.matches(line) ||
             buyNGetMPattern.matches(line) ||
             bogoPercentPattern.matches(line) ||
             bogoPattern.matches(line) ||

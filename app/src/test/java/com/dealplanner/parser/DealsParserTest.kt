@@ -112,6 +112,29 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse buy get percent off flyer promos`() {
+        val text = """
+            Coffee Creamer
+            Buy One Get One 50% off
+
+            Seltzer
+            Buy Two Get One 50% off
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(2)
+
+        val coffeeCreamer = result.deals.first { it.name == "Coffee Creamer" }
+        assertThat(coffeeCreamer.dealType).isEqualTo("buy_n_get_m")
+        assertThat(coffeeCreamer.discountPercent).isEqualTo(25.0)
+
+        val seltzer = result.deals.first { it.name == "Seltzer" }
+        assertThat(seltzer.dealType).isEqualTo("buy_n_get_m")
+        assertThat(seltzer.discountPercent).isWithin(0.1).of(16.7)
+    }
+
+    @Test
     fun `parse BOGO flyer shorthand deals`() {
         val text = """
             Greek Yogurt
