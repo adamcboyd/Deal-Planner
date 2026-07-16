@@ -354,7 +354,8 @@ class PantryPhraseParser {
             DateTimeFormatter.ofPattern("yyyy-MM-dd"),
             DateTimeFormatter.ofPattern("yyyy/M/d"),
             DateTimeFormatter.ofPattern("yyyy-M-d"),
-            DateTimeFormatter.ofPattern("M-d-yyyy")
+            DateTimeFormatter.ofPattern("M-d-yyyy"),
+            DateTimeFormatter.ofPattern("M-d-yy")
         )
 
         val inputLower = input.lowercase()

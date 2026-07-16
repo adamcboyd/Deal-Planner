@@ -246,6 +246,7 @@ Great Value peanut butter opened on 2026-07-01 best by date 2026-12-31
 Kroger yogurt best before 2026-12-31
 milk use by 12/31/2026
 milk use-by 12/31/2026
+milk use by 12-31-26
 pasta exp 12/31/2026
 milk expiration date 12/31/2026
 yogurt best-by 2026-12-31
@@ -259,7 +260,7 @@ The parser handles:
 - Units (lb, oz, cans, etc.)
 - Brands (Great Value, Kroger, etc.)
 - Locations (pantry, fridge, freezer)
-- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, and `best by date`)
+- Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, two-digit dash dates such as `MM-DD-YY`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, and `best by date`)
 - Forms (canned, frozen, fresh)
 
 Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
@@ -443,7 +444,7 @@ As of the latest local pass:
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
-- Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, and `use-by`, low-confidence review flags, and duplicate merging.
+- Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, common expiration label cues such as `expiration date`, `best by date`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
 - Pantry parser handles common liquid package sizes such as `1 gal`, `1 quart`, and `1 pint`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.

@@ -115,7 +115,7 @@ Deal_Planner/
 - ✅ **PantryPhraseParser**:
   - Handles quantities (numeric, comma-decimal OCR, fractions, words)
   - Extracts brands, units, sizes, locations
-  - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, and exp)
+  - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, and exp, plus unpadded year-first and two-digit dash label dates)
   - Duplicate detection and merging
   - Confidence scoring
 
@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (162 Test Cases)
+### 7. Unit Tests (163 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -383,7 +383,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Loads repeatable demo data with reset budget and meal params
 - ✅ Parses pantry items
 - ✅ Parses pantry comma-decimal OCR quantities and sizes such as 1,5 lb and 5,3oz
-- ✅ Parses unpadded year-first pantry/AI label dates such as `2026-7-1`
+- ✅ Parses unpadded year-first and two-digit dash pantry/AI label dates such as `2026-7-1` and `12-31-26`
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 162 unit tests
+- ✅ 163 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

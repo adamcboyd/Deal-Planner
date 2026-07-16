@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after unpadded year-first pantry/AI date parsing work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after two-digit dash pantry label date parsing work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1264,6 +1264,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `FlexibleDateParsingTest`, `PantryPhraseParserTest`, and `PantryVisionItemMapperTest` passed, then the full Gradle gate passed with `162` unit tests detected and `0` failures/errors. Manual pantry text and AI pantry photo mapping accept unpadded year-first dash dates such as `2026-7-1` for opened and best-by dates.
 
+Latest focused pantry parser check after two-digit dash label date parsing:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.PantryPhraseParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `PantryPhraseParserTest` passed locally, then the full Gradle gate passed with `163` unit tests detected, `0` failures/errors, and `21` lint warnings. Manual pantry text now accepts two-digit dash label dates such as `milk use by 12-31-26` for best-by dates.
+
 Additional check:
 
 ```powershell
@@ -1373,6 +1384,7 @@ Verified by build/unit tests/code inspection:
 - Open Food Facts barcode response parsing and barcode normalization have no-network unit coverage.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
+- Pantry typed date parsing accepts two-digit dash label dates such as `milk use by 12-31-26`.
 - Pantry edit/review quantity fields accept comma-decimal and leading-decimal corrections such as `1,5`, `.5`, and `,5`.
 - Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Camera permission request launch failures now show visible recovery messages that point to Android Settings or an alternate input path.
