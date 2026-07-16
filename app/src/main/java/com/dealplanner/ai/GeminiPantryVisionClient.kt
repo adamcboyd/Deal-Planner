@@ -274,7 +274,7 @@ class GeminiPantryVisionClient(
                 "use_by_date"
             ),
             openedDate = firstStringOrNull("openedDate", "opened_date", "opened", "openedOn", "opened_on", "openDate", "open_date"),
-            confidence = (get("confidence")?.asDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
+            confidence = (get("confidence")?.asFlexibleDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
             questions = get("questions")?.toStringList().orEmpty()
         )
     }
@@ -336,9 +336,13 @@ class GeminiPantryVisionClient(
         } ?: QuantityParts()
     }
 
-    private fun JsonElement.asDoubleOrNull(): Double? {
+    private fun JsonElement.asFlexibleDoubleOrNull(): Double? {
         return try {
-            if (isJsonNull) null else asDouble
+            if (isJsonNull || !isJsonPrimitive) {
+                null
+            } else {
+                asString.toFlexibleDoubleOrNull()
+            }
         } catch (_: Exception) {
             null
         }
@@ -347,7 +351,7 @@ class GeminiPantryVisionClient(
     private fun JsonElement.toQuantityParts(): QuantityParts? {
         if (isJsonNull || !isJsonPrimitive) return null
 
-        asDoubleOrNull()?.let { value -> return QuantityParts(value = value) }
+        asFlexibleDoubleOrNull()?.let { value -> return QuantityParts(value = value) }
         val text = try {
             asString.trim()
         } catch (_: Exception) {
@@ -363,7 +367,7 @@ class GeminiPantryVisionClient(
     }
 
     private fun String.toQuantityDoubleOrNull(): Double? {
-        val compact = replace(" ", "")
+        val compact = replace(" ", "").replace(',', '.')
         val fractionParts = compact.split('/').takeIf { it.size == 2 }
         if (fractionParts != null) {
             val numerator = fractionParts[0].toDoubleOrNull()
@@ -373,6 +377,10 @@ class GeminiPantryVisionClient(
             }
         }
         return compact.toDoubleOrNull()
+    }
+
+    private fun String.toFlexibleDoubleOrNull(): Double? {
+        return trim().replace(',', '.').toDoubleOrNull()
     }
 
     private fun String?.normalizePantryUnit(): String? {
@@ -432,7 +440,7 @@ class GeminiPantryVisionClient(
 
     private companion object {
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
-        private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:\.\d+)?)\s*([A-Za-z]+)?""")
+        private val quantityPattern = Regex("""(\d+\s*/\s*\d+|\d+(?:[.,]\d+)?)\s*([A-Za-z]+)?""")
         private val wordQuantityPattern = Regex(
             """\b(one|two|three|four|five|six|seven|eight|nine|ten|half)\b\s*([A-Za-z]+)?""",
             RegexOption.IGNORE_CASE

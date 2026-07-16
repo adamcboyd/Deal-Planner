@@ -267,6 +267,32 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with comma decimal quantity and confidence`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "ground beef",
+                  "amount": "1,5 lb",
+                  "confidence": "0,82"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(1)
+        val item = result.items.first()
+        assertThat(item.product).isEqualTo("ground beef")
+        assertThat(item.quantity).isEqualTo(1.5)
+        assertThat(item.unit).isEqualTo("lb")
+        assertThat(item.confidence).isEqualTo(0.82)
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
