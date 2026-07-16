@@ -27,8 +27,19 @@ class DealsParser {
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
     private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
+    private val packagePricePattern = Regex("""\$(\d+\.\d{2})""")
+    private val priceTextPattern = Regex("""\$\d+\.\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|ea|each|oz))?""", RegexOption.IGNORE_CASE)
 
     private val couponKeywords = listOf("coupon", "digital coupon", "member price", "clip", "app only")
+    private val packageWords = Regex("""\b(bag|can|box|bottle|jar|pack|family|fresh|wild|caught|boneless|skinless|extra|virgin|with)\b""", RegexOption.IGNORE_CASE)
+    private val categoryWords = setOf(
+        "kroger weekly ad",
+        "fresh meat seafood",
+        "fresh meat & seafood",
+        "fresh produce",
+        "grocery",
+        "frozen"
+    )
 
     // Baseline prices for common items (for deal scoring)
     private val baselinePrices = mapOf(
@@ -59,12 +70,7 @@ class DealsParser {
                 continue
             }
 
-            val modifierLines = mutableListOf<String>()
-            var j = i + 1
-            while (j < lines.size && isModifierLine(lines[j])) {
-                modifierLines.add(lines[j])
-                j++
-            }
+            val (modifierLines, nextIndex) = collectTrailingModifiers(lines, i)
 
             val combinedLine = (listOf(line) + modifierLines).joinToString(" ")
             val fallbackName = findPreviousName(lines, i)
@@ -76,7 +82,7 @@ class DealsParser {
                 deals.add(dealResult)
             }
 
-            i = if (modifierLines.isNotEmpty()) j else i + 1
+            i = nextIndex
         }
 
         // Calculate deal scores
@@ -91,27 +97,20 @@ class DealsParser {
     }
 
     private fun parseDealLine(line: String, nextLine: String, store: String): DealItem? {
-        var name = ""
-        var price = 0.0
-        var unit: String? = null
-        var dealType = ""
-        var limit: Int? = null
-        var couponFlag = false
-        var discountPercent = 0.0
+        var name: String
+        var price: Double
+        var unit: String?
+        var dealType: String
         var confidence = 1.0
 
         // Check for coupon keywords
-        couponFlag = couponKeywords.any { line.lowercase().contains(it) }
+        val couponFlag = couponKeywords.any { line.lowercase().contains(it) }
 
         // Check for limit
-        limitPattern.find(line)?.let {
-            limit = it.groupValues[1].toIntOrNull()
-        }
+        val limit = limitPattern.find(line)?.groupValues?.get(1)?.toIntOrNull()
 
         // Percent-off lines may be standalone deals or modifiers for a base price.
-        percentOffPattern.find(line)?.let { match ->
-            discountPercent = match.groupValues[1].toDouble()
-        }
+        var discountPercent = percentOffPattern.find(line)?.groupValues?.get(1)?.toDouble() ?: 0.0
 
         // Parse different deal types
 
@@ -120,7 +119,7 @@ class DealsParser {
             price = match.groupValues[1].toDouble()
             unit = "lb"
             dealType = "per_pound"
-            name = extractItemName(line, match.value)
+            name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
                 confidence = 0.8
@@ -133,7 +132,7 @@ class DealsParser {
             price = match.groupValues[1].toDouble()
             unit = match.groupValues[2].lowercase()
             dealType = "per_unit"
-            name = extractItemName(line, match.value)
+            name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
                 confidence = 0.8
@@ -148,7 +147,7 @@ class DealsParser {
             price = totalPrice / n
             unit = "ea"
             dealType = "n_for_x"
-            name = extractItemName(line, match.value)
+            name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
                 confidence = 0.8
@@ -167,7 +166,7 @@ class DealsParser {
             val priceMatch = Regex("""\$(\d+\.\d{2})""").find(line)
             price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
 
-            name = extractItemName(line, match.value)
+            name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
                 confidence = 0.7
@@ -189,12 +188,25 @@ class DealsParser {
             val priceMatch = Regex("""\$(\d+\.\d{2})""").find(line)
             price = priceMatch?.groupValues?.get(1)?.toDouble() ?: 0.0
 
-            name = extractItemName(line, match.value)
+            name = chooseName(extractItemName(line, match.value), nextLine)
             if (name.isBlank() && nextLine.isNotBlank()) {
                 name = nextLine.take(50)
                 confidence = 0.7
             }
 
+            return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
+        }
+
+        // 6. Plain package price: Yellow Onions 3 lb bag $2.99 or Black Beans $0.89
+        packagePricePattern.find(line)?.let { match ->
+            price = match.groupValues[1].toDouble()
+            unit = "ea"
+            dealType = "per_unit"
+            name = chooseName(extractItemName(line, match.value), nextLine)
+            if (name.isBlank() && nextLine.isNotBlank()) {
+                name = nextLine.take(50)
+                confidence = 0.8
+            }
             return createDealItem(name, price, unit, dealType, limit, couponFlag, store, confidence, discountPercent, line)
         }
 
@@ -206,9 +218,11 @@ class DealsParser {
         var name = line.replace(dealText, "")
         name = name.replace(Regex("""limit\s*\d+""", RegexOption.IGNORE_CASE), "")
         name = name.replace(percentOffPattern, "")
-        couponKeywords.forEach { keyword ->
+        couponKeywords.sortedByDescending { it.length }.forEach { keyword ->
             name = name.replace(keyword, "", ignoreCase = true)
         }
+        name = name.replace(buyNGetMPattern, "")
+        name = name.replace(priceTextPattern, "")
         return name.trim()
     }
 
@@ -217,24 +231,89 @@ class DealsParser {
             pricePerUnitPattern.containsMatchIn(line) ||
             nForXPattern.containsMatchIn(line) ||
             buyNGetMPattern.containsMatchIn(line) ||
-            percentOffPattern.containsMatchIn(line)
+            percentOffPattern.containsMatchIn(line) ||
+            packagePricePattern.containsMatchIn(line)
     }
 
     private fun isModifierLine(line: String): Boolean {
         val lineLower = line.lowercase()
         return limitPattern.matches(line) ||
             percentOffPattern.matches(line) ||
+            buyNGetMPattern.matches(line) ||
             couponKeywords.any { lineLower.contains(it) }
     }
 
-    private fun findPreviousName(lines: List<String>, currentIndex: Int): String {
-        for (index in currentIndex - 1 downTo 0) {
-            val previous = lines[index]
-            if (!containsDealSignal(previous) && !isModifierLine(previous)) {
-                return previous
+    private fun collectTrailingModifiers(lines: List<String>, currentIndex: Int): Pair<List<String>, Int> {
+        val modifierLines = mutableListOf<String>()
+        var index = currentIndex + 1
+
+        while (index < lines.size) {
+            val line = lines[index]
+            val nextLine = lines.getOrNull(index + 1)
+
+            when {
+                isModifierLine(line) -> {
+                    modifierLines.add(line)
+                    index++
+                }
+                !containsDealSignal(line) && nextLine != null && isModifierLine(nextLine) -> {
+                    modifierLines.add(line)
+                    modifierLines.add(nextLine)
+                    index += 2
+                }
+                else -> break
             }
         }
-        return ""
+
+        return modifierLines to index
+    }
+
+    private fun findPreviousName(lines: List<String>, currentIndex: Int): String {
+        val nameParts = ArrayDeque<String>()
+
+        for (index in currentIndex - 1 downTo 0) {
+            val previous = lines[index]
+            if (containsDealSignal(previous) || isModifierLine(previous) || isCategoryLine(previous)) {
+                break
+            }
+
+            nameParts.addFirst(previous)
+            if (nameParts.size >= 2) {
+                break
+            }
+        }
+
+        return nameParts.joinToString(" ").take(80)
+    }
+
+    private fun chooseName(extractedName: String, fallbackName: String): String {
+        val cleaned = extractedName
+            .replace(priceTextPattern, "")
+            .replace(Regex("""\s+"""), " ")
+            .trim()
+            .trim('-', '–', ':')
+            .trim()
+
+        return if (looksLikePackageOnly(cleaned)) fallbackName else cleaned
+    }
+
+    private fun looksLikePackageOnly(name: String): Boolean {
+        if (name.isBlank()) return true
+        val meaningful = name
+            .replace(sizePattern, "")
+            .replace(packageWords, "")
+            .replace(Regex("""[^A-Za-z]+"""), "")
+
+        return meaningful.length < 3
+    }
+
+    private fun isCategoryLine(line: String): Boolean {
+        val normalized = line.lowercase()
+            .replace("&", " ")
+            .replace(Regex("""[^a-z0-9]+"""), " ")
+            .trim()
+            .replace(Regex("""\s+"""), " ")
+        return normalized in categoryWords
     }
 
     private fun createDealItem(
@@ -250,7 +329,7 @@ class DealsParser {
         rawText: String
     ): DealItem {
         // Extract size if present in name
-        val sizeMatch = sizePattern.find(name)
+        val sizeMatch = sizePattern.find(name) ?: sizePattern.find(rawText)
         val sizeText = sizeMatch?.value
 
         // Calculate price per unit (normalized to per pound)
@@ -303,7 +382,7 @@ class DealsParser {
         // 3. Stackability (20% weight)
         var stackability = 0.0
         if (deal.couponFlag) stackability += 0.5
-        if (deal.limit == null || deal.limit!! > 2) stackability += 0.5
+        if (deal.limit?.let { it > 2 } ?: true) stackability += 0.5
         score += stackability * 0.2
 
         // 4. Utility fit (15% weight) - basic heuristic

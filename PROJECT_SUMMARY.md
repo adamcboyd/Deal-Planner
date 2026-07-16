@@ -83,7 +83,7 @@ Deal_Planner/
             │   └── GeminiPantryVisionClientTest.kt ✅ 5 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 14 test cases
-            │   └── DealsParserTest.kt         ✅ 8 test cases
+            │   └── DealsParserTest.kt         ✅ 11 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
                 ├── BudgetEngineTest.kt        ✅ 8 test cases
@@ -109,10 +109,12 @@ Deal_Planner/
 
 - ✅ **DealsParser**:
   - $X.XX/lb pattern
+  - Plain package prices such as 3 lb bag $2.99
   - N for $X pattern
   - Buy N Get M pattern
   - Percent off pattern
   - Coupon/limit detection
+  - Multi-line flyer names and modifiers from bundled demo flyer text
   - Deal score calculation (4-factor algorithm)
 
 ### 3. Photo, OCR, and AI Integration
@@ -170,10 +172,10 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (50 Test Cases)
+### 7. Unit Tests (53 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (14 tests)
-- ✅ DealsParserTest (8 tests)
+- ✅ DealsParserTest (11 tests)
 - ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (8 tests)
 - ✅ ReceiptReconcilerTest (10 tests)
@@ -352,6 +354,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
+- ✅ Parses bundled demo flyer structures including package prices, multi-line names, limits, coupons, and BOGO modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
@@ -381,7 +384,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 50 unit tests
+- ✅ 53 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -104,4 +104,73 @@ class DealsParserTest {
 
         assertThat(result.deals).hasSize(3)
     }
+
+    @Test
+    fun `parse package price deal`() {
+        val text = "Yellow Onions\n3 lb bag $2.99"
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(1)
+        val deal = result.deals[0]
+        assertThat(deal.name).isEqualTo("Yellow Onions")
+        assertThat(deal.sizeText).isEqualTo("3 lb")
+        assertThat(deal.price).isEqualTo(2.99)
+        assertThat(deal.dealType).isEqualTo("per_unit")
+        assertThat(deal.store).isEqualTo("Kroger")
+    }
+
+    @Test
+    fun `parse demo flyer style multiline modifiers`() {
+        val text = """
+            Pork Shoulder Roast
+            $3.99/lb
+            Family Pack
+            Limit 2
+
+            Chicken Breast
+            Boneless Skinless
+            $2.99/lb
+            Member Price
+
+            Olive Oil
+            Extra Virgin
+            24 oz $6.99
+            Buy 2 Get 1 Free
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(3)
+
+        val pork = result.deals.first { it.name.contains("Pork Shoulder") }
+        assertThat(pork.limit).isEqualTo(2)
+        assertThat(pork.price).isEqualTo(3.99)
+
+        val chicken = result.deals.first { it.name.contains("Chicken Breast") }
+        assertThat(chicken.name).contains("Boneless Skinless")
+        assertThat(chicken.couponFlag).isTrue()
+
+        val oliveOil = result.deals.first { it.name.contains("Olive Oil") }
+        assertThat(oliveOil.price).isEqualTo(6.99)
+        assertThat(oliveOil.dealType).isEqualTo("buy_n_get_m")
+        assertThat(oliveOil.discountPercent).isWithin(0.1).of(33.3)
+    }
+
+    @Test
+    fun `parse bundled demo flyer deal names`() {
+        val text = java.io.File("src/main/assets/demo_flyer.txt").readText()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals.map { it.name }).containsAtLeast(
+            "Pork Shoulder Roast",
+            "Chicken Breast Boneless Skinless",
+            "85% Lean Ground Beef",
+            "Mandarin Oranges",
+            "Kroger Pasta 16 oz",
+            "Black Beans 15 oz can",
+            "Olive Oil Extra Virgin"
+        )
+        assertThat(result.deals.all { it.store == "Kroger" }).isTrue()
+    }
 }

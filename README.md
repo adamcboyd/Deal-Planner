@@ -204,6 +204,7 @@ On the Deals tab, enter the store name or leave it as `Unknown`, then use one of
 ML Kit OCR extracts visible text, then the Deals parser looks for:
 
 - `$3.99/lb` (per pound)
+- `3 lb bag $2.99` or standalone package prices after an item name
 - `2 for $10` (N for X)
 - `Buy 2 Get 1 Free` (buy N get M)
 - `25% off` (percent off)
@@ -313,7 +314,8 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Pantry cards can be edited after manual, OCR, or AI import so VERIFY items can be corrected during phone testing.
-- Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deals parser handles price/lb, package prices, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.

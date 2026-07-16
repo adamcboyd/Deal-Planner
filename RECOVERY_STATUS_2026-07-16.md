@@ -57,7 +57,8 @@ Verified by build/unit tests/code inspection:
 - App name/package is now Deal Planner: `com.dealplanner`.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
-- Deals flyer parser has unit tests.
+- Deals flyer parser has unit tests, including bundled demo flyer structures.
+- Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Meal planning engine has unit tests.
 - Budget engine has unit tests.
 - Receipt reconciliation engine has unit tests.
@@ -133,6 +134,7 @@ gemini.model=gemini-3.5-flash
    - Deals gallery image.
    - Deals PDF.
    - Deals pasted OCR text.
+   - Deals bundled demo flyer text via pasted OCR.
    - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
    - Receipts photo.
