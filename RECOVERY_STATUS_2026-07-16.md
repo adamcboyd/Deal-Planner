@@ -1034,6 +1034,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 
 Expected no-phone local result: before stopping at the expected no connected/authorized Android phone condition, the install helper verifies APK identity/permissions and prints generated APK source identity plus generated APK Gemini model/configured state without printing secrets.
 
+Latest helper checkpoint after phone-test sample generator work:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -Help
+.\scripts\new-phone-test-samples.ps1
+```
+
+Result: created an ignored timestamped `phone-test-samples\` folder with:
+
+- `deal-planner-demo-receipt.txt`
+- `deal-planner-demo-receipt.pdf`
+- `deal-planner-demo-flyer.txt`
+- `deal-planner-demo-flyer.pdf`
+- `README.md`
+
+The generated PDFs were checked for `%PDF-1.4` headers and `%%EOF` trailers, and `git check-ignore` confirmed the sample output is ignored.
+
 Latest continuation gate after receipt PDF import work:
 
 ```powershell
@@ -1099,6 +1116,7 @@ Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already buil
 Use `.\scripts\phone-debug-preflight.ps1 -Help` and `.\scripts\phone-debug-install.ps1 -Help` if the exact helper options are lost.
 Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
 Use `.\scripts\new-phone-test-report.ps1` before or during phone testing; its Source Snapshot now records both the repo HEAD and the compiled APK source branch/commit/dirty state from generated debug `BuildConfig`.
+Use `.\scripts\new-phone-test-samples.ps1` before phone testing to create ignored demo receipt/flyer TXT and PDF files for pasted-text and PDF picker checks.
 
 Phone test checklist:
 
@@ -1118,6 +1136,7 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
 - `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` is available for timestamped phone-test pass/fail evidence capture, records repo HEAD plus compiled APK source branch/commit/dirty state, and writes local reports under ignored `phone-test-results\`.
+- `scripts\new-phone-test-samples.ps1` is available for creating ignored demo receipt/flyer TXT and PDF files under `phone-test-samples\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
@@ -1294,6 +1313,7 @@ Optional before the phone test run:
 
 ```powershell
 .\scripts\new-phone-test-report.ps1
+.\scripts\new-phone-test-samples.ps1
 ```
 
 7. Test in this order:

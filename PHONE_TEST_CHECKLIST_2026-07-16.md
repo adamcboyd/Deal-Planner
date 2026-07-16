@@ -54,6 +54,14 @@ To create a timestamped report before or during the phone run:
 
 Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes both the repo commit and the compiled APK source branch/commit/dirty state.
 
+To create deterministic sample files for pasted text and PDF picker checks:
+
+```powershell
+.\scripts\new-phone-test-samples.ps1
+```
+
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open. It contains demo receipt/flyer TXT and PDF files generated from the bundled app assets.
+
 ## Optional Gemini Setup
 
 The app works without Gemini by using on-device ML Kit OCR fallback. To test Gemini pantry photo recognition, create `local.properties` locally:
@@ -121,7 +129,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 
 ### Deals
 
-1. Open `app\src\main\assets\demo_flyer.txt`.
+1. Open `app\src\main\assets\demo_flyer.txt`, or use `deal-planner-demo-flyer.txt` from a generated `phone-test-samples\<timestamp>\` folder.
 2. Copy the full text into `Deals` -> `Paste flyer OCR text`.
 3. Set store to `Kroger`.
 4. Tap `Process Text`.
@@ -138,7 +146,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 
 ### Receipts
 
-1. Open `app\src\main\assets\demo_receipt.txt`.
+1. Open `app\src\main\assets\demo_receipt.txt`, or use `deal-planner-demo-receipt.txt` from a generated `phone-test-samples\<timestamp>\` folder.
 2. Copy the full text into `Receipts` -> `Paste receipt OCR text`.
 3. Set store to `Kroger`.
 4. Tap `Process Text`.
@@ -214,7 +222,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected: deals are added with the entered store name.
 3. Flyer PDF:
    - Tap `Choose Flyer PDF`.
-   - Pick a flyer PDF.
+   - Pick a flyer PDF, such as `deal-planner-demo-flyer.pdf` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: app reads up to 12 pages and adds parsed deals, or shows a clear recovery message.
 
 ### Receipt Inputs
@@ -230,7 +238,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Expected: receipt line items are added and Budget updates.
 3. Receipt PDF:
    - Tap `PDF`.
-   - Pick a receipt PDF.
+   - Pick a receipt PDF, such as `deal-planner-demo-receipt.pdf` from a generated `phone-test-samples\<timestamp>\` folder.
    - Expected: app reads up to 12 pages and adds receipt line items, or shows a clear recovery message. Budget updates when line items import.
 
 ## AI Verification

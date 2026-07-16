@@ -215,6 +215,18 @@ if ($apkInfo) {
     $apkLine = "- Debug APK: MISSING at $apkPath"
 }
 
+$sampleRoot = Join-Path $repoRoot "phone-test-samples"
+$latestSampleDir = if (Test-Path $sampleRoot) {
+    Get-ChildItem -LiteralPath $sampleRoot -Directory | Sort-Object Name -Descending | Select-Object -First 1
+} else {
+    $null
+}
+if ($latestSampleDir) {
+    $sampleLine = "- Phone test samples: $($latestSampleDir.FullName)"
+} else {
+    $sampleLine = "- Phone test samples: not generated yet. Run .\scripts\new-phone-test-samples.ps1"
+}
+
 if ([string]::IsNullOrWhiteSpace($adb.Devices)) {
     $adbBlock = "(no adb output)"
 } else {
@@ -239,6 +251,7 @@ $apkLine
 - Gemini model setting: $($geminiModel.Trim())
 - APK Gemini configured: $apkGeminiConfigured
 - APK Gemini model: $($apkGeminiModel.Trim())
+$sampleLine
 - Checklist: PHONE_TEST_CHECKLIST_2026-07-16.md
 
 ## Git Status
@@ -286,6 +299,7 @@ $adbBlock
 - [ ] Pantry typed input works, including edit/review and comma/leading-decimal quantity corrections.
 - [ ] Deals pasted flyer text works, including edit/review and comma/leading-decimal price corrections.
 - [ ] Receipts pasted receipt text works, updates Budget, and supports edit/delete corrections.
+- [ ] Generated sample TXT files were available for pasted flyer/receipt checks, if used.
 - [ ] Budget settings save valid comma/leading-decimal values and block invalid text.
 - Notes:
 
@@ -301,6 +315,7 @@ $adbBlock
 - [ ] Receipt photo works or shows a clear recovery message.
 - [ ] Receipt gallery works or shows a clear recovery message.
 - [ ] Receipt PDF works or shows a clear recovery message.
+- [ ] Generated sample PDF files were available for flyer/receipt PDF checks, if used.
 - [ ] Camera denial/cancel, permission-request failure, picker cancel, and external launch-failure states show visible messages.
 - Notes:
 
