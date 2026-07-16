@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after sample transfer receipt/report work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: sample transfer manifest requirement work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone starter failure-report work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: sample transfer receipt/report work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2142,6 +2142,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-rep
 ```
 
 Result: PowerShell parse checks passed for both helper scripts, transfer helper help printed successfully, generated ignored report `phone-test-results\20260716-154217\PHONE_TEST_REPORT.md` includes the sample Android destination and missing-transfer-receipt status, and the transfer helper accepted the manifest-backed local sample folder before stopping at the expected no connected/authorized Android phone condition.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest helper checkpoint after phone starter failure-report work:
+
+Helper checkpoint:
+
+- `scripts\start-phone-test-run.ps1` now creates a failure-state phone-test report when setup stops before the normal final report step, unless `-SkipReport` was explicitly used.
+- The starter keeps the original failure as the terminating error after attempting the report, so automation still sees setup as failed.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so phone setup expects a report even after partial setup failures.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command "`$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath 'scripts\start-phone-test-run.ps1')); 'start-phone-test-run.ps1 parsed'"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -SkipNetwork
+```
+
+Result: PowerShell parse check passed, help output documented failure-state report behavior, and the expected no-phone run failed at required-phone preflight while creating ignored failure-state report `phone-test-results\20260716-154940\PHONE_TEST_REPORT.md` with current repo/APK identity, dirty tracked paths, no selected device, and latest sample destination details.
 
 Full local gate:
 

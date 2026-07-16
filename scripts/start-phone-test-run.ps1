@@ -25,6 +25,7 @@ function Show-Usage {
     Write-Host "  3. Copies those samples to the phone Downloads folder and verifies transfer."
     Write-Host "  4. Builds/installs/launches the debug APK."
     Write-Host "  5. Creates a timestamped phone-test report."
+    Write-Host "     If setup fails before that step, a failure-state report is still created unless -SkipReport is used."
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -RequireGemini  Also require a compiled real Gemini key/model before continuing."
@@ -58,6 +59,13 @@ function Invoke-Helper {
     }
 }
 
+function Invoke-PhoneTestReport {
+    param([string]$Label)
+
+    Invoke-Helper $Label (Join-Path $PSScriptRoot "new-phone-test-report.ps1")
+    $script:reportCreated = $true
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -71,6 +79,7 @@ if (-not (Test-Path $JavaHome)) {
 
 $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
+$script:reportCreated = $false
 
 $preflightArgs = @("-RequirePhone", "-JavaHome", $JavaHome)
 if ($RequireGemini) {
@@ -80,27 +89,41 @@ if ($SkipNetwork) {
     $preflightArgs += "-SkipNetwork"
 }
 
-Invoke-Helper "Phone preflight" (Join-Path $PSScriptRoot "phone-debug-preflight.ps1") $preflightArgs
+try {
+    Invoke-Helper "Phone preflight" (Join-Path $PSScriptRoot "phone-debug-preflight.ps1") $preflightArgs
 
-if (-not $SkipSamples) {
-    Invoke-Helper "Create deterministic phone samples" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
-    Invoke-Helper "Copy deterministic samples to phone" (Join-Path $PSScriptRoot "send-phone-test-samples.ps1")
+    if (-not $SkipSamples) {
+        Invoke-Helper "Create deterministic phone samples" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
+        Invoke-Helper "Copy deterministic samples to phone" (Join-Path $PSScriptRoot "send-phone-test-samples.ps1")
+    }
+
+    $installArgs = @("-JavaHome", $JavaHome)
+    if ($SkipBuild) {
+        $installArgs += "-SkipBuild"
+    }
+    if ($NoLaunch) {
+        $installArgs += "-NoLaunch"
+    }
+
+    Invoke-Helper "Install Deal Planner debug APK" (Join-Path $PSScriptRoot "phone-debug-install.ps1") $installArgs
+
+    if (-not $SkipReport) {
+        Invoke-PhoneTestReport "Create phone-test report"
+    }
+
+    Write-Host ""
+    Write-Host "Phone test setup complete."
+    Write-Host "Use PHONE_TEST_CHECKLIST_2026-07-16.md on the phone run, and capture logs with .\scripts\phone-debug-logs.ps1 if anything fails."
+} catch {
+    $failureMessage = $_.Exception.Message
+    if (-not $SkipReport -and -not $script:reportCreated) {
+        Write-Warning "Phone test setup stopped before completion: $failureMessage"
+        Write-Warning "Creating a phone-test report with the current failure state."
+        try {
+            Invoke-PhoneTestReport "Create phone-test report after setup failure"
+        } catch {
+            Write-Warning "Could not create failure-state phone-test report: $($_.Exception.Message)"
+        }
+    }
+    throw
 }
-
-$installArgs = @("-JavaHome", $JavaHome)
-if ($SkipBuild) {
-    $installArgs += "-SkipBuild"
-}
-if ($NoLaunch) {
-    $installArgs += "-NoLaunch"
-}
-
-Invoke-Helper "Install Deal Planner debug APK" (Join-Path $PSScriptRoot "phone-debug-install.ps1") $installArgs
-
-if (-not $SkipReport) {
-    Invoke-Helper "Create phone-test report" (Join-Path $PSScriptRoot "new-phone-test-report.ps1")
-}
-
-Write-Host ""
-Write-Host "Phone test setup complete."
-Write-Host "Use PHONE_TEST_CHECKLIST_2026-07-16.md on the phone run, and capture logs with .\scripts\phone-debug-logs.ps1 if anything fails."
