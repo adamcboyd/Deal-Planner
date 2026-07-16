@@ -67,6 +67,23 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse pantry quantities and sizes when OCR uses comma decimals`() {
+        val weightedItem = parser.parse("1,5 lb ground beef in freezer")
+        val labelItem = parser.parse("Kroger yogurt 5,3oz fridge")
+
+        assertThat(weightedItem.item.item).isEqualTo("ground beef")
+        assertThat(weightedItem.item.qty).isEqualTo(1.5)
+        assertThat(weightedItem.item.unit).isEqualTo("lb")
+        assertThat(weightedItem.item.location).isEqualTo("freezer")
+
+        assertThat(labelItem.item.item).isEqualTo("yogurt")
+        assertThat(labelItem.item.brand).isEqualTo("Kroger")
+        assertThat(labelItem.item.size).isEqualTo("5.3oz")
+        assertThat(labelItem.item.unit).isEqualTo("oz")
+        assertThat(labelItem.item.location).isEqualTo("fridge")
+    }
+
+    @Test
     fun `parse item with fraction word`() {
         val result = parser.parse("half lb butter")
 

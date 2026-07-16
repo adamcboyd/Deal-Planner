@@ -366,6 +366,14 @@ Latest continuation gate after comma-decimal OCR price parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `100` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after pantry comma-decimal quantity/size parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `101` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -428,6 +436,7 @@ Verified by build/unit tests/code inspection:
 - Pantry manual text input parses label wording such as `expiration date 12/31/2026` and `best by date 2026-12-31` without leaving `date` in the item name.
 - Pantry manual text input parses `opened on 2026-07-01` without leaving `on` in the item name.
 - Pantry manual text input parses hyphenated label cues such as `use-by 12/31/2026` and `best-by 2026-12-31` without leaving the cue in the item name.
+- Pantry manual/OCR text input accepts comma-decimal quantities and package sizes such as `1,5 lb ground beef` and `Kroger yogurt 5,3oz`.
 - Deals flyer parser has unit tests, including bundled demo flyer structures.
 - Deals parser handles package prices, multi-line names, and trailing modifiers such as limits, coupons, and BOGO lines.
 - Deals parser handles slash-style multi-buy prices such as `2/$5` and `10 / $10`.
@@ -540,6 +549,7 @@ gemini.model=gemini-3.5-flash
    - Launch app and tap Load Demo.
    - After receipt/budget tests, tap Load Demo again and confirm Budget returns to the `$292 / $45 spent` demo baseline.
    - Pantry typed entry.
+   - Pantry typed/OCR text with comma-decimal quantity or size such as `1,5 lb ground beef` or `Kroger yogurt 5,3oz`.
    - Pantry photo.
    - Pantry gallery image.
    - Pantry barcode scan.

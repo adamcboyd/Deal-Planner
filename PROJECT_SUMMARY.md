@@ -86,7 +86,7 @@ Deal_Planner/
             ├── lookup/
             │   └── OpenFoodFactsBarcodeClientTest.kt ✅ 7 test cases
             ├── parser/
-            │   ├── PantryPhraseParserTest.kt  ✅ 25 test cases
+            │   ├── PantryPhraseParserTest.kt  ✅ 26 test cases
             │   └── DealsParserTest.kt         ✅ 20 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 8 test cases
@@ -105,7 +105,7 @@ Deal_Planner/
 
 ### 2. Parsers (Production-Ready)
 - ✅ **PantryPhraseParser**:
-  - Handles quantities (numeric, fractions, words)
+  - Handles quantities (numeric, comma-decimal OCR, fractions, words)
   - Extracts brands, units, sizes, locations
   - Parses dates (relative and absolute, including label cues such as opened on, best before, best-by, best by date, use by, use-by, expiration date, and exp)
   - Duplicate detection and merging
@@ -189,10 +189,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (100 Test Cases)
+### 7. Unit Tests (101 Test Cases)
 - ✅ GeminiPantryVisionClientTest (14 tests)
 - ✅ OpenFoodFactsBarcodeClientTest (7 tests)
-- ✅ PantryPhraseParserTest (25 tests)
+- ✅ PantryPhraseParserTest (26 tests)
 - ✅ DealsParserTest (20 tests)
 - ✅ MealPlanningEngineTest (8 tests)
 - ✅ BudgetEngineTest (10 tests)
@@ -367,6 +367,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Builds a debug APK for emulator/device install
 - ✅ Loads repeatable demo data with reset budget and meal params
 - ✅ Parses pantry items
+- ✅ Parses pantry comma-decimal OCR quantities and sizes such as 1,5 lb and 5,3oz
 - ✅ Seeds reviewable pantry items from scanned or manually entered barcodes
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
 - ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths
@@ -423,7 +424,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper
 - ✅ PowerShell phone/Gemini/barcode preflight helper
-- ✅ 100 unit tests
+- ✅ 101 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -66,7 +66,7 @@ class PantryPhraseParser {
             val token = tokens[i]
 
             // Check for numeric quantity
-            val numericQty = token.toDoubleOrNull()
+            val numericQty = token.toPantryNumberOrNull()
             if (numericQty != null) {
                 qty = numericQty
                 i++
@@ -108,10 +108,10 @@ class PantryPhraseParser {
         }
 
         // Extract unit and size
-        val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""")
+        val sizePattern = Regex("""(\d+(?:[.,]\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""")
         val sizeMatch = sizePattern.find(input.lowercase())
         if (sizeMatch != null) {
-            size = sizeMatch.value
+            size = "${sizeMatch.groupValues[1].normalizePantryNumberText()}${sizeMatch.groupValues[2]}"
             val sizeUnit = normalizeUnit(sizeMatch.groupValues[2])
             if (unit == null || unit in listOf("lb", "oz", "g", "kg", "ml", "l")) {
                 unit = sizeUnit
@@ -256,8 +256,8 @@ class PantryPhraseParser {
         // Remove numbers that are part of size (e.g., "15oz")
         val itemTokens = tokens.filter { token ->
             !skipWords.contains(token) &&
-            token.toDoubleOrNull() == null &&
-            !Regex("""\d+(?:\.\d+)?(?:oz|lb|lbs|g|kg|ml|l)""").matches(token) &&
+            token.toPantryNumberOrNull() == null &&
+            !Regex("""\d+(?:[.,]\d+)?(?:oz|lb|lbs|g|kg|ml|l)""").matches(token) &&
             !DATE_TOKEN_PATTERN.matches(token)
         }
 
@@ -487,6 +487,14 @@ class PantryPhraseParser {
             cleanedExisting.equals("generic", ignoreCase = true) && !cleanedIncoming.equals("generic", ignoreCase = true) -> cleanedIncoming ?: cleanedExisting
             else -> cleanedExisting
         }
+    }
+
+    private fun String.toPantryNumberOrNull(): Double? {
+        return normalizePantryNumberText().toDoubleOrNull()
+    }
+
+    private fun String.normalizePantryNumberText(): String {
+        return replace(',', '.')
     }
 
     private data class PantryDuplicateKey(
