@@ -342,6 +342,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateReceipt(item)
             if (existing != null) {
                 updateBudgetForReceiptDelta(item.totalCost - existing.totalCost)
+                updatePantryForReceiptChange(existing, item)
             }
             updateBudgetAnalysis()
         }
@@ -351,6 +352,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository.deleteReceipt(item)
             updateBudgetForReceiptDelta(-item.totalCost)
+            applyPantryReceiptDelta(item, -1.0)
             updateBudgetAnalysis()
         }
     }
@@ -411,6 +413,27 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val currentBudget = repository.getBudget() ?: return
         repository.updateBudget(
             budgetEngine.adjustBudgetForReceiptChange(currentBudget, delta)
+        )
+    }
+
+    private suspend fun updatePantryForReceiptChange(
+        oldReceipt: ReceiptItem,
+        newReceipt: ReceiptItem
+    ) {
+        applyPantryReceiptDelta(oldReceipt, -1.0)
+        applyPantryReceiptDelta(newReceipt, 1.0)
+    }
+
+    private suspend fun applyPantryReceiptDelta(receipt: ReceiptItem, direction: Double) {
+        if (receipt.matchedType != "pantry") return
+        val pantryItemId = receipt.matchedItemId ?: return
+        val receiptQty = receipt.qty ?: return
+        val pantryItem = repository.getPantryItem(pantryItemId) ?: return
+
+        repository.updatePantryItem(
+            pantryItem.copy(
+                qty = (pantryItem.qty + (receiptQty * direction)).coerceAtLeast(0.0)
+            )
         )
     }
 

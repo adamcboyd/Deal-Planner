@@ -54,21 +54,24 @@ class ReceiptReconciler {
                 // Try to match with deal items
                 val dealMatch = findBestMatch(itemName, dealItems.map { it.name })
                 val pantryMatch = findBestMatch(itemName, pantryItems.map { it.item })
-
-                val confidence = if (dealMatch != null && dealMatch.second > 0.7) {
-                    dealMatch.second
-                } else if (pantryMatch != null && pantryMatch.second > 0.7) {
-                    pantryMatch.second
+                val matchedDeal = dealMatch?.let { match -> dealItems.find { it.name == match.first } }
+                val matchedPantryItem = pantryMatch?.let { match -> pantryItems.find { it.item == match.first } }
+                val useDealMatch = dealMatch != null && (
+                    pantryMatch == null || dealMatch.second >= pantryMatch.second
+                )
+                val selectedConfidence = if (useDealMatch) {
+                    dealMatch?.second
                 } else {
-                    0.5
+                    pantryMatch?.second
                 }
 
+                val confidence = selectedConfidence ?: 0.5
                 val needsReview = confidence < 0.7
 
                 val receiptItem = ReceiptItem(
                     rawLine = line,
-                    matchedItemId = dealMatch?.let { dealItems.find { d -> d.name == it.first }?.id },
-                    matchedType = if (dealMatch != null) "deal" else if (pantryMatch != null) "pantry" else null,
+                    matchedItemId = if (useDealMatch) matchedDeal?.id else matchedPantryItem?.id,
+                    matchedType = if (useDealMatch) "deal" else if (pantryMatch != null) "pantry" else null,
                     qty = qty,
                     totalCost = price,
                     date = LocalDate.now(),
@@ -81,8 +84,7 @@ class ReceiptReconciler {
                 total += price
 
                 // If matched to deal, check PPU variance
-                if (dealMatch != null) {
-                    val matchedDeal = dealItems.find { it.name == dealMatch.first }
+                if (useDealMatch) {
                     if (matchedDeal != null) {
                         val actualPPU = if (qty != null && qty > 0) price / qty else price
                         val variance = ((actualPPU - matchedDeal.pricePerUnit) / matchedDeal.pricePerUnit) * 100
@@ -104,8 +106,7 @@ class ReceiptReconciler {
                 }
 
                 // If matched to pantry, create update to increment quantity
-                if (pantryMatch != null) {
-                    val matchedPantryItem = pantryItems.find { it.item == pantryMatch.first }
+                if (!useDealMatch) {
                     if (matchedPantryItem != null && qty != null) {
                         pantryUpdates.add(
                             matchedPantryItem.copy(

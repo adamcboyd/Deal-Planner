@@ -87,7 +87,7 @@ Deal_Planner/
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
                 ├── BudgetEngineTest.kt        ✅ 8 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 7 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 8 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -170,13 +170,13 @@ Deal_Planner/
   - Budget state ($292 food budget)
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (47 Test Cases)
+### 7. Unit Tests (48 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (14 tests)
 - ✅ DealsParserTest (8 tests)
 - ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (8 tests)
-- ✅ ReceiptReconcilerTest (7 tests)
+- ✅ ReceiptReconcilerTest (8 tests)
 
 ## 🔧 Technology Stack
 
@@ -353,7 +353,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
-- ✅ Keeps budget spending in sync when receipt totals are edited or receipt items are deleted
+- ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Tracks budget
@@ -377,7 +377,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
-- ✅ 47 unit tests
+- ✅ 48 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -68,6 +68,7 @@ Verified by build/unit tests/code inspection:
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt edits and deletes adjust budget spending totals.
+- Pantry-matched receipt edits and deletes adjust pantry quantities.
 - Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
@@ -131,6 +132,7 @@ gemini.model=gemini-3.5-flash
    - Receipts pasted OCR text.
    - Receipts edit/review dialog for OCR and match corrections.
    - Receipts edit/delete budget total adjustment.
+   - Receipts edit/delete pantry quantity adjustment for pantry matches.
    - Settings AI status before and after adding a real Gemini key.
    - Settings Test AI Connection before pantry AI photo testing.
    - Generate meal plan.

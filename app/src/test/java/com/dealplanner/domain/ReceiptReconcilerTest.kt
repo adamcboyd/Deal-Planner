@@ -125,6 +125,7 @@ class ReceiptReconcilerTest {
 
         val pantry = listOf(
             PantryItem(
+                id = 7,
                 item = "Black Beans",
                 qty = 2.0,
                 unit = "can"
@@ -134,5 +135,39 @@ class ReceiptReconcilerTest {
         val result = reconciler.reconcileReceipt(ocrText, emptyList(), pantry, "Kroger")
 
         assertThat(result.pantryUpdates).isNotEmpty()
+        assertThat(result.pantryUpdates[0].qty).isEqualTo(4.0)
+        assertThat(result.receiptItems[0].matchedType).isEqualTo("pantry")
+        assertThat(result.receiptItems[0].matchedItemId).isEqualTo(7)
+    }
+
+    @Test
+    fun `receipt pantry match wins over weaker deal match`() {
+        val ocrText = "BLACK BEANS       $1.78"
+        val deals = listOf(
+            DealItem(
+                id = 1,
+                name = "Chicken Breast",
+                price = 2.99,
+                unit = "lb",
+                dealType = "per_pound",
+                store = "Kroger",
+                pricePerUnit = 2.99
+            )
+        )
+        val pantry = listOf(
+            PantryItem(
+                id = 7,
+                item = "Black Beans",
+                qty = 2.0,
+                unit = "can"
+            )
+        )
+
+        val result = reconciler.reconcileReceipt(ocrText, deals, pantry, "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].matchedType).isEqualTo("pantry")
+        assertThat(result.receiptItems[0].matchedItemId).isEqualTo(7)
+        assertThat(result.dealMatches).isEmpty()
     }
 }
