@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after receipt edit validation and receipt adjustment calculator extraction; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: receipt edit validation.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini connection-test seam coverage; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: receipt adjustment calculator extraction.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2015,3 +2015,27 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `228` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest continuation note after Gemini connection-test seam:
+
+Code checkpoint:
+
+- Added a narrow `GeminiContentTransport` test seam to `GeminiPantryVisionClient` so Settings -> Test AI Connection result handling can be tested without live network calls.
+- Production behavior still uses the same Gemini REST endpoint and request body when no test transport is supplied.
+- Added direct unit coverage for connection-test success, empty Gemini response, trimmed key/model values passed to transport, missing-key handling, and concise transport/API failure status text.
+
+Targeted Gemini gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `231` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

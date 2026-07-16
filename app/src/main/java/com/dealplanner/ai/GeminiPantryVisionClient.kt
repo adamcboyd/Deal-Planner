@@ -19,9 +19,14 @@ import java.net.URL
  *
  * API keys are supplied by BuildConfig from local.properties or GEMINI_API_KEY.
  */
+fun interface GeminiContentTransport {
+    fun postGenerateContent(modelName: String, apiKey: String, requestBody: String): String
+}
+
 class GeminiPantryVisionClient(
     private val apiKey: String = BuildConfig.GEMINI_API_KEY,
-    private val model: String = BuildConfig.GEMINI_MODEL
+    private val model: String = BuildConfig.GEMINI_MODEL,
+    private val contentTransport: GeminiContentTransport? = null
 ) {
     data class PantryVisionItem(
         val brand: String?,
@@ -101,6 +106,10 @@ class GeminiPantryVisionClient(
     }
 
     private fun postGenerateContent(requestBody: String): String {
+        contentTransport?.let { transport ->
+            return transport.postGenerateContent(modelName, apiKey.trim(), requestBody)
+        }
+
         val endpoint = URL("https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent")
         val connection = (endpoint.openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"

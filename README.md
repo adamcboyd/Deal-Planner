@@ -393,6 +393,7 @@ Tests cover:
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields, and non-finite numeric fallback)
+- Gemini connection-test success, empty-response, missing-key, and concise failure status handling without requiring live network calls
 - AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - AI pantry review-note reasons for missing, non-positive, or uncertain brand, amount/unit, storage location, and best-by date details
 

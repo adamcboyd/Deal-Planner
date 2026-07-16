@@ -1,6 +1,7 @@
 package com.dealplanner.ai
 
 import com.google.common.truth.Truth.assertThat
+import java.io.IOException
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -56,6 +57,77 @@ class GeminiPantryVisionClientTest {
 
         assertThat(result.success).isFalse()
         assertThat(result.message).contains("not configured")
+    }
+
+    @Test
+    fun `connection test reports success from api response without network`() = runTest {
+        var capturedModel: String? = null
+        var capturedKey: String? = null
+        var capturedRequestBody: String? = null
+        val client = GeminiPantryVisionClient(
+            apiKey = " test-real-key-for-unit-tests ",
+            model = " models/gemini-3.5-flash ",
+            contentTransport = GeminiContentTransport { modelName, apiKey, requestBody ->
+                capturedModel = modelName
+                capturedKey = apiKey
+                capturedRequestBody = requestBody
+                """
+                    {
+                      "candidates": [
+                        {
+                          "content": {
+                            "parts": [
+                              {"text": "OK"}
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                """.trimIndent()
+            }
+        )
+
+        val result = client.testConnection()
+
+        assertThat(result.success).isTrue()
+        assertThat(result.message).isEqualTo("Gemini connection OK using gemini-3.5-flash.")
+        assertThat(capturedModel).isEqualTo("gemini-3.5-flash")
+        assertThat(capturedKey).isEqualTo("test-real-key-for-unit-tests")
+        assertThat(capturedRequestBody).contains("Reply with OK")
+    }
+
+    @Test
+    fun `connection test reports empty api response without network`() = runTest {
+        val client = GeminiPantryVisionClient(
+            apiKey = "test-real-key-for-unit-tests",
+            model = "gemini-3.5-flash",
+            contentTransport = GeminiContentTransport { _, _, _ ->
+                """{"candidates":[{"content":{"parts":[]}}]}"""
+            }
+        )
+
+        val result = client.testConnection()
+
+        assertThat(result.success).isFalse()
+        assertThat(result.message).isEqualTo("Gemini responded, but returned an empty test response.")
+    }
+
+    @Test
+    fun `connection test reports transport failure without raw json`() = runTest {
+        val client = GeminiPantryVisionClient(
+            apiKey = "test-real-key-for-unit-tests",
+            model = "gemini-3.5-flash",
+            contentTransport = GeminiContentTransport { _, _, _ ->
+                throw IOException("Gemini request failed: HTTP 400 INVALID_ARGUMENT: API key not valid.")
+            }
+        )
+
+        val result = client.testConnection()
+
+        assertThat(result.success).isFalse()
+        assertThat(result.message).isEqualTo(
+            "Gemini connection failed: Gemini request failed: HTTP 400 INVALID_ARGUMENT: API key not valid."
+        )
     }
 
     @Test
