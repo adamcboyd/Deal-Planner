@@ -169,6 +169,43 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with alternate item wrappers`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val wrappedResponse = """
+            {
+              "pantry_items": [
+                {
+                  "product": "brown rice",
+                  "quantity": 1,
+                  "unit": "bag"
+                }
+              ],
+              "warnings": "used pantry_items key"
+            }
+        """.trimIndent()
+        val arrayResponse = """
+            [
+              {
+                "product": "olive oil",
+                "quantity": 1,
+                "unit": "bottle"
+              }
+            ]
+        """.trimIndent()
+
+        val wrappedResult = client.parseVisionResult(wrappedResponse)
+        val arrayResult = client.parseVisionResult(arrayResponse)
+
+        assertThat(wrappedResult.items).hasSize(1)
+        assertThat(wrappedResult.items.first().product).isEqualTo("brown rice")
+        assertThat(wrappedResult.warnings).containsExactly("used pantry_items key")
+
+        assertThat(arrayResult.items).hasSize(1)
+        assertThat(arrayResult.items.first().product).isEqualTo("olive oil")
+        assertThat(arrayResult.warnings).isEmpty()
+    }
+
+    @Test
     fun `parse pantry vision response skips malformed string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """

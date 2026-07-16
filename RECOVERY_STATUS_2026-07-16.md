@@ -270,6 +270,14 @@ Latest continuation gate after Gemini pantry field-alias parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `87` unit tests detected and `0 errors, 21 warnings`.
 
+Latest continuation gate after Gemini pantry item-wrapper parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `88` unit tests detected and `0 errors, 21 warnings`.
+
 Latest phone preflight helper check:
 
 ```powershell
@@ -373,7 +381,7 @@ Verified by build/unit tests/code inspection:
 - Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
 - Placeholder Gemini keys are treated as not configured.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
-- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, snake_case/name aliases, malformed string/list fields, and confidence clamping.
+- Gemini pantry response parsing has no-network unit coverage for fenced JSON, minor surrounding text, scalar warnings/questions, top-level arrays, item-wrapper aliases, snake_case/name aliases, malformed string/list fields, and confidence clamping.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids.

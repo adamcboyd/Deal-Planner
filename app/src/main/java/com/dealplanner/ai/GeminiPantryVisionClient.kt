@@ -201,13 +201,16 @@ class GeminiPantryVisionClient(
     }
 
     internal fun parseVisionResult(rawText: String): PantryVisionResult {
-        val cleaned = rawText.extractJsonObjectText()
+        val cleaned = rawText.extractJsonText()
 
-        val root = JsonParser.parseString(cleaned).asJsonObject
-        val warnings = root.get("warnings")?.toStringList().orEmpty()
-        val items = root.get("items")
-            ?.takeIf { it.isJsonArray }
-            ?.asJsonArray
+        val root = JsonParser.parseString(cleaned)
+        val warnings = root
+            .takeIf { it.isJsonObject }
+            ?.asJsonObject
+            ?.get("warnings")
+            ?.toStringList()
+            .orEmpty()
+        val items = root.toPantryVisionItemArray()
             ?.mapNotNull { element -> element.takeIf { it.isJsonObject }?.asJsonObject?.toPantryVisionItem() }
             .orEmpty()
 
@@ -216,6 +219,19 @@ class GeminiPantryVisionClient(
             warnings = warnings,
             rawResponse = rawText
         )
+    }
+
+    private fun JsonElement.toPantryVisionItemArray(): JsonArray? {
+        if (isJsonArray) return asJsonArray
+        if (!isJsonObject) return null
+
+        val root = asJsonObject
+        return listOf("items", "pantry_items", "pantryItems", "foods", "food_items")
+            .firstNotNullOfOrNull { name ->
+                root.get(name)
+                    ?.takeIf { it.isJsonArray }
+                    ?.asJsonArray
+            }
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
@@ -243,7 +259,7 @@ class GeminiPantryVisionClient(
         )
     }
 
-    private fun String.extractJsonObjectText(): String {
+    private fun String.extractJsonText(): String {
         val trimmed = trim()
         val unfenced = if (trimmed.startsWith("```")) {
             trimmed
@@ -256,8 +272,20 @@ class GeminiPantryVisionClient(
             trimmed
         }
 
-        val start = unfenced.indexOf('{')
-        val end = unfenced.lastIndexOf('}')
+        val objectStart = unfenced.indexOf('{')
+        val objectEnd = unfenced.lastIndexOf('}')
+        val arrayStart = unfenced.indexOf('[')
+        val arrayEnd = unfenced.lastIndexOf(']')
+        val useArray = arrayStart >= 0 && arrayEnd >= arrayStart && (
+            objectStart == -1 || arrayStart < objectStart
+        )
+
+        if (useArray) {
+            return unfenced.substring(arrayStart, arrayEnd + 1).trim()
+        }
+
+        val start = objectStart
+        val end = objectEnd
         return if (start >= 0 && end >= start) {
             unfenced.substring(start, end + 1).trim()
         } else {
