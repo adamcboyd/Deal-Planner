@@ -41,7 +41,7 @@ class DealsParser {
     private val bogoPattern = Regex("""\b(?:bogo(?:\s*free)?|b1g1(?:\s*free)?)\b""", RegexOption.IGNORE_CASE)
     private val percentOffPattern = Regex("""(\d+)%\s*off""", RegexOption.IGNORE_CASE)
     private val limitPattern = Regex("""limit\s*(\d+)""", RegexOption.IGNORE_CASE)
-    private val sizePattern = Regex("""(\d+(?:\.\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
+    private val sizePattern = Regex("""(\d+(?:[.,]\d+)?)\s*(oz|lb|lbs|g|kg|ml|l)""", RegexOption.IGNORE_CASE)
     private val packagePricePattern = Regex("""(?<![\d.,])($PACKAGE_PRICE_TOKEN_PATTERN)(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b)""", RegexOption.IGNORE_CASE)
     private val centsPackagePricePattern = Regex("""(?<![\d.])(\d{1,3})\s*(?:¢|cents?|c)(?=\s|$)""", RegexOption.IGNORE_CASE)
     private val priceTextPattern = Regex("""$UNIT_PRICE_PATTERN(?:\s*(?:/|per\s+)?\s*(?:lb|lbs|pound|pounds|ea|each|oz)|(?!\s*(?:oz|lb|lbs|pound|pounds|g|kg|ml|l)\b))""", RegexOption.IGNORE_CASE)
@@ -508,11 +508,7 @@ class DealsParser {
         discountPercent: Double,
         rawText: String
     ): DealItem {
-        // Extract size if present in name
-        val sizeMatch = sizePattern.find(name) ?: rawText
-            .takeUnless { bogoPattern.containsMatchIn(it) }
-            ?.let { sizePattern.find(it) }
-        val sizeText = sizeMatch?.value
+        val sizeText = extractSizeText(name, rawText, unit, dealType)
 
         // Calculate price per unit (normalized to per pound)
         val pricePerUnit = when (unit) {
@@ -536,6 +532,25 @@ class DealsParser {
             discountPercent = discountPercent,
             rawText = rawText
         )
+    }
+
+    private fun extractSizeText(
+        name: String,
+        rawText: String,
+        unit: String?,
+        dealType: String
+    ): String? {
+        val sizeMatch = sizePattern.find(name)
+            ?: rawText
+                .takeUnless { bogoPattern.containsMatchIn(it) }
+                .takeUnless { unit == "lb" && dealType == "per_pound" }
+                ?.let { sizePattern.find(it) }
+
+        return sizeMatch?.let { match ->
+            val amount = match.groupValues[1].replace(',', '.')
+            val sizeUnit = match.groupValues[2].lowercase()
+            "$amount $sizeUnit"
+        }
     }
 
     /**

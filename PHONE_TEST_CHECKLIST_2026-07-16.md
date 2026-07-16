@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry `NET WT` package-label OCR/parser work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after flyer comma-decimal package-size parsing work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -146,9 +146,10 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 12. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
 13. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
 14. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
-15. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
-16. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-17. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+15. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
+16. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
+17. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+18. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 

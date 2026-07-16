@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after pantry `NET WT` package-label OCR/parser work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after flyer comma-decimal package-size parsing work; confirm the exact commit with `git log -1 --oneline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1297,6 +1297,17 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Result: `BUILD SUCCESSFUL`. Targeted `PantryPhraseParserTest` and `PantryOcrCandidateExtractorTest` passed locally, then the full Gradle gate passed with `165` unit tests detected, `0` failures/errors, and `21` lint warnings. Pantry OCR fallback now avoids treating `NET WT` package-size lines as separate products, and the pantry parser strips `net wt` label wording from the item name while preserving the package size and best-if-used-by date.
 
+Latest focused flyer parser check after comma-decimal package-size parsing:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.DealsParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed locally, then the full Gradle gate passed with `166` unit tests detected, `0` failures/errors, and `21` lint warnings. Flyer parsing now preserves comma-decimal package sizes such as `5,3 oz` as `5.3 oz`, while loose per-pound prices such as `2,99 lb` are still treated as prices and not package sizes.
+
 Additional check:
 
 ```powershell
@@ -1382,7 +1393,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser ignores flyer metadata/date lines such as `Valid 7/16/2026 - 7/22/2026` so slash dates do not become fake multi-buy deals.
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Deals parser accepts leading-decimal flyer OCR prices such as `.99/lb`, `.99 lb`, `.89`, `2 for .99`, and `2/.99`.
-- Deals parser accepts comma-decimal flyer OCR prices such as `2,99/lb`, `2 for 5,00`, and `3 lb bag 2,99`.
+- Deals parser accepts comma-decimal flyer OCR prices such as `2,99/lb`, `2 for 5,00`, and `3 lb bag 2,99`, and preserves comma-decimal package sizes such as `5,3 oz` without treating loose per-pound prices as package sizes.
 - Deals parser accepts explicit whole-dollar unit prices such as `$3/lb`, `$4 per pound`, and `$1/ea`, without treating bare package-size text as a price.
 - Deals parser accepts explicit whole-dollar package prices such as `Milk` / `$3` and `Flour 5 lb bag $4`, without treating bare package-size text as a price.
 - Deals parser ignores savings-only flyer callouts such as `Save $1 when you buy 2` so they do not import fake deal rows.

@@ -145,7 +145,7 @@ Deal_Planner/
 - ✅ Pantry camera/gallery/barcode/manual code import
 - ✅ Open Food Facts product lookup for barcode/manual code intake with reviewable fallback
 - ✅ Flyer camera/gallery/PDF/manual text import
-- ✅ Receipt camera/gallery/manual text import
+- ✅ Receipt camera/gallery/PDF/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Concise Gemini API error summaries for Settings connection testing
@@ -184,7 +184,7 @@ Deal_Planner/
 - ✅ **Pantry Review Dialog**: Edit imported pantry items and clear/keep verification flags
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF/manual text import, processing status, failed-parse text retention, store-aware deal cards with scores, coupon flags
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, and confidence
-- ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, processing status, failed-parse text retention, review flags, budget updates
+- ✅ **ReceiptsScreen**: Receipt photo/gallery/PDF/manual text import, processing status, failed-parse text retention, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, date, and review status
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
@@ -200,7 +200,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (165 Test Cases)
+### 7. Unit Tests (166 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
@@ -403,10 +403,10 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
-- ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c
+- ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c, plus comma-decimal package sizes such as 5,3 oz
 - ✅ Ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings do not import as fake deals
 - ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
-- ✅ Imports receipt items from camera/gallery photos or pasted OCR text
+- ✅ Imports receipt items from camera/gallery photos, PDFs, or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Parses the bundled demo receipt used by the phone test checklist
 - ✅ Applies receipt header dates including year-first slash/dash OCR formats such as `Transaction Date: 2025/10/27`
@@ -456,7 +456,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 165 unit tests
+- ✅ 166 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
