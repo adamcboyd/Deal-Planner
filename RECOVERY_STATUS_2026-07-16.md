@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated app-code checkpoint: `d1460fa fix: require review for unknown AI pantry locations`
-- The branch may include later docs-only recovery commits, but `d1460fa` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
+- Latest validated app-code checkpoint: `b270f09 fix: add AI pantry review reason notes`
+- The branch may include later docs-only recovery commits, but `b270f09` is the latest app-code checkpoint with `testDebugUnitTest assembleDebug lintDebug` passing.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 
 ## Other Local Copies Found
@@ -892,6 +892,22 @@ Latest continuation gate after AI pantry missing/unknown location review work:
 
 Result: `BUILD SUCCESSFUL`, with `146` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused AI pantry review-note clarity check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.PantryVisionItemMapperTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after AI pantry review-note clarity work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `146` unit tests detected and `0 failures, 0 errors, 0 skipped, and 21 lint warnings`.
+
 Additional check:
 
 ```powershell
@@ -1035,6 +1051,7 @@ Verified by build/unit tests/code inspection:
 - AI pantry photo item mapping has unit coverage for unknown amount units; the item requires review instead of being treated as fully verified.
 - AI pantry photo item mapping has unit coverage for Generic or unknown brand values; the item requires review so missing label brand details stay visible.
 - AI pantry photo item mapping has unit coverage for missing or unknown storage location; the item defaults to `pantry` but requires review so pantry/fridge/freezer placement can be corrected.
+- AI pantry photo VERIFY notes include explicit review reasons for missing brand, amount/unit, storage location, and best-by date details, so the phone review flow tells the user what needs correction.
 - Demo data loading resets pantry, deals, receipts, meal plans, default meal settings, and the `$292 / $45 spent` demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated taps do not duplicate meal-plan rows.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and estimated Shopping totals are covered by unit tests.

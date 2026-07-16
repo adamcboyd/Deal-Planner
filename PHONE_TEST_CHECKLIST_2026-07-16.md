@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: `d1460fa fix: require review for unknown AI pantry locations`
+- Current validated app-code checkpoint: `b270f09 fix: add AI pantry review reason notes`
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -217,9 +217,10 @@ In `Settings`:
 5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
 6. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 7. With key configured, test pantry photo recognition against a real pantry item label.
-8. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY instead of saving as fully reviewed.
-9. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY for brand review.
-10. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY for location review.
+8. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
+9. If Gemini imports an item with Generic or unknown brand details, confirm the pantry item shows VERIFY and notes include `Review brand.`.
+10. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
+11. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
 
 ## Settings Save Check
 
@@ -267,3 +268,4 @@ Verify these show visible status messages instead of silent failures:
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.
+- AI pantry VERIFY rows explain what needs review in the item notes.

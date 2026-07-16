@@ -243,7 +243,7 @@ On the Pantry tab:
 1. Tap **Photo** to capture a full-resolution app-cache image, or **Gallery** to choose an image.
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
-4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
+4. Missing brand, amount/unit, location, or expiration information is marked with a VERIFY badge and notes such as `Review brand.`, `Review amount/unit.`, `Review pantry/fridge/freezer location.`, or `Review expiration or best-by date.`.
 5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`.
 
 ### Adding Pantry Items From Barcodes
@@ -352,6 +352,7 @@ Tests cover:
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates, split and inline decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal OCR prices, discount/coupon line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar warnings/questions, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields)
+- AI pantry review-note reasons for missing or uncertain brand, amount/unit, storage location, and best-by date details
 
 ## Key Algorithms
 
@@ -449,6 +450,7 @@ As of the latest local pass:
 - AI pantry photo items with an unknown amount unit require review instead of being treated as fully verified.
 - AI pantry photo items with a Generic or unknown brand require review so missing label brand details stay visible.
 - AI pantry photo items with missing or unknown storage location require review so pantry/fridge/freezer placement can be corrected.
+- AI pantry photo VERIFY notes include specific review prompts for missing brand, amount/unit, storage location, and best-by date details.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
 ## Constraints & Design Decisions
