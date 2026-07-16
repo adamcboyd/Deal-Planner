@@ -276,46 +276,133 @@ class GeminiPantryVisionClient(
     }
 
     private fun JsonObject.toPantryVisionItem(): PantryVisionItem? {
-        val product = firstStringOrNull("product", "item", "product_name", "name", "food", "food_name")
+        val product = firstStringOrNull(
+            "product",
+            "productName",
+            "product_name",
+            "item",
+            "itemName",
+            "item_name",
+            "name",
+            "food",
+            "foodName",
+            "food_name",
+            "description",
+            "label"
+        )
         if (product.isNullOrBlank()) return null
-        val quantity = firstQuantityParts("quantity", "qty", "amount", "count")
-        val explicitUnit = firstStringOrNull("unit", "units", "item_unit", "itemUnit", "package_unit", "packageUnit")
+        val quantity = firstQuantityParts(
+            "quantity",
+            "qty",
+            "amount",
+            "count",
+            "packageQuantity",
+            "package_quantity",
+            "numberOfItems",
+            "number_of_items"
+        )
+        val explicitUnit = firstStringOrNull(
+            "unit",
+            "units",
+            "quantityUnit",
+            "quantity_unit",
+            "amountUnit",
+            "amount_unit",
+            "item_unit",
+            "itemUnit",
+            "package_unit",
+            "packageUnit"
+        )
         val quantityWithExplicitUnit = quantity.withExplicitUnit(explicitUnit)
 
         return PantryVisionItem(
-            brand = firstStringOrNull("brand", "brand_name", "brandName"),
+            brand = firstStringOrNull("brand", "brand_name", "brandName", "manufacturer", "maker", "labelBrand", "label_brand"),
             product = product,
             quantity = quantityWithExplicitUnit.value,
             unit = quantityWithExplicitUnit.unit.normalizePantryUnit(),
-            size = firstStringOrNull("size", "package_size", "packageSize", "net_weight", "netWeight"),
+            size = firstStringOrNull(
+                "size",
+                "package",
+                "packageSize",
+                "package_size",
+                "netWeight",
+                "net_weight",
+                "netQuantity",
+                "net_quantity",
+                "packageLabel",
+                "package_label"
+            ),
             location = firstStringOrNull(
                 "location",
                 "storage_location",
                 "storageLocation",
                 "storage",
-                "place"
+                "storageArea",
+                "storage_area",
+                "storageType",
+                "storage_type",
+                "place",
+                "section"
             ).normalizeStorageLocation(),
             expirationDate = firstStringOrNull(
                 "expirationDate",
                 "expiration_date",
+                "expirationDateText",
+                "expiration_date_text",
                 "expiration",
+                "expires",
                 "expiryDate",
                 "expiry_date",
                 "expiry",
+                "date",
+                "dateText",
+                "date_text",
+                "labelDate",
+                "label_date",
+                "dateOnLabel",
+                "date_on_label",
+                "bestDate",
+                "best_date",
                 "bestBy",
                 "best_by",
+                "bestByText",
+                "best_by_text",
                 "bestByDate",
                 "best_by_date",
+                "bestByDateText",
+                "best_by_date_text",
                 "bestBefore",
                 "best_before",
                 "bestBeforeDate",
                 "best_before_date",
+                "sellBy",
+                "sell_by",
+                "sellByDate",
+                "sell_by_date",
+                "sellByText",
+                "sell_by_text",
+                "useBefore",
+                "use_before",
                 "useBy",
                 "use_by",
                 "useByDate",
                 "use_by_date"
             ),
-            openedDate = firstStringOrNull("openedDate", "opened_date", "opened", "openedOn", "opened_on", "openDate", "open_date"),
+            openedDate = firstStringOrNull(
+                "openedDate",
+                "opened_date",
+                "openedDateText",
+                "opened_date_text",
+                "opened",
+                "openedOn",
+                "opened_on",
+                "dateOpened",
+                "date_opened",
+                "openDate",
+                "open_date",
+                "openDateText",
+                "open_date_text"
+            ),
             confidence = (get("confidence")?.asFlexibleDoubleOrNull() ?: 0.5).coerceIn(0.0, 1.0),
             questions = get("questions")?.toStringList().orEmpty()
         )
@@ -583,7 +670,9 @@ class GeminiPantryVisionClient(
             "ounces", "ounce" -> "oz"
             "grams", "gram" -> "g"
             "kilograms", "kilogram" -> "kg"
-            "ct", "each", "ea", "item", "items", "counts" -> "count"
+            "ct", "each", "ea", "item", "items", "counts", "pack", "packs", "package", "packages", "pk" -> "count"
+            "milliliters", "milliliter" -> "ml"
+            "liters", "liter" -> "l"
             "dozen", "dozens" -> "count"
             else -> normalized
         }
@@ -598,8 +687,9 @@ class GeminiPantryVisionClient(
             ?: return null
 
         return when (normalized) {
-            "refrigerator", "refrigerated" -> "fridge"
-            "deep freezer" -> "freezer"
+            "refrigerator", "refrigerated", "cold storage", "cold" -> "fridge"
+            "deep freezer", "deep freeze", "frozen" -> "freezer"
+            "cabinet", "cupboard", "shelf", "shelf stable", "shelf-stable", "room temp", "room temperature" -> "pantry"
             else -> normalized
         }
     }

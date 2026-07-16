@@ -344,6 +344,58 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with common label aliases`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "manufacturer": "Great Value",
+                  "productName": "peanut butter",
+                  "packageQuantity": "1",
+                  "quantityUnit": "jar",
+                  "netQuantity": "16 oz",
+                  "storageArea": "cabinet",
+                  "sell_by_date": "2027-03-04",
+                  "dateOpened": "2026-07-15",
+                  "confidence": "0.86"
+                },
+                {
+                  "itemName": "milk",
+                  "number_of_items": 2,
+                  "amount_unit": "packages",
+                  "package_label": "1 gal",
+                  "storageType": "cold storage",
+                  "expirationDateText": {"text": "12/31/2026"},
+                  "confidence": 0.93
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+
+        val peanutButter = result.items.first { it.product == "peanut butter" }
+        assertThat(peanutButter.brand).isEqualTo("Great Value")
+        assertThat(peanutButter.quantity).isEqualTo(1.0)
+        assertThat(peanutButter.unit).isEqualTo("jar")
+        assertThat(peanutButter.size).isEqualTo("16 oz")
+        assertThat(peanutButter.location).isEqualTo("pantry")
+        assertThat(peanutButter.expirationDate).isEqualTo("2027-03-04")
+        assertThat(peanutButter.openedDate).isEqualTo("2026-07-15")
+
+        val milk = result.items.first { it.product == "milk" }
+        assertThat(milk.quantity).isEqualTo(2.0)
+        assertThat(milk.unit).isEqualTo("count")
+        assertThat(milk.size).isEqualTo("1 gal")
+        assertThat(milk.location).isEqualTo("fridge")
+        assertThat(milk.expirationDate).isEqualTo("12/31/2026")
+    }
+
+    @Test
     fun `parse pantry vision response with object and array wrapped string fields`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
