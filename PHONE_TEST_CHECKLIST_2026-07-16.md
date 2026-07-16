@@ -62,7 +62,7 @@ To create deterministic sample files for pasted text, gallery image, and PDF pic
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, and requests Android media scans so picker apps can see the files sooner. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus a pantry-label PNG generated for gallery checks.
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, and requests Android media scans so picker apps can see the files sooner. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples.
 
 ## Optional Gemini Setup
 
@@ -176,7 +176,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 ### Pantry Inputs
 
 1. Manual barcode/code:
-   - Enter a UPC-like code in `Barcode / UPC`.
+   - Enter a UPC-like code in `Barcode / UPC`, such as `012345678905` from `deal-planner-demo-upc-a.txt`.
    - Also test a pasted label form such as `UPC: 0 12345-67890 5`.
    - Tap `Add Code`.
    - Expected with network/product match: item appears with product name, brand when available, package quantity when available, VERIFY status, barcode in notes, and `Product lookup: Open Food Facts`.
@@ -188,7 +188,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 2. Barcode scanner:
    - Tap `Scan`.
    - Allow camera permission.
-   - Scan a pantry barcode.
+   - Scan a pantry barcode, or display/print `deal-planner-demo-upc-a.png` on another screen and scan it.
    - Expected: same lookup/fallback behavior as manual barcode entry.
 3. Barcode duplicate check:
    - Add or scan the same barcode twice.

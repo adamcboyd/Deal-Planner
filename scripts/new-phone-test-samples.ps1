@@ -204,6 +204,125 @@ function New-TextImage {
     }
 }
 
+function Test-UpcACheckDigit {
+    param([string]$Barcode)
+
+    if ($Barcode -notmatch "^\d{12}$") {
+        return $false
+    }
+
+    $oddSum = 0
+    for ($index = 0; $index -lt 11; $index += 2) {
+        $oddSum += [int]::Parse($Barcode.Substring($index, 1))
+    }
+
+    $evenSum = 0
+    for ($index = 1; $index -lt 11; $index += 2) {
+        $evenSum += [int]::Parse($Barcode.Substring($index, 1))
+    }
+
+    $expectedCheckDigit = (10 - ((($oddSum * 3) + $evenSum) % 10)) % 10
+    return $expectedCheckDigit -eq [int]::Parse($Barcode.Substring(11, 1))
+}
+
+function New-UpcABarcodeImage {
+    param(
+        [string]$Barcode,
+        [string]$OutputPath,
+        [string]$Title
+    )
+
+    if (-not (Test-UpcACheckDigit $Barcode)) {
+        throw "UPC-A barcode must be 12 digits with a valid check digit: $Barcode"
+    }
+
+    Add-Type -AssemblyName System.Drawing
+
+    $leftPatterns = @{
+        "0" = "0001101"
+        "1" = "0011001"
+        "2" = "0010011"
+        "3" = "0111101"
+        "4" = "0100011"
+        "5" = "0110001"
+        "6" = "0101111"
+        "7" = "0111011"
+        "8" = "0110111"
+        "9" = "0001011"
+    }
+    $rightPatterns = @{
+        "0" = "1110010"
+        "1" = "1100110"
+        "2" = "1101100"
+        "3" = "1000010"
+        "4" = "1011100"
+        "5" = "1001110"
+        "6" = "1010000"
+        "7" = "1000100"
+        "8" = "1001000"
+        "9" = "1110100"
+    }
+
+    $pattern = "101"
+    for ($index = 0; $index -lt 6; $index++) {
+        $pattern += $leftPatterns[$Barcode.Substring($index, 1)]
+    }
+    $pattern += "01010"
+    for ($index = 6; $index -lt 12; $index++) {
+        $pattern += $rightPatterns[$Barcode.Substring($index, 1)]
+    }
+    $pattern += "101"
+
+    $moduleWidth = 5
+    $quietModules = 10
+    $barcodeWidth = ($pattern.Length + ($quietModules * 2)) * $moduleWidth
+    $width = [Math]::Max(820, $barcodeWidth + 120)
+    $height = 620
+    $barTop = 150
+    $barHeight = 310
+    $left = [int](($width - $barcodeWidth) / 2)
+
+    $bitmap = [System.Drawing.Bitmap]::new($width, $height)
+    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+    try {
+        $graphics.Clear([System.Drawing.Color]::White)
+        $graphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
+
+        $titleFont = [System.Drawing.Font]::new("Arial", 28, [System.Drawing.FontStyle]::Bold)
+        $labelFont = [System.Drawing.Font]::new("Consolas", 32, [System.Drawing.FontStyle]::Bold)
+        $hintFont = [System.Drawing.Font]::new("Arial", 18, [System.Drawing.FontStyle]::Regular)
+        try {
+            $blackBrush = [System.Drawing.Brushes]::Black
+            $grayPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(220, 220, 220), 2)
+            try {
+                $graphics.DrawRectangle($grayPen, 24, 24, $width - 48, $height - 48)
+                $graphics.DrawString($Title, $titleFont, $blackBrush, 56, 56)
+
+                for ($index = 0; $index -lt $pattern.Length; $index++) {
+                    if ($pattern.Substring($index, 1) -eq "1") {
+                        $x = $left + (($quietModules + $index) * $moduleWidth)
+                        $graphics.FillRectangle($blackBrush, $x, $barTop, $moduleWidth, $barHeight)
+                    }
+                }
+
+                $graphics.DrawString($Barcode, $labelFont, $blackBrush, $left + 92, $barTop + $barHeight + 24)
+                $graphics.DrawString("Display on another screen or print, then scan with the phone camera.", $hintFont, $blackBrush, 56, $height - 84)
+            } finally {
+                $grayPen.Dispose()
+            }
+        } finally {
+            $titleFont.Dispose()
+            $labelFont.Dispose()
+            $hintFont.Dispose()
+        }
+
+        $bitmap.Save($OutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
+    }
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -231,11 +350,13 @@ New-Item -ItemType Directory -Force -Path $sessionDir | Out-Null
 $receiptText = Join-Path $sessionDir "deal-planner-demo-receipt.txt"
 $flyerText = Join-Path $sessionDir "deal-planner-demo-flyer.txt"
 $pantryText = Join-Path $sessionDir "deal-planner-demo-pantry-label.txt"
+$barcodeText = Join-Path $sessionDir "deal-planner-demo-upc-a.txt"
 $receiptPdf = Join-Path $sessionDir "deal-planner-demo-receipt.pdf"
 $flyerPdf = Join-Path $sessionDir "deal-planner-demo-flyer.pdf"
 $receiptImage = Join-Path $sessionDir "deal-planner-demo-receipt.png"
 $flyerImage = Join-Path $sessionDir "deal-planner-demo-flyer.png"
 $pantryImage = Join-Path $sessionDir "deal-planner-demo-pantry-label.png"
+$barcodeImage = Join-Path $sessionDir "deal-planner-demo-upc-a.png"
 $readmePath = Join-Path $sessionDir "README.md"
 
 Copy-Item -LiteralPath $receiptAsset -Destination $receiptText -Force
@@ -246,11 +367,19 @@ $pantryLines = @(
     "Private Selection Salsa 16 oz fridge opened 2026-07-01 best by 2026-08-15"
 )
 Set-Content -LiteralPath $pantryText -Value $pantryLines -Encoding UTF8
+$barcodeValue = "012345678905"
+$barcodeLines = @(
+    "UPC-A: $barcodeValue",
+    "Use this code for Pantry -> Barcode / UPC -> Add Code.",
+    "Display or print deal-planner-demo-upc-a.png on another screen for Pantry -> Scan."
+)
+Set-Content -LiteralPath $barcodeText -Value $barcodeLines -Encoding UTF8
 New-SimplePdf -SourceTextPath $receiptAsset -OutputPath $receiptPdf -Title "Deal Planner Demo Receipt"
 New-SimplePdf -SourceTextPath $flyerAsset -OutputPath $flyerPdf -Title "Deal Planner Demo Flyer"
 New-TextImage -Lines (Get-Content -LiteralPath $receiptAsset) -OutputPath $receiptImage -Title "Deal Planner Demo Receipt"
 New-TextImage -Lines (Get-Content -LiteralPath $flyerAsset) -OutputPath $flyerImage -Title "Deal Planner Demo Flyer"
 New-TextImage -Lines $pantryLines -OutputPath $pantryImage -Title "Deal Planner Demo Pantry Labels"
+New-UpcABarcodeImage -Barcode $barcodeValue -OutputPath $barcodeImage -Title "Deal Planner Demo UPC-A"
 
 $readme = @"
 # Deal Planner Phone Test Samples - $stamp
@@ -265,10 +394,13 @@ Copy this folder to the Android phone or upload it to a location the phone can o
 - deal-planner-demo-flyer.png: choose from Deals -> Choose Flyer Image.
 - deal-planner-demo-pantry-label.txt: reference text for pantry label OCR.
 - deal-planner-demo-pantry-label.png: choose from Pantry -> Gallery.
+- deal-planner-demo-upc-a.txt: paste or type into Pantry -> Barcode / UPC.
+- deal-planner-demo-upc-a.png: display on another screen or print, then scan from Pantry -> Scan.
 
 Expected receipt result: the bundled demo receipt imports grocery line items, ignores total/tender lines, and updates Budget.
 Expected flyer result: the bundled demo flyer imports multiple Kroger deals with prices, limits, coupons, and deal scores.
 Expected pantry result: the label image imports separate VERIFY pantry rows, or shows a visible OCR recovery message if the phone OCR cannot read the generated image.
+Expected barcode result: the UPC imports a VERIFY barcode item, using Open Food Facts details when available or fallback barcode details otherwise.
 "@
 
 Set-Content -LiteralPath $readmePath -Value $readme -Encoding UTF8

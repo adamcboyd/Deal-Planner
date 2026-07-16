@@ -197,6 +197,8 @@ function Assert-SampleFolder {
         "deal-planner-demo-flyer.png",
         "deal-planner-demo-pantry-label.txt",
         "deal-planner-demo-pantry-label.png",
+        "deal-planner-demo-upc-a.txt",
+        "deal-planner-demo-upc-a.png",
         "README.md"
     )
 
@@ -214,7 +216,7 @@ function Assert-SampleFolder {
         }
     }
 
-    foreach ($pngName in @("deal-planner-demo-receipt.png", "deal-planner-demo-flyer.png", "deal-planner-demo-pantry-label.png")) {
+    foreach ($pngName in @("deal-planner-demo-receipt.png", "deal-planner-demo-flyer.png", "deal-planner-demo-pantry-label.png", "deal-planner-demo-upc-a.png")) {
         $pngPath = Join-Path $Path $pngName
         if (-not (Test-PngFile $pngPath)) {
             throw "$pngName is not a valid generated PNG sample."

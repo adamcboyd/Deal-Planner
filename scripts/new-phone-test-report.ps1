@@ -311,6 +311,7 @@ $adbBlock
 
 - [ ] Manual barcode/code lookup/fallback works.
 - [ ] Barcode scanner works.
+- [ ] Generated UPC-A barcode sample was available for manual code and scanner checks, if used.
 - [ ] Pantry photo works or shows a clear recovery message.
 - [ ] Pantry gallery works or shows a clear recovery message.
 - [ ] Flyer photo works or shows a clear recovery message.
