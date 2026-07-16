@@ -598,6 +598,37 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse flyer each prices without leaving each in item name`() {
+        val text = """
+            Kroger Milk
+            ${'$'}3.99 each
+
+            Black Beans
+            88c each
+
+            Store Yogurt
+            ${'$'}1.25 per ea
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(3)
+
+        val milk = result.deals.first { it.name == "Kroger Milk" }
+        assertThat(milk.price).isEqualTo(3.99)
+        assertThat(milk.unit).isEqualTo("ea")
+        assertThat(milk.dealType).isEqualTo("per_unit")
+
+        val beans = result.deals.first { it.name == "Black Beans" }
+        assertThat(beans.price).isEqualTo(0.88)
+        assertThat(beans.unit).isEqualTo("ea")
+
+        val yogurt = result.deals.first { it.name == "Store Yogurt" }
+        assertThat(yogurt.price).isEqualTo(1.25)
+        assertThat(yogurt.unit).isEqualTo("ea")
+    }
+
+    @Test
     fun `parse demo flyer style multiline modifiers`() {
         val text = """
             Pork Shoulder Roast

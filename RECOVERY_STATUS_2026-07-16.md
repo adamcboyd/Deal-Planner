@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after generated phone-test report AI checklist sync; confirm the exact commit with `git log -1 --oneline`.
-- Latest validated app-code checkpoint before that helper/docs sync: AI non-positive quantity review validation.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after flyer each-price parser validation; confirm the exact commit with `git log -1 --oneline`.
+- Latest helper/docs checkpoint before that app-code work: generated phone-test report AI checklist sync.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -1405,6 +1405,16 @@ Latest helper checkpoint after generated phone-test report AI checklist sync:
 
 Result: report helper help printed successfully, all 7 PowerShell helpers parsed successfully, and a generated ignored `PHONE_TEST_REPORT.md` included an AI verification row for zero or negative Gemini amount details falling back to quantity `1.0`, showing VERIFY, and including `Review amount/unit.` so the real-phone report matches `PHONE_TEST_CHECKLIST_2026-07-16.md`. The full Gradle gate stayed `BUILD SUCCESSFUL` with `175` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings.
 
+Latest focused flyer each-price parser check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.DealsParserTest
+```
+
+Result: `BUILD SUCCESSFUL`. Targeted `DealsParserTest` passed locally, then the full Gradle gate passed with `176` unit tests detected, `0` failures/errors, `0` skipped, and `21` lint warnings. Flyer text/OCR parsing now accepts `$3.99 each`, `$1.25 per ea`, and `88c each` as per-unit deals without appending `each` or `ea` to the imported item name. This strengthens pasted flyer text plus flyer photo/gallery/PDF OCR paths because all route through the same parser.
+
 Additional check:
 
 ```powershell
@@ -1495,6 +1505,7 @@ Verified by build/unit tests/code inspection:
 - Deals parser accepts explicit whole-dollar package prices such as `Milk` / `$3` and `Flour 5 lb bag $4`, without treating bare package-size text as a price.
 - Deals parser ignores savings-only flyer callouts such as `Save $1 when you buy 2` so they do not import fake deal rows.
 - Deals parser accepts cent-style flyer/OCR prices such as `99c/lb` and `88c`, with exact unit coverage for the phone checklist `Roma Tomatoes` / `99c/lb` pasted-text test.
+- Deals parser accepts each/ea flyer OCR prices such as `$3.99 each`, `$1.25 per ea`, and `88c each` without appending `each` or `ea` to the imported item name.
 - Meal planning engine has unit tests.
 - Meal plan generation has unit coverage for one generated row per requested date and deterministic output for the same inputs.
 - Meal-side filtering has unit coverage so household/non-food flyer deals do not become generated meal vegetables or Shopping items.

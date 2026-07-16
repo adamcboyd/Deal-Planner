@@ -145,13 +145,14 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 10. Reopen edit, enter score `7`, and confirm Save disables with a 0-to-1 value message.
 11. Optional store whitespace check: set store to ` Kroger `, import one deal, and confirm the deal shows store `Kroger`.
 12. Optional cent-price check: paste `Roma Tomatoes` on one line and `99c/lb` on the next, then confirm it imports as a $0.99/lb deal.
-13. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
-14. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
-15. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
-16. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
-17. Optional household/non-food meal-side check: paste `Tide Laundry Detergent $9.99` as a deal, generate or refresh the meal plan, and confirm detergent does not appear in `Menu` meals or `Shopping` totals.
-18. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
-19. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
+13. Optional each-price check: paste `Kroger Milk` / `$3.99 each`, `Store Yogurt` / `$1.25 per ea`, and `Black Beans` / `88c each`; confirm imported item names do not include `each` or `ea`.
+14. Optional whole-dollar unit price check: paste `Chicken Drumsticks` on one line and `$3/lb` on the next, then confirm it imports as a $3.00/lb deal.
+15. Optional whole-dollar package price check: paste `Milk` on one line and `$3` on the next, then confirm it imports as a $3.00 deal.
+16. Optional package-size OCR check: paste `Kroger Yogurt 5,3 oz $1,49`; confirm it imports as a $1.49 deal with package size `5.3 oz`.
+17. Optional savings-callout check: paste `Milk`, `$3`, and `Save $1 when you buy 2`; confirm only the $3 Milk deal imports and no `Save` deal appears.
+18. Optional household/non-food meal-side check: paste `Tide Laundry Detergent $9.99` as a deal, generate or refresh the meal plan, and confirm detergent does not appear in `Menu` meals or `Shopping` totals.
+19. Paste text with no deal prices, tap `Process Text`, and confirm the text remains available for correction.
+20. Clear the flyer text field and tap `Process Text`; confirm `No flyer text found.` appears.
 
 ### Receipts
 

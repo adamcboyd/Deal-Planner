@@ -407,7 +407,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
 - ✅ Parses flyer prices with or without dollar signs, including comma-decimal and cent-style prices such as 2,99/lb, 99c/lb, and 88c, plus comma-decimal package sizes such as 5,3 oz
 - ✅ Ignores savings-only flyer callouts such as `Save $1 when you buy 2` so coupon savings do not import as fake deals
-- ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
+- ✅ Parses bundled demo flyer structures and shorthand flyer promos including package prices, each/ea prices, multi-line names, limits, coupons, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO, B1G1, and BOGO-percent modifiers
 - ✅ Imports receipt items from camera/gallery photos, PDFs, or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Parses the bundled demo receipt used by the phone test checklist
@@ -460,7 +460,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ 175 unit tests
+- ✅ 176 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
