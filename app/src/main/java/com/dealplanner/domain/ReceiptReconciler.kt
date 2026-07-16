@@ -484,6 +484,8 @@ class ReceiptReconciler {
             DateTimeFormatter.ofPattern("MM/dd/yy"),
             DateTimeFormatter.ofPattern("M-d-yyyy"),
             DateTimeFormatter.ofPattern("M-d-yy"),
+            DateTimeFormatter.ofPattern("yyyy/M/d"),
+            DateTimeFormatter.ofPattern("yyyy-M-d"),
             DateTimeFormatter.ISO_LOCAL_DATE
         )
         private const val QUANTITY_AMOUNT_PATTERN = """\d+(?:[.,]\d+)?"""

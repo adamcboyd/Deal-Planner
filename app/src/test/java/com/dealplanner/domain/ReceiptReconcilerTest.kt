@@ -70,6 +70,28 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `year first receipt header dates apply to imported receipt items`() {
+        val slashDateReceipt = """
+            KROGER
+            Transaction Date: 2025/10/27
+            BLACK BEANS      ${'$'}1.78
+        """.trimIndent()
+        val dashDateReceipt = """
+            KROGER
+            Purchase Date: 2025-10-28
+            KROGER PASTA     ${'$'}3.00
+        """.trimIndent()
+
+        val slashResult = reconciler.reconcileReceipt(slashDateReceipt, emptyList(), emptyList(), "Kroger")
+        val dashResult = reconciler.reconcileReceipt(dashDateReceipt, emptyList(), emptyList(), "Kroger")
+
+        assertThat(slashResult.receiptItems).hasSize(1)
+        assertThat(slashResult.receiptItems.first().date).isEqualTo(LocalDate.of(2025, 10, 27))
+        assertThat(dashResult.receiptItems).hasSize(1)
+        assertThat(dashResult.receiptItems.first().date).isEqualTo(LocalDate.of(2025, 10, 28))
+    }
+
+    @Test
     fun `normalize store names for imported receipt items`() {
         val ocrText = "BLACK BEANS      $1.78"
 
