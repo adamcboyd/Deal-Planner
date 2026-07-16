@@ -19,6 +19,7 @@ function Show-Usage {
     Write-Host "  -Generate        Create a fresh local sample folder before copying."
     Write-Host "  -SamplesDir PATH Copy this local sample folder instead of the latest generated folder."
     Write-Host "  -RemoteRoot PATH Android destination root. Default: /sdcard/Download/DealPlannerPhoneTestSamples"
+    Write-Host "                   Sample folders must include SAMPLE_MANIFEST.md from new-phone-test-samples.ps1."
     Write-Host ""
     Write-Host "Set ANDROID_SERIAL when more than one authorized Android device is connected."
 }
@@ -199,7 +200,8 @@ function Assert-SampleFolder {
         "deal-planner-demo-pantry-label.png",
         "deal-planner-demo-upc-a.txt",
         "deal-planner-demo-upc-a.png",
-        "README.md"
+        "README.md",
+        "SAMPLE_MANIFEST.md"
     )
 
     foreach ($fileName in $requiredFiles) {
