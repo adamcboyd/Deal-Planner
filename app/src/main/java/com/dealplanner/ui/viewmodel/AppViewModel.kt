@@ -137,6 +137,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _pantryPhotoStatus.value = "Pantry photo canceled."
     }
 
+    fun reportPantryGallerySelectionCanceled() {
+        _pantryPhotoStatus.value = "Pantry gallery selection canceled."
+    }
+
     fun reportPantryCameraPermissionDenied() {
         _pantryPhotoStatus.value = "Camera permission is needed to take pantry photos."
     }
@@ -281,6 +285,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _dealsScanStatus.value = "Flyer photo canceled."
     }
 
+    fun reportDealsGallerySelectionCanceled() {
+        _dealsScanStatus.value = "Flyer image selection canceled."
+    }
+
+    fun reportDealsPdfSelectionCanceled() {
+        _dealsScanStatus.value = "Flyer PDF selection canceled."
+    }
+
     fun reportDealsCameraPermissionDenied() {
         _dealsScanStatus.value = "Camera permission is needed to take flyer photos."
     }
@@ -409,6 +421,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportReceiptPhotoCaptureCanceled() {
         _receiptScanStatus.value = "Receipt photo canceled."
+    }
+
+    fun reportReceiptGallerySelectionCanceled() {
+        _receiptScanStatus.value = "Receipt gallery selection canceled."
     }
 
     fun reportReceiptCameraPermissionDenied() {

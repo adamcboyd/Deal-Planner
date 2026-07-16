@@ -58,6 +58,8 @@ fun PantryScreen(viewModel: AppViewModel) {
     ) { uri ->
         if (uri != null) {
             viewModel.processPantryPhotoUri(uri)
+        } else {
+            viewModel.reportPantryGallerySelectionCanceled()
         }
     }
 

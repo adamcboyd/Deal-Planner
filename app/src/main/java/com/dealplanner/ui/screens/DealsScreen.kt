@@ -54,6 +54,8 @@ fun DealsScreen(viewModel: AppViewModel) {
     ) { uri ->
         if (uri != null) {
             viewModel.processDealsPhotoUri(uri, storeName)
+        } else {
+            viewModel.reportDealsGallerySelectionCanceled()
         }
     }
 
@@ -62,6 +64,8 @@ fun DealsScreen(viewModel: AppViewModel) {
     ) { uri ->
         if (uri != null) {
             viewModel.processDealsPdfUri(uri, storeName)
+        } else {
+            viewModel.reportDealsPdfSelectionCanceled()
         }
     }
 

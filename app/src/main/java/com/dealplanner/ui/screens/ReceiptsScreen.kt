@@ -80,6 +80,8 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
     ) { uri ->
         if (uri != null) {
             viewModel.processReceiptPhotoUri(uri, storeName)
+        } else {
+            viewModel.reportReceiptGallerySelectionCanceled()
         }
     }
 

@@ -94,6 +94,14 @@ Latest continuation gate after flyer PDF render cap work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after gallery/PDF picker cancel status work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -132,7 +140,7 @@ Verified by build/unit tests/code inspection:
 - Barcode/manual code pantry input creates VERIFY items with the barcode preserved in notes.
 - Pantry typed, OCR/AI photo, and barcode imports now upsert safe duplicates instead of creating repeated rows.
 - Pantry duplicate detection normalizes package size/Generic brand, keeps different locations separate, and only merges barcode items when the barcode value matches.
-- Camera permission denial and canceled camera/barcode actions now show visible status messages during phone testing.
+- Camera permission denial and canceled camera/barcode/gallery/PDF actions now show visible status messages during phone testing.
 - Camera/gallery image imports decode to software bitmaps and cap oversized phone images before OCR/Gemini processing.
 - Flyer photo/gallery/PDF/manual text input exists.
 - Flyer PDF pages render with a 3072px longest-side cap before OCR to reduce oversized-PDF failures on phones.
@@ -170,7 +178,7 @@ Not yet verified on a real phone:
 - ML Kit OCR quality on real pantry/flyer photos.
 - Gemini pantry photo API call.
 - Android permissions flow.
-- Camera permission denial/cancel status on the physical phone.
+- Camera permission denial/cancel and gallery/PDF picker cancel status on the physical phone.
 - Kitchen pantry test.
 
 Current AI configuration:
@@ -209,13 +217,13 @@ gemini.model=gemini-3.5-flash
    - Pantry photo.
    - Pantry gallery image.
    - Pantry barcode scan.
-   - Pantry camera-permission denial or canceled capture/scan status.
+   - Pantry camera-permission denial or canceled capture/gallery/scan status.
    - Pantry manual barcode/code entry.
    - Pantry duplicate check: add the same typed/photo item twice and confirm quantity merges.
    - Pantry barcode duplicate check: add the same UPC twice and confirm quantity merges, then add a different UPC and confirm it remains separate.
    - Pantry edit/review dialog for VERIFY items.
    - Deals flyer photo.
-   - Deals camera-permission denial or canceled capture status.
+   - Deals camera-permission denial or canceled capture/gallery/PDF status.
    - Deals gallery image.
    - Deals PDF.
    - Deals pasted OCR text.
@@ -224,7 +232,7 @@ gemini.model=gemini-3.5-flash
    - Deals store field applies to photo, gallery, PDF, and pasted OCR imports.
    - Deals edit/review dialog for low-confidence OCR results.
    - Receipts photo.
-   - Receipts camera-permission denial or canceled capture status.
+   - Receipts camera-permission denial or canceled capture/gallery status.
    - Receipts gallery image.
    - Receipts pasted OCR text.
    - Receipts pasted OCR text with prices missing dollar signs.

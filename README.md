@@ -340,7 +340,7 @@ As of the latest local pass:
 - Deals parser accepts flyer prices when OCR drops dollar signs.
 - Deal cards can be edited after flyer photo/image/PDF/text import so low-confidence OCR results can be corrected during phone testing.
 - Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
-- Camera permission denial and canceled capture/scan flows show on-screen status messages.
+- Camera permission denial and canceled capture/scan/gallery/PDF picker flows show on-screen status messages.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
