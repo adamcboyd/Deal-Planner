@@ -145,6 +145,41 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse receipt lines when OCR drops dollar signs`() {
+        val ocrText = """
+            BLACK BEANS       1.78
+            2 @ 0.89
+            KROGER PASTA      3.00
+            3 @ 1.00
+            SUBTOTAL          4.78
+            TOTAL             4.78
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(2)
+        assertThat(result.receiptItems.map { it.rawLine }).containsExactly(
+            "BLACK BEANS       1.78",
+            "KROGER PASTA      3.00"
+        ).inOrder()
+        assertThat(result.receiptItems.map { it.qty }).containsExactly(2.0, 3.0).inOrder()
+        assertThat(result.total).isEqualTo(4.78)
+    }
+
+    @Test
+    fun `parse inline quantity receipt lines without dollar signs`() {
+        val ocrText = "2 @ 0.89 BLACK BEANS 1.78"
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(1)
+        assertThat(result.receiptItems[0].rawLine).isEqualTo("2 @ 0.89 BLACK BEANS 1.78")
+        assertThat(result.receiptItems[0].qty).isEqualTo(2.0)
+        assertThat(result.receiptItems[0].totalCost).isEqualTo(1.78)
+        assertThat(result.total).isEqualTo(1.78)
+    }
+
+    @Test
     fun `split weighted quantity line attaches to previous deal and is not imported`() {
         val ocrText = """
             PORK SHOULDER    $12.95

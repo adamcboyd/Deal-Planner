@@ -87,7 +87,7 @@ Deal_Planner/
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
-                └── ReceiptReconcilerTest.kt   ✅ 10 test cases
+                └── ReceiptReconcilerTest.kt   ✅ 12 test cases
 ```
 
 ## 🎯 Core Features Implemented
@@ -152,6 +152,7 @@ Deal_Planner/
   - VPP calculation for proteins
   - Confidence scoring
   - Pantry quantity updates
+  - Dollar/no-dollar OCR price parsing
 
 ### 5. UI Layer (Jetpack Compose)
 - ✅ **MainActivity**: Navigation + bottom bar
@@ -175,13 +176,13 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (60 Test Cases)
+### 7. Unit Tests (62 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (19 tests)
 - ✅ DealsParserTest (11 tests)
 - ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (10 tests)
-- ✅ ReceiptReconcilerTest (10 tests)
+- ✅ ReceiptReconcilerTest (12 tests)
 
 ## 🔧 Technology Stack
 
@@ -242,6 +243,7 @@ Deal_Planner/
 3. Use Photo, Gallery, or pasted OCR text
 4. Receipt lines reconcile against pantry/deals and update budget spending
 5. Edit any receipt item that needs OCR, match, date, or total correction
+6. Receipt OCR prices can include or omit dollar signs
 
 ### Generating Meal Plan
 1. Go to Menu tab
@@ -364,6 +366,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
 - ✅ Attaches split quantity and weighted price-per-pound lines to their grocery items
+- ✅ Parses receipt OCR item totals and inline quantity lines with or without dollar signs
 - ✅ Ignores receipt subtotal, tax, total, savings, and tender/payment lines
 - ✅ Rounds receipt totals to cents before applying budget updates
 - ✅ Keeps pantry quantities and budget spending in sync when receipt items are edited or deleted
@@ -392,7 +395,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
-- ✅ 60 unit tests
+- ✅ 62 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

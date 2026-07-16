@@ -241,6 +241,7 @@ On the Receipts tab:
 7. Receipt edits and deletes adjust pantry quantities, budget spending, daily envelope, and projected spend so Pantry and Budget stay in sync.
 8. Subtotal, tax, total, payment, and EBT/card lines are ignored so only grocery items affect spending.
 9. Split quantity lines such as `3.25 lb @ $3.99/lb` or `2 @ $0.89` attach to the previous grocery item instead of importing as separate items.
+10. OCR prices work with or without dollar signs, such as `BLACK BEANS 1.78` or `2 @ 0.89 BLACK BEANS 1.78`.
 
 ### Meal Planning
 
@@ -283,7 +284,7 @@ Tests cover:
 - Deal regex patterns (all deal types)
 - Meal planning (GERD-filtering, anchors)
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
-- Receipt reconciliation (fuzzy matching, VPP)
+- Receipt reconciliation (fuzzy matching, VPP, split quantities, dollar/no-dollar OCR prices)
 - Gemini configuration guardrails
 
 ## Key Algorithms
@@ -339,6 +340,7 @@ As of the latest local pass:
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with store-aware deal creation.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines, including weighted price-per-pound lines.
+- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and payment/tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
 - Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing.

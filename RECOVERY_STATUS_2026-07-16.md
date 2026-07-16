@@ -46,6 +46,14 @@ Latest continuation gate after receipt-aware budget analysis work:
 
 Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
 
+Latest continuation gate after receipt no-dollar OCR parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `0 errors, 27 warnings`.
+
 Additional check:
 
 ```powershell
@@ -89,6 +97,7 @@ Verified by build/unit tests/code inspection:
 - Receipt photo/gallery/manual text input exists.
 - Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
+- Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines.
 - Receipt totals are rounded to cents before budget updates.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and projected spend.
@@ -167,6 +176,7 @@ gemini.model=gemini-3.5-flash
    - Receipts photo.
    - Receipts gallery image.
    - Receipts pasted OCR text.
+   - Receipts pasted OCR text with prices missing dollar signs.
    - Receipts split quantity lines do not import as separate items.
    - Receipts subtotal/tax/total/payment lines do not import as items.
    - Receipts edit/review dialog for OCR and match corrections.

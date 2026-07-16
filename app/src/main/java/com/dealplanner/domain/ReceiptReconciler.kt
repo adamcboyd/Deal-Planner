@@ -137,8 +137,8 @@ class ReceiptReconciler {
      */
     private fun parseReceiptLine(line: String): Triple<String, Double, Double?>? {
         // Pattern: optional qty, item name, price
-        val pattern1 = Regex("""(\d+)\s*@\s*\$?(\d+\.\d{2})\s+(.+?)\s+\$(\d+\.\d{2})""")
-        val pattern2 = Regex("""(.+?)\s+\$(\d+\.\d{2})""")
+        val pattern1 = Regex("""(\d+)\s*@\s*\$?(\d+\.\d{2})\s+(.+?)\s+\$?(\d+\.\d{2})""")
+        val pattern2 = Regex("""(.+?)\s+\$?(\d+\.\d{2})""")
 
         pattern1.find(line)?.let { match ->
             val qty = match.groupValues[1].toDoubleOrNull() ?: 1.0
