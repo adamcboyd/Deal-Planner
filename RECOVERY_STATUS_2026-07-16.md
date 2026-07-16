@@ -764,6 +764,22 @@ Latest continuation gate after Gemini dozen quantity parsing work:
 
 Result: `BUILD SUCCESSFUL`, with `138` unit tests detected and `0 errors, 21 warnings`.
 
+Latest focused receipt leading-decimal price parsing check:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.domain.ReceiptReconcilerTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Latest continuation gate after receipt leading-decimal price parsing work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `139` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -877,6 +893,7 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation attaches split quantity lines, including weighted price-per-pound lines, to the previous grocery item.
 - Receipt reconciliation parses one-line weighted produce rows such as `BANANAS 1.50 lb @ $0.69/lb $1.04` and comma-decimal variants such as `APPLES 1,25 lb @ 1,99/lb 2,49`.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs.
+- Receipt reconciliation accepts leading-decimal receipt prices such as `.89` in weighted produce rows, inline quantity rows, split quantity rows, and plain item-total rows.
 - Receipt reconciliation accepts item totals and split quantity lines when OCR uses comma decimals, such as `BLACK BEANS 1,78` plus `2 @ 0,89`.
 - Receipt reconciliation ignores subtotal, tax, total, savings, and tender/payment lines, including card tender lines such as `VISA DEBIT` and `CARD TENDER`.
 - Receipt reconciliation ignores SNAP/EBT/WIC benefit tender lines such as `SNAP EBT`, `EBT FOOD`, and `WIC BENEFIT` so they do not inflate grocery spending.

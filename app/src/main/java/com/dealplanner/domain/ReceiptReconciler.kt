@@ -143,11 +143,11 @@ class ReceiptReconciler {
     private fun parseReceiptLine(line: String): Triple<String, Double, Double?>? {
         // Pattern: optional qty, item name, price
         val itemFirstWeightedPattern = Regex(
-            """(.+?)\s+(\d+(?:[.,]\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*@\s*\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+\$?(\d+[.,]\d{2})""",
+            """(.+?)\s+($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces)\s*@\s*\$?$RECEIPT_PRICE_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces))?\s+\$?($RECEIPT_PRICE_PATTERN)""",
             RegexOption.IGNORE_CASE
         )
-        val pattern1 = Regex("""(\d+(?:[.,]\d+)?)\s*@\s*\$?(\d+[.,]\d{2})\s+(.+?)\s+\$?(\d+[.,]\d{2})""")
-        val pattern2 = Regex("""(.+?)\s+\$?(\d+[.,]\d{2})""")
+        val pattern1 = Regex("""($QUANTITY_AMOUNT_PATTERN)\s*@\s*\$?($RECEIPT_PRICE_PATTERN)\s+(.+?)\s+\$?($RECEIPT_PRICE_PATTERN)""")
+        val pattern2 = Regex("""(.+?)\s+\$?($RECEIPT_PRICE_PATTERN)""")
 
         itemFirstWeightedPattern.find(line)?.let { match ->
             val itemName = match.groupValues[1].trim()
@@ -486,8 +486,10 @@ class ReceiptReconciler {
             DateTimeFormatter.ofPattern("M-d-yy"),
             DateTimeFormatter.ISO_LOCAL_DATE
         )
+        private const val QUANTITY_AMOUNT_PATTERN = """\d+(?:[.,]\d+)?"""
+        private const val RECEIPT_PRICE_PATTERN = """(?:\d+)?[.,]\d{2}"""
         private val splitQuantityPattern = Regex(
-            """(?i)^(\d+(?:[.,]\d+)?)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?\d+[.,]\d{2}(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
+            """(?i)^($QUANTITY_AMOUNT_PATTERN)\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each)?\s*@\s*\$?$RECEIPT_PRICE_PATTERN(?:\s*/\s*(?:lb|lbs|pound|pounds|oz|ounce|ounces|ct|count|ea|each))?$"""
         )
         private const val MIN_MATCH_CONFIDENCE = 0.55
         private val receiptMatchStopWords = setOf(

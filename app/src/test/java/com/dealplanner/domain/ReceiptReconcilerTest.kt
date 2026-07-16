@@ -469,6 +469,36 @@ class ReceiptReconcilerTest {
     }
 
     @Test
+    fun `parse receipt lines with leading decimal prices`() {
+        val ocrText = """
+            BANANAS 1.50 lb @ .69/lb 1.04
+            1 @ .89 BLACK BEANS .89
+            KROGER PASTA .99
+            1 @ .99
+            TOTAL 2.92
+        """.trimIndent()
+
+        val result = reconciler.reconcileReceipt(ocrText, emptyList(), emptyList(), "Kroger")
+
+        assertThat(result.receiptItems).hasSize(3)
+
+        val bananas = result.receiptItems.first { it.rawLine.startsWith("BANANAS") }
+        assertThat(bananas.qty).isEqualTo(1.5)
+        assertThat(bananas.totalCost).isEqualTo(1.04)
+
+        val blackBeans = result.receiptItems.first { it.rawLine.startsWith("1 @ .89") }
+        assertThat(blackBeans.qty).isEqualTo(1.0)
+        assertThat(blackBeans.totalCost).isEqualTo(0.89)
+
+        val pasta = result.receiptItems.first { it.rawLine.startsWith("KROGER PASTA") }
+        assertThat(pasta.qty).isEqualTo(1.0)
+        assertThat(pasta.totalCost).isEqualTo(0.99)
+
+        assertThat(result.receiptItems.map { it.rawLine }).doesNotContain("TOTAL 2.92")
+        assertThat(result.total).isEqualTo(2.92)
+    }
+
+    @Test
     fun `receipt pantry match wins over weaker deal match`() {
         val ocrText = "BLACK BEANS       $1.78"
         val deals = listOf(
