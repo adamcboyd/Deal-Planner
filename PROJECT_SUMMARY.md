@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 47
+- **Total Kotlin Files**: 50
 - **Configuration Files**: 15
-- **Test Files**: 11 (comprehensive unit tests)
+- **Test Files**: 18 (comprehensive unit tests)
 - **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
@@ -56,6 +56,7 @@ Deal_Planner/
         │   │   │   └── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
         │   │   └── ui/
         │   │       ├── camera/CapturePhotoUriFactory.kt ✅ Full-resolution capture URIs
+        │   │       ├── state/                   ✅ UI validation and clear/retain helpers
         │   │       ├── viewmodel/AppViewModel.kt ✅ MVVM ViewModel
         │   │       ├── navigation/Screen.kt      ✅ Navigation setup
         │   │       ├── screens/                  ✅ 7 Compose screens
@@ -103,6 +104,7 @@ Deal_Planner/
             │   ├── DealItemInputValidatorTest.kt ✅ Deal edit validation tests
             │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
             │   ├── PantryItemInputValidatorTest.kt ✅ Pantry edit quantity validation tests
+            │   ├── ReceiptItemInputValidatorTest.kt ✅ Receipt edit validation tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
             └── util/
                 ├── FlexibleDateParsingTest.kt ✅ Flexible date parsing tests
@@ -210,9 +212,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (181 Test Cases)
+### 7. Unit Tests (220 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
+- ✅ BarcodePantryMapperTest
 - ✅ OpenFoodFactsBarcodeClientTest
 - ✅ PantryOcrCandidateExtractorTest
 - ✅ PantryPhraseParserTest
@@ -220,6 +223,12 @@ Deal_Planner/
 - ✅ MealPlanningEngineTest
 - ✅ BudgetEngineTest
 - ✅ ReceiptReconcilerTest
+- ✅ BudgetInputValidatorTest
+- ✅ DealItemInputValidatorTest
+- ✅ ManualInputClearPolicyTest
+- ✅ PantryItemInputValidatorTest
+- ✅ ReceiptItemInputValidatorTest
+- ✅ SettingsInputValidatorTest
 - ✅ FlexibleDateParsingTest
 - ✅ FlexibleNumberParsingTest
 
@@ -477,7 +486,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce` and `12-count` package-size checks
-- ✅ 212 unit tests
+- ✅ 220 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

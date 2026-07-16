@@ -1966,3 +1966,27 @@ Full local gate:
 ```
 
 Result: `BUILD SUCCESSFUL`; `212` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.
+
+Latest continuation note after Receipt item input validator extraction:
+
+Code checkpoint:
+
+- Added `ReceiptItemInputValidator` as a pure UI-state helper for receipt edit validation.
+- `ReceiptItemEditDialog` now uses the shared validator for optional quantity, total cost, match ID, confidence, date parsing, visible error text, and Save enablement.
+- Added direct unit coverage for blank optional quantity, dot decimal, comma decimal, leading decimal, zero, negative, blank required total, invalid, non-finite, match ID, confidence range, and ISO date text.
+
+Targeted UI-state gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ui.state.*"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `220` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `21` warnings.

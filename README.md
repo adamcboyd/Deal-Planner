@@ -382,6 +382,7 @@ Tests cover:
 - Settings protein-per-meal validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Pantry edit quantity validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Deal edit validation for price, PPU, discount, score, confidence, and limit text including 0-to-1 and 0-to-100 bounds
+- Receipt edit validation for optional quantity, total, match ID, confidence, and date text including comma-decimal and leading-decimal corrections
 - Deal regex patterns (all deal types, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar flyer OCR prices, comma-decimal package sizes, slash/no-slash per-pound prices, slash-style multi-buy prices, savings-only callout filtering, unsafe/zero multi-buy rejection, numeric/word-number buy-get promos, buy-get percent-off promos, BOGO/B1G1/BOGO-percent shorthand)
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields, while rejecting non-finite values such as NaN or Infinity
 - Meal planning (GERD-filtering, anchors)

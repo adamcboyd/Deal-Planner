@@ -53,10 +53,8 @@ import com.dealplanner.data.model.ReceiptItem
 import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.state.ManualInputClearDecision
 import com.dealplanner.ui.state.ManualInputClearPolicy
+import com.dealplanner.ui.state.ReceiptItemInputValidator
 import com.dealplanner.ui.viewmodel.AppViewModel
-import com.dealplanner.util.toFlexibleDoubleOrNull
-import java.time.LocalDate
-import java.time.format.DateTimeParseException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -375,16 +373,16 @@ fun ReceiptItemEditDialog(
     var confidence by remember(receipt.id) { mutableStateOf(receipt.confidence.toString()) }
     var date by remember(receipt.id) { mutableStateOf(receipt.date.toString()) }
     var needsReview by remember(receipt.id) { mutableStateOf(receipt.needsReview) }
-    val parsedQty = qty.toFlexibleDoubleOrNull()
-    val isQtyValid = qty.isBlank() || (parsedQty != null && parsedQty >= 0.0)
-    val parsedTotalCost = totalCost.toFlexibleDoubleOrNull()
-    val isTotalCostValid = parsedTotalCost != null && parsedTotalCost >= 0.0
-    val parsedMatchedItemId = matchedItemId.toLongOrNull()
-    val isMatchedItemIdValid = matchedItemId.isBlank() || (parsedMatchedItemId != null && parsedMatchedItemId >= 0L)
-    val parsedConfidence = confidence.toFlexibleDoubleOrNull()
-    val isConfidenceValid = parsedConfidence != null && parsedConfidence in 0.0..1.0
-    val parsedDate = date.toLocalDateOrNull()
-    val isDateValid = parsedDate != null
+    val qtyValidation = ReceiptItemInputValidator.validateOptionalQuantity(qty)
+    val totalCostValidation = ReceiptItemInputValidator.validateTotalCost(totalCost)
+    val matchedItemIdValidation = ReceiptItemInputValidator.validateMatchedItemId(matchedItemId)
+    val confidenceValidation = ReceiptItemInputValidator.validateConfidence(confidence)
+    val dateValidation = ReceiptItemInputValidator.validateDate(date)
+    val isQtyValid = qtyValidation.isValid
+    val isTotalCostValid = totalCostValidation.isValid
+    val isMatchedItemIdValid = matchedItemIdValidation.isValid
+    val isConfidenceValid = confidenceValidation.isValid
+    val isDateValid = dateValidation.isValid
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -423,7 +421,7 @@ fun ReceiptItemEditDialog(
                     }
                     if (!isQtyValid || !isTotalCostValid) {
                         Text(
-                            "Use non-negative quantity and total values, or leave quantity blank.",
+                            ReceiptItemInputValidator.QUANTITY_TOTAL_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -458,7 +456,7 @@ fun ReceiptItemEditDialog(
                     }
                     if (!isMatchedItemIdValid) {
                         Text(
-                            "Use a whole-number match ID or leave blank.",
+                            ReceiptItemInputValidator.MATCH_ID_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -485,14 +483,14 @@ fun ReceiptItemEditDialog(
                     }
                     if (!isConfidenceValid) {
                         Text(
-                            "Use a confidence value from 0 to 1.",
+                            ReceiptItemInputValidator.CONFIDENCE_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
                     }
                     if (!isDateValid) {
                         Text(
-                            "Use YYYY-MM-DD.",
+                            ReceiptItemInputValidator.DATE_ERROR,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -525,12 +523,12 @@ fun ReceiptItemEditDialog(
                     onSave(
                         receipt.copy(
                             rawLine = rawLine.trim(),
-                            matchedItemId = parsedMatchedItemId,
+                            matchedItemId = matchedItemIdValidation.parsedValue,
                             matchedType = matchedType.trim().ifBlank { null },
-                            qty = parsedQty,
-                            totalCost = parsedTotalCost ?: receipt.totalCost,
-                            date = parsedDate ?: receipt.date,
-                            confidence = parsedConfidence ?: receipt.confidence,
+                            qty = qtyValidation.parsedValue,
+                            totalCost = totalCostValidation.parsedValue ?: receipt.totalCost,
+                            date = dateValidation.parsedValue ?: receipt.date,
+                            confidence = confidenceValidation.parsedValue ?: receipt.confidence,
                             store = store.trim().ifBlank { null },
                             needsReview = needsReview
                         )
@@ -546,13 +544,4 @@ fun ReceiptItemEditDialog(
             }
         }
     )
-}
-
-private fun String.toLocalDateOrNull(): LocalDate? {
-    if (isBlank()) return null
-    return try {
-        LocalDate.parse(trim())
-    } catch (_: DateTimeParseException) {
-        null
-    }
 }
