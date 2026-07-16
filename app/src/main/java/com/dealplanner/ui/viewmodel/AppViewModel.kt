@@ -50,6 +50,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     // Flows
     val pantryItems = repository.allPantryItems.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val deals = repository.allDeals.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val receipts = repository.allReceipts.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val mealPlans = repository.allMealPlans.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val budgetState = repository.budgetState.stateIn(viewModelScope, SharingStarted.Lazily, null)
     val params = repository.params.stateIn(viewModelScope, SharingStarted.Lazily, null)
@@ -65,6 +66,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _dealsScanStatus = MutableStateFlow<String?>(null)
     val dealsScanStatus: StateFlow<String?> = _dealsScanStatus.asStateFlow()
+
+    private val _receiptScanStatus = MutableStateFlow<String?>(null)
+    val receiptScanStatus: StateFlow<String?> = _receiptScanStatus.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -307,28 +311,80 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Receipt reconciliation
-    fun processReceiptOCR(ocrText: String, store: String) {
+    fun processReceiptOCR(ocrText: String, store: String = "Unknown") {
         viewModelScope.launch {
+            importReceiptOcrText(ocrText, store)
+        }
+    }
+
+    fun processReceiptPhoto(bitmap: Bitmap, store: String = "Unknown") {
+        viewModelScope.launch {
+            importReceiptPhoto(bitmap, store)
+        }
+    }
+
+    fun processReceiptPhotoUri(uri: Uri, store: String = "Unknown") {
+        viewModelScope.launch {
+            val bitmap = loadBitmapFromUri(uri)
+            importReceiptPhoto(bitmap, store)
+        }
+    }
+
+    fun deleteReceipt(item: ReceiptItem) {
+        viewModelScope.launch {
+            repository.deleteReceipt(item)
+            updateBudgetAnalysis()
+        }
+    }
+
+    private suspend fun importReceiptPhoto(bitmap: Bitmap, store: String) {
+        _receiptScanStatus.value = "Reading receipt photo..."
+
+        try {
+            val ocrText = textRecognitionHelper.processImage(bitmap)
+            importReceiptOcrText(ocrText, store)
+        } catch (e: Exception) {
+            _receiptScanStatus.value = "Could not read that receipt photo. Try again with better lighting."
+        }
+    }
+
+    private suspend fun importReceiptOcrText(ocrText: String, store: String) {
+        val cleanedText = ocrText.trim()
+        if (cleanedText.isBlank()) {
+            _receiptScanStatus.value = "No receipt text found."
+            return
+        }
+
+        try {
             val currentDeals = repository.getAllDeals()
             val pantry = repository.getAllPantryItems()
+            val result = receiptReconciler.reconcileReceipt(cleanedText, currentDeals, pantry, store.ifBlank { "Unknown" })
 
-            val result = receiptReconciler.reconcileReceipt(ocrText, currentDeals, pantry, store)
+            if (result.receiptItems.isEmpty()) {
+                _receiptScanStatus.value = "No receipt line items found. Try a clearer photo or paste OCR text."
+                return
+            }
 
-            // Insert receipt items
             repository.insertReceipts(result.receiptItems)
-
-            // Update pantry quantities
             result.pantryUpdates.forEach { updatedItem ->
                 repository.updatePantryItem(updatedItem)
             }
 
-            // Update budget
             val currentBudget = repository.getBudget()
             if (currentBudget != null) {
                 val updatedBudget = budgetEngine.updateBudgetWithReceipt(currentBudget, result.total)
                 repository.updateBudget(updatedBudget)
                 updateBudgetAnalysis()
             }
+
+            _receiptScanStatus.value = buildString {
+                append("Added ${result.receiptItems.size} receipt item")
+                if (result.receiptItems.size != 1) append("s")
+                append(" (${ "$%.2f".format(result.total) })")
+                if (result.receiptItems.any { it.needsReview }) append(" with REVIEW checks")
+            }
+        } catch (e: Exception) {
+            _receiptScanStatus.value = "Could not process that receipt."
         }
     }
 
@@ -345,6 +401,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             // Clear existing data
             repository.deleteAllPantryItems()
             repository.deleteAllDeals()
+            repository.deleteAllReceipts()
             repository.deleteAllMealPlans()
 
             // Add pantry anchors

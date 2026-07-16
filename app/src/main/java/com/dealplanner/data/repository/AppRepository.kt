@@ -53,6 +53,7 @@ class AppRepository(
     suspend fun updateReceipt(item: ReceiptItem) = receiptDao.update(item)
     suspend fun deleteReceipt(item: ReceiptItem) = receiptDao.delete(item)
     suspend fun getReceipt(id: Long) = receiptDao.getById(id)
+    suspend fun deleteAllReceipts() = receiptDao.deleteAll()
 
     // Meal plan operations
     val allMealPlans: Flow<List<MealPlan>> = mealPlanDao.getAllFlow()

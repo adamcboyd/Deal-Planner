@@ -1,15 +1,15 @@
 # Deal Planner - Complete Project Summary
 
-## ✅ Project Status: COMPLETE & RUNNABLE
+## ✅ Project Status: BUILDABLE PHONE-TEST BASELINE
 
-This is a **fully functional**, production-ready MVP Android application that compiles and runs out of the box.
+This is a working Android MVP baseline that compiles, passes unit tests, builds a debug APK, and is ready for physical-phone testing.
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 40
+- **Total Kotlin Files**: 41
 - **Configuration Files**: 15
 - **Test Files**: 5 (comprehensive unit tests)
-- **Lines of Code**: ~3,500+
+- **Lines of Code**: ~3,800+
 
 ## 📁 Complete File Structure
 
@@ -53,9 +53,10 @@ Deal_Planner/
         │   │   └── ui/
         │   │       ├── viewmodel/AppViewModel.kt ✅ MVVM ViewModel
         │   │       ├── navigation/Screen.kt      ✅ Navigation setup
-        │   │       ├── screens/                  ✅ 6 Compose screens
+        │   │       ├── screens/                  ✅ 7 Compose screens
         │   │       │   ├── PantryScreen.kt
         │   │       │   ├── DealsScreen.kt
+        │   │       │   ├── ReceiptsScreen.kt
         │   │       │   ├── ShoppingListScreen.kt
         │   │       │   ├── MenuScreen.kt
         │   │       │   ├── BudgetScreen.kt
@@ -79,7 +80,7 @@ Deal_Planner/
             │   ├── PantryPhraseParserTest.kt  ✅ 11 test cases
             │   └── DealsParserTest.kt         ✅ 8 test cases
             └── domain/
-                ├── MealPlanningEngineTest.kt  ✅ 6 test cases
+                ├── MealPlanningEngineTest.kt  ✅ 5 test cases
                 ├── BudgetEngineTest.kt        ✅ 6 test cases
                 └── ReceiptReconcilerTest.kt   ✅ 7 test cases
 ```
@@ -115,6 +116,7 @@ Deal_Planner/
 - ✅ URI support for image selection
 - ✅ Pantry camera/gallery import
 - ✅ Flyer camera/gallery/PDF import
+- ✅ Receipt camera/gallery/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ ML Kit OCR fallback when Gemini is not configured
 
@@ -144,6 +146,7 @@ Deal_Planner/
 - ✅ **MainActivity**: Navigation + bottom bar
 - ✅ **PantryScreen**: Natural language input, photo/gallery import, VERIFY badges
 - ✅ **DealsScreen**: Flyer photo/gallery/PDF import, deal cards with scores, coupon flags
+- ✅ **ReceiptsScreen**: Receipt photo/gallery/manual text import, review flags, budget updates
 - ✅ **ShoppingListScreen**: Consolidated list with PPU
 - ✅ **MenuScreen**: 7-day plan with freezer directives
 - ✅ **BudgetScreen**: Balance, envelope, analysis, suggestions
@@ -160,7 +163,7 @@ Deal_Planner/
 ### 7. Unit Tests (40 Test Cases)
 - ✅ PantryPhraseParserTest (14 tests)
 - ✅ DealsParserTest (8 tests)
-- ✅ MealPlanningEngineTest (6 tests)
+- ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (6 tests)
 - ✅ ReceiptReconcilerTest (7 tests)
 
@@ -200,7 +203,7 @@ Deal_Planner/
 
 4. **Load Demo Data**:
    - Tap "Load Demo" button in top-right
-   - Explore all 6 tabs
+   - Explore all 7 tabs
 
 ## 📱 User Flows
 
@@ -214,6 +217,12 @@ Deal_Planner/
 1. Go to Deals tab
 2. Tap "Load Demo" to see sample deals
 3. View deal scores, PPU, coupon flags
+
+### Processing Receipts
+1. Go to Receipts tab
+2. Enter a store name
+3. Use Photo, Gallery, or pasted OCR text
+4. Receipt lines reconcile against pantry/deals and update budget spending
 
 ### Generating Meal Plan
 1. Go to Menu tab
@@ -288,7 +297,7 @@ score = 0.40 × (discount% / 100)
 - Confidence scoring (0-1)
 - VPP calculation: price / (weight / serving_size)
 
-## ✨ Production-Ready Features
+## ✨ Build-Ready Features
 
 - ✅ Error handling in all parsers
 - ✅ Null safety throughout
@@ -314,14 +323,15 @@ score = 0.40 × (discount% / 100)
 
 ## 🎯 What's Working
 
-Everything! This is a **complete, runnable MVP** that:
+This is a **buildable, runnable MVP baseline** that:
 - ✅ Compiles without errors
-- ✅ Runs on emulator/device
+- ✅ Builds a debug APK for emulator/device install
 - ✅ Loads demo data
 - ✅ Parses pantry items
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
-- ✅ Imports flyer deals from camera/gallery photos
+- ✅ Imports flyer deals from camera/gallery photos and PDFs
+- ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Tracks budget
@@ -340,13 +350,13 @@ Everything! This is a **complete, runnable MVP** that:
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
 - ✅ Receipt reconciliation engine
-- ✅ 6 Compose UI screens
+- ✅ 7 Compose UI screens
 - ✅ Demo data + seed function
 - ✅ 40 unit tests
 - ✅ Comprehensive README
-- ✅ No TODO stubs (all features implemented)
+- ✅ No placeholder blocking the core phone-test flow
 
-## 🎉 Ready to Use
+## 🎉 Ready to Test
 
 Simply:
 1. Open in Android Studio
@@ -357,4 +367,4 @@ Simply:
 
 ---
 
-**Built with ❤️ as a complete, production-ready MVP**
+**Built as a phone-testable Deal Planner MVP baseline**

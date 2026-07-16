@@ -15,6 +15,7 @@ Parameters → Deals + Pantry → Meals
 - **Pantry Management**: Natural language input parser with duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
 - **Deal Tracking**: Camera, gallery image, and PDF flyer OCR with regex parsing
+- **Receipt Tracking**: Camera/gallery/manual receipt OCR reconciliation
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
@@ -98,6 +99,8 @@ gemini.model=gemini-3.5-flash
 
 Do not commit `local.properties`; it is ignored by Git.
 
+A non-secret template is included at `local.properties.example`.
+
 ### Build & Run
 
 1. **Clone/Open Project**:
@@ -150,6 +153,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Pantry**: Add items via natural language (e.g., "2 cans black beans 15oz")
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, or import flyer PDFs and view deal scores/details
+   - **Receipts**: Scan receipt photos, choose receipt images, or paste OCR text to update spending
    - **Shopping**: See consolidated shopping list with PPU
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
@@ -204,6 +208,16 @@ ML Kit OCR extracts visible text, then the Deals parser looks for:
 - `Limit 2` (purchase limits)
 
 The built-in demo flyer covers the same formats.
+
+### Processing Receipts
+
+On the Receipts tab:
+
+1. Enter the store name, or leave it as `Unknown`.
+2. Paste receipt OCR text and tap **Process Text**, or use **Photo** / **Gallery**.
+3. The app reconciles receipt lines against current deals and pantry items.
+4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
+5. Low-confidence matches are marked with a review warning.
 
 ### Meal Planning
 
@@ -281,6 +295,7 @@ As of the latest local pass:
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
+- Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.
 - Phone install was not verified because `adb devices` showed no connected/authorized device.
 
@@ -298,6 +313,7 @@ As of the latest local pass:
 - [x] Camera/gallery pantry photo import
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
+- [x] Receipt photo/gallery/manual text import
 - [ ] Barcode scanning for pantry seeding
 - [ ] Nutrition lookup by verified brand/product/size
 - [ ] Export shopping list as PDF

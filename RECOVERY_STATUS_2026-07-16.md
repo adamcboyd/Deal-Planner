@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Current commit: `b1366ad chore: rename app to Deal Planner`
+- Pushed recovery checkpoint at start of follow-up work: `01e3dca docs: add recovery status checkpoint`
 
 ## Other Local Copies Found
 
@@ -63,6 +63,7 @@ Verified by build/unit tests/code inspection:
 - Receipt reconciliation engine has unit tests.
 - Pantry photo/gallery input exists.
 - Flyer photo/gallery/PDF input exists.
+- Receipt photo/gallery/manual text input exists.
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
 - Demo data loading exists.
@@ -72,6 +73,7 @@ Not yet verified on a real phone:
 - Camera capture UX.
 - Gallery import UX.
 - Flyer PDF picker UX.
+- Receipt photo/gallery/manual text UX.
 - ML Kit OCR quality on real pantry/flyer photos.
 - Gemini pantry photo API call.
 - Android permissions flow.
@@ -112,6 +114,9 @@ gemini.model=gemini-3.5-flash
    - Deals flyer photo.
    - Deals gallery image.
    - Deals PDF.
+   - Receipts photo.
+   - Receipts gallery image.
+   - Receipts pasted OCR text.
    - Generate meal plan.
    - Review shopping list.
    - Review budget.

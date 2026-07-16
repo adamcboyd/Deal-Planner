@@ -71,6 +71,11 @@ fun MainScreen(viewModel: AppViewModel) {
                         label = "Deals"
                     ),
                     NavigationItem(
+                        screen = Screen.Receipts,
+                        icon = Icons.Default.ReceiptLong,
+                        label = "Receipts"
+                    ),
+                    NavigationItem(
                         screen = Screen.ShoppingList,
                         icon = Icons.Default.ShoppingCart,
                         label = "Shopping"
@@ -128,6 +133,9 @@ fun NavigationHost(navController: NavHostController, viewModel: AppViewModel) {
         }
         composable(Screen.Deals.route) {
             DealsScreen(viewModel = viewModel)
+        }
+        composable(Screen.Receipts.route) {
+            ReceiptsScreen(viewModel = viewModel)
         }
         composable(Screen.ShoppingList.route) {
             ShoppingListScreen(viewModel = viewModel)

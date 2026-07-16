@@ -1,0 +1,6 @@
+# Copy this file to local.properties and fill in only on your machine.
+# Never commit the real local.properties file.
+
+# Optional: enables Gemini Vision pantry photo extraction.
+gemini.api.key=YOUR_GEMINI_API_KEY
+gemini.model=gemini-3.5-flash
