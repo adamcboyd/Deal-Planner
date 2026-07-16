@@ -186,7 +186,7 @@ The parser handles:
 
 On the Pantry tab:
 
-1. Tap **Photo** to capture an item, or **Gallery** to choose an image.
+1. Tap **Photo** to capture a full-resolution app-cache image, or **Gallery** to choose an image.
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
 3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate.
 4. Missing brand, amount, size, or expiration information is marked with a VERIFY badge and notes such as "What is the brand? Use Generic if none."
@@ -195,7 +195,7 @@ On the Pantry tab:
 
 On the Deals tab, use one of three input paths:
 
-1. **Take Flyer Photo** captures a flyer image without saving it to the camera roll.
+1. **Take Flyer Photo** captures a full-resolution app-cache flyer image without saving it to the camera roll.
 2. **Choose Flyer Image** imports an existing screenshot or photo.
 3. **Choose Flyer PDF** renders PDF pages locally and OCRs them with ML Kit.
 
@@ -215,7 +215,7 @@ The built-in demo flyer covers the same formats.
 On the Receipts tab:
 
 1. Enter the store name, or leave it as `Unknown`.
-2. Paste receipt OCR text and tap **Process Text**, or use **Photo** / **Gallery**.
+2. Paste receipt OCR text and tap **Process Text**, or use **Photo** / **Gallery**. Photo capture uses a full-resolution app-cache image for better OCR.
 3. The app reconciles receipt lines against current deals and pantry items.
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Low-confidence matches are marked with a review warning.
@@ -304,6 +304,7 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - Pantry parser handles quantity, brand, size, location, dates, low-confidence review flags, and duplicate merging.
 - Deals parser handles price/lb, N-for-X, buy-N-get-M, percent-off, Member Price/coupon flags, and limits.
+- Camera capture uses app-private full-resolution image files instead of low-resolution preview bitmaps.
 - Deals screen imports flyer photos, gallery images, and PDFs through ML Kit OCR.
 - Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation.
 - Receipt reconciliation handles fuzzy matching and split receipt quantity lines.

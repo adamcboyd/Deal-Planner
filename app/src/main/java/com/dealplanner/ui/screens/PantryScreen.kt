@@ -2,6 +2,7 @@ package com.dealplanner.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.dealplanner.data.model.PantryItem
+import com.dealplanner.ui.camera.CapturePhotoUriFactory
 import com.dealplanner.ui.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,12 +32,15 @@ fun PantryScreen(viewModel: AppViewModel) {
     val pantryItems by viewModel.pantryItems.collectAsState()
     val pantryPhotoStatus by viewModel.pantryPhotoStatus.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            viewModel.processPantryPhoto(bitmap)
+        contract = ActivityResultContracts.TakePicture()
+    ) { saved ->
+        val uri = pendingCameraUri
+        pendingCameraUri = null
+        if (saved && uri != null) {
+            viewModel.processPantryPhotoUri(uri)
         }
     }
 
@@ -51,7 +56,9 @@ fun PantryScreen(viewModel: AppViewModel) {
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraLauncher.launch(null)
+            val uri = CapturePhotoUriFactory.create(context, "pantry")
+            pendingCameraUri = uri
+            cameraLauncher.launch(uri)
         }
     }
 
@@ -98,7 +105,9 @@ fun PantryScreen(viewModel: AppViewModel) {
                             ) == PackageManager.PERMISSION_GRANTED
 
                             if (hasPermission) {
-                                cameraLauncher.launch(null)
+                                val uri = CapturePhotoUriFactory.create(context, "pantry")
+                                pendingCameraUri = uri
+                                cameraLauncher.launch(uri)
                             } else {
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }

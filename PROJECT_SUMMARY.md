@@ -6,10 +6,10 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 42
+- **Total Kotlin Files**: 43
 - **Configuration Files**: 15
 - **Test Files**: 6 (comprehensive unit tests)
-- **Lines of Code**: ~3,900+
+- **Lines of Code**: ~4,000+
 
 ## 📁 Complete File Structure
 
@@ -51,6 +51,7 @@ Deal_Planner/
         │   │   │   ├── BudgetEngine.kt           ✅ Budget tracking
         │   │   │   └── ReceiptReconciler.kt      ✅ Fuzzy matching
         │   │   └── ui/
+        │   │       ├── camera/CapturePhotoUriFactory.kt ✅ Full-resolution capture URIs
         │   │       ├── viewmodel/AppViewModel.kt ✅ MVVM ViewModel
         │   │       ├── navigation/Screen.kt      ✅ Navigation setup
         │   │       ├── screens/                  ✅ 7 Compose screens
@@ -72,6 +73,8 @@ Deal_Planner/
         │       │   └── colors.xml     ✅ Color palette
         │       ├── drawable/
         │       │   └── ic_launcher_foreground.xml  ✅ Launcher icon
+        │       ├── xml/
+        │       │   └── file_paths.xml              ✅ FileProvider cache paths
         │       └── mipmap-anydpi-v26/
         │           ├── ic_launcher.xml             ✅ Adaptive icon
         │           └── ic_launcher_round.xml       ✅ Round icon
@@ -116,6 +119,7 @@ Deal_Planner/
 - ✅ ML Kit Text Recognition helper
 - ✅ Bitmap processing
 - ✅ URI support for image selection
+- ✅ Full-resolution app-cache camera capture
 - ✅ Pantry camera/gallery import
 - ✅ Flyer camera/gallery/PDF import
 - ✅ Receipt camera/gallery/manual text import
@@ -320,6 +324,7 @@ score = 0.40 × (discount% / 100)
 - ✅ Android-first, phone-only MVP
 - ✅ Kotlin + Jetpack Compose
 - ✅ Room (SQLite) for all data
+- ✅ App-cache photo capture so OCR photos do not clutter the camera roll
 - ✅ ML Kit on-device OCR
 - ✅ ZXing barcode support (stub ready)
 - ✅ Optional cloud AI for pantry photos, with on-device OCR fallback
@@ -335,6 +340,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Parses pantry items
 - ✅ Imports pantry items from camera/gallery photos
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
+- ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Imports flyer deals from camera/gallery photos and PDFs
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text

@@ -64,6 +64,7 @@ Verified by build/unit tests/code inspection:
 - Pantry photo/gallery input exists.
 - Flyer photo/gallery/PDF input exists.
 - Receipt photo/gallery/manual text input exists.
+- Camera capture now uses full-resolution app-cache image files for pantry, flyer, and receipt OCR.
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
@@ -73,6 +74,7 @@ Verified by build/unit tests/code inspection:
 Not yet verified on a real phone:
 
 - Camera capture UX.
+- Full-resolution app-cache camera URI behavior on the physical phone.
 - Gallery import UX.
 - Flyer PDF picker UX.
 - Receipt photo/gallery/manual text UX.
