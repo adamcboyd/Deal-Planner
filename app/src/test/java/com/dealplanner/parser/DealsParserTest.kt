@@ -120,6 +120,45 @@ class DealsParserTest {
     }
 
     @Test
+    fun `parse flyer prices when OCR drops dollar signs`() {
+        val text = """
+            Chicken Breast
+            2.99/lb
+
+            Kroger Pasta
+            10 for 10
+
+            Yellow Onions
+            3 lb bag 2.99
+
+            Store Pasta
+            16.00 oz
+            1.49
+        """.trimIndent()
+
+        val result = parser.parse(text, "Kroger")
+
+        assertThat(result.deals).hasSize(4)
+
+        val chicken = result.deals.first { it.name == "Chicken Breast" }
+        assertThat(chicken.price).isEqualTo(2.99)
+        assertThat(chicken.unit).isEqualTo("lb")
+        assertThat(chicken.dealType).isEqualTo("per_pound")
+
+        val pasta = result.deals.first { it.name == "Kroger Pasta" }
+        assertThat(pasta.price).isEqualTo(1.0)
+        assertThat(pasta.dealType).isEqualTo("n_for_x")
+
+        val onions = result.deals.first { it.name == "Yellow Onions" }
+        assertThat(onions.price).isEqualTo(2.99)
+        assertThat(onions.sizeText).isEqualTo("3 lb")
+
+        val pastaSize = result.deals.first { it.name == "Store Pasta 16.00 oz" }
+        assertThat(pastaSize.price).isEqualTo(1.49)
+        assertThat(pastaSize.sizeText).isEqualTo("16.00 oz")
+    }
+
+    @Test
     fun `parse demo flyer style multiline modifiers`() {
         val text = """
             Pork Shoulder Roast

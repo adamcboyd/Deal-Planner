@@ -83,7 +83,7 @@ Deal_Planner/
             │   └── GeminiPantryVisionClientTest.kt ✅ 5 test cases
             ├── parser/
             │   ├── PantryPhraseParserTest.kt  ✅ 19 test cases
-            │   └── DealsParserTest.kt         ✅ 11 test cases
+            │   └── DealsParserTest.kt         ✅ 12 test cases
             └── domain/
                 ├── MealPlanningEngineTest.kt  ✅ 5 test cases
                 ├── BudgetEngineTest.kt        ✅ 10 test cases
@@ -110,6 +110,7 @@ Deal_Planner/
 - ✅ **DealsParser**:
   - $X.XX/lb pattern
   - Plain package prices such as 3 lb bag $2.99
+  - Dollar/no-dollar flyer OCR price parsing
   - N for $X pattern
   - Buy N Get M pattern
   - Percent off pattern
@@ -176,10 +177,10 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (62 Test Cases)
+### 7. Unit Tests (63 Test Cases)
 - ✅ GeminiPantryVisionClientTest (5 tests)
 - ✅ PantryPhraseParserTest (19 tests)
-- ✅ DealsParserTest (11 tests)
+- ✅ DealsParserTest (12 tests)
 - ✅ MealPlanningEngineTest (5 tests)
 - ✅ BudgetEngineTest (10 tests)
 - ✅ ReceiptReconcilerTest (12 tests)
@@ -236,6 +237,7 @@ Deal_Planner/
 2. Enter a store name or leave it as Unknown
 3. Use Photo, Gallery, PDF, pasted OCR text, or tap "Load Demo" to see sample deals
 4. View deal scores, PPU, coupon flags
+5. Flyer prices can include or omit dollar signs
 
 ### Processing Receipts
 1. Go to Receipts tab
@@ -362,6 +364,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Tests Gemini key/model/network connectivity from Settings
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
+- ✅ Parses flyer prices with or without dollar signs
 - ✅ Parses bundled demo flyer structures including package prices, multi-line names, limits, coupons, and BOGO modifiers
 - ✅ Imports receipt items from camera/gallery photos or pasted OCR text
 - ✅ Lets users correct receipt OCR/reconciliation output and review status
@@ -395,7 +398,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Receipt review/edit flow
 - ✅ 7 Compose UI screens
 - ✅ Repeatable demo data + seed function
-- ✅ 62 unit tests
+- ✅ 63 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 
