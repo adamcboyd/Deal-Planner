@@ -239,6 +239,12 @@ if (Test-Path ".\PHONE_TEST_CHECKLIST_2026-07-16.md") {
     Add-Check $results "Phone checklist" "WARN" "Phone checklist file not found."
 }
 
+if (Test-Path ".\scripts\phone-debug-logs.ps1") {
+    Add-Check $results "Phone log helper" "OK" "scripts\phone-debug-logs.ps1 is present for crash/log capture."
+} else {
+    Add-Check $results "Phone log helper" "WARN" "Log helper not found; phone failures may be harder to diagnose."
+}
+
 Write-Host ""
 $failCount = @($results | Where-Object { $_.Status -eq "FAIL" }).Count
 $warnCount = @($results | Where-Object { $_.Status -eq "WARN" }).Count

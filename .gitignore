@@ -6,6 +6,7 @@
 /build
 **/build/
 /captures
+/phone-test-logs/
 .externalNativeBuild
 .cxx
 local.properties

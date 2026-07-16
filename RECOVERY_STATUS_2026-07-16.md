@@ -510,6 +510,23 @@ Latest continuation gate after Gemini API error-summary work:
 
 Result: `BUILD SUCCESSFUL`, with `115` unit tests detected and `0 errors, 21 warnings`.
 
+Latest phone log helper checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-logs.ps1 -Help
+.\scripts\phone-debug-preflight.ps1
+```
+
+Result: log helper help printed successfully, all PowerShell helper scripts parsed successfully, and preflight recognized `scripts\phone-debug-logs.ps1`.
+
+Latest continuation gate after phone log helper work:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`, with `115` unit tests detected and `0 errors, 21 warnings`.
+
 Additional check:
 
 ```powershell
@@ -542,6 +559,7 @@ Phone install helper:
 
 Use `.\scripts\phone-debug-preflight.ps1` to check repo/APK/ADB/Gemini/barcode lookup readiness before installing.
 Use `.\scripts\phone-debug-install.ps1 -SkipBuild` after the APK is already built and app source/resources/build config plus Gemini/local configuration have not changed.
+Use `.\scripts\phone-debug-logs.ps1` to capture device metadata, full logcat, and a Deal Planner/crash-filtered log if a real-phone test fails. Captured logs write to ignored local `phone-test-logs\`.
 
 Phone test checklist:
 
@@ -556,6 +574,7 @@ Verified by build/unit tests/code inspection:
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK once ADB sees an authorized phone.
 - `scripts\phone-debug-preflight.ps1` reports repo, APK, ADB/phone, Gemini, and Open Food Facts readiness without printing secrets.
 - `scripts\phone-debug-preflight.ps1` warns when app source/resources/build config or `local.properties` are newer than `app-debug.apk`, and `scripts\phone-debug-install.ps1 -SkipBuild` refuses that stale APK so app code and Gemini key/model values must be rebuilt before phone testing.
+- `scripts\phone-debug-logs.ps1` is available for phone-test crash/log capture and writes local logs under ignored `phone-test-logs\`.
 - Bottom navigation labels are now backed by string resources while preserving the visible tab labels.
 - Room local database and repository layer compile.
 - Pantry natural-language parser has unit tests.
@@ -685,6 +704,12 @@ gemini.model=gemini-3.5-flash
 
 ```powershell
 .\scripts\phone-debug-install.ps1
+```
+
+Optional if anything fails on the phone:
+
+```powershell
+.\scripts\phone-debug-logs.ps1 -Clear -Launch -DurationSeconds 90
 ```
 
 7. Test in this order:

@@ -158,6 +158,20 @@ If the debug APK is already built and you only want to reinstall/launch on a con
 
 Use `-SkipBuild` only when you have not changed app code/resources, Gradle config, `local.properties`, or Gemini environment values since the APK was built.
 
+Phone log capture helper:
+
+```powershell
+.\scripts\phone-debug-logs.ps1
+```
+
+Before reproducing a phone-only failure, use:
+
+```powershell
+.\scripts\phone-debug-logs.ps1 -Clear -Launch -DurationSeconds 90
+```
+
+Logs are saved under `phone-test-logs\`, which is ignored by Git. Start with `logcat-dealplanner-filtered.txt` when debugging a failure.
+
 Debug APK output:
 
 ```text
@@ -380,6 +394,7 @@ As of the latest local pass:
 - Unit tests pass with `testDebugUnitTest`.
 - `scripts\phone-debug-install.ps1` can build, verify, install, and launch the debug APK when an authorized Android phone is connected.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
+- `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Load Demo resets pantry, deals, receipts, meal plans, default meal settings, and the demo budget baseline.
 - Menu Generate deterministically rebuilds and replaces the active generated week so repeated phone-test taps do not duplicate meal-plan rows.

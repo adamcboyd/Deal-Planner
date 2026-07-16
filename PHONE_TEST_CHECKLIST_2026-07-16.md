@@ -30,6 +30,20 @@ If the APK is already built:
 
 Do not use `-SkipBuild` after changing app code/resources, Gradle config, `local.properties`, or Gemini environment values. The install helper blocks a stale APK when app source/config or `local.properties` is newer than `app-debug.apk`.
 
+If a phone-only issue appears, capture logs from the same project folder:
+
+```powershell
+.\scripts\phone-debug-logs.ps1
+```
+
+To clear old logs, launch the app, wait while you reproduce the issue, and then save logs:
+
+```powershell
+.\scripts\phone-debug-logs.ps1 -Clear -Launch -DurationSeconds 90
+```
+
+Start debugging with `phone-test-logs\<timestamp>\logcat-dealplanner-filtered.txt`.
+
 ## Optional Gemini Setup
 
 The app works without Gemini by using on-device ML Kit OCR fallback. To test Gemini pantry photo recognition, create `local.properties` locally:
