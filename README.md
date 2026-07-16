@@ -251,7 +251,7 @@ On the Pantry tab:
 On the Pantry tab:
 
 1. Tap **Scan** to scan a product barcode, or type/paste a code into **Barcode / UPC** and tap **Add Code**.
-2. Deal Planner accepts plain UPC/EAN/GTIN digits or pasted label text such as `UPC: 0 12345-67890 5`, then looks up the cleaned code with Open Food Facts when the phone has network access. If pasted label text also has item numbers or dates, labeled UPC/EAN/GTIN text is preferred.
+2. Deal Planner accepts plain UPC/EAN/GTIN digits or pasted label text such as `UPC: 0 12345-67890 5`, then looks up the cleaned code with Open Food Facts when the phone has network access. If pasted label text also has item numbers or dates, labeled UPC/EAN/GTIN text is preferred and date/item/lot/SKU numbers are ignored when no barcode label is present.
 3. If a product is found, Deal Planner creates a VERIFY pantry item with the product name, brand, package quantity, barcode, and lookup source in notes.
 4. If lookup misses or the phone is offline, Deal Planner still creates a reviewable barcode item with the code saved in notes.
 5. If the text is blank or does not contain an 8-14 digit product barcode, Deal Planner shows `No barcode found.` instead of creating a junk pantry row.
@@ -412,7 +412,7 @@ As of the latest local pass:
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
 - Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
-- Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, and rejects non-code text.
+- Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, and rejects non-code date, item, lot, SKU, or plain text.
 - Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal quantity corrections.
 - Pantry edit quantity blocks invalid or negative values with visible validation instead of silently preserving the old quantity.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.

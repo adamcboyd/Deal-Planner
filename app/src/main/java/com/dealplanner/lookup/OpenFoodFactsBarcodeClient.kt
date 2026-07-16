@@ -5,6 +5,9 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.net.HttpURLConnection
 import java.net.URLEncoder
 import java.net.URL
@@ -97,6 +100,9 @@ class OpenFoodFactsBarcodeClient(
 
         val compact = trimmed.replace(Regex("""[\s-]+"""), "")
         if (compact.isProductBarcode()) {
+            if (compact.looksLikeCalendarDateCode() && dateSeparatorPattern.containsMatchIn(trimmed)) {
+                return ""
+            }
             return compact
         }
 
@@ -107,13 +113,16 @@ class OpenFoodFactsBarcodeClient(
 
         val digitRuns = productBarcodePattern.findAll(compact)
             .map { it.value }
+            .filterNot { it.looksLikeCalendarDateCode() }
             .toList()
         if (digitRuns.isNotEmpty()) {
+            if (nonBarcodeNumberCuePattern.containsMatchIn(trimmed)) {
+                return ""
+            }
             return digitRuns.first()
         }
 
-        val digitsOnly = trimmed.filter { it.isDigit() }
-        return if (digitsOnly.isProductBarcode()) digitsOnly else ""
+        return ""
     }
 
     private fun buildProductUrl(barcode: String): URL {
@@ -184,10 +193,32 @@ class OpenFoodFactsBarcodeClient(
         return all { it.isDigit() } && length in 8..14
     }
 
+    private fun String.looksLikeCalendarDateCode(): Boolean {
+        if (length != 8 || any { !it.isDigit() }) return false
+
+        return barcodeDateFormats.any { formatter ->
+            try {
+                LocalDate.parse(this, formatter)
+                true
+            } catch (_: DateTimeParseException) {
+                false
+            }
+        }
+    }
+
     private companion object {
         private val productBarcodePattern = Regex("""\d{8,14}""")
         private val labeledBarcodePattern = Regex(
             """(?i)\b(?:upc|ean|gtin|barcode|bar\s*code)\b[^0-9]{0,20}((?:\d[\s-]*){8,14})"""
+        )
+        private val dateSeparatorPattern = Regex("""\b(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4})\b""")
+        private val nonBarcodeNumberCuePattern = Regex(
+            """(?i)\b(?:best\s*by|best\s*before|use\s*by|exp(?:iration|iry)?|opened|date|item\s*(?:#|no\.?|number)?|lot|batch|sku|plu)\b"""
+        )
+        private val barcodeDateFormats = listOf(
+            DateTimeFormatter.BASIC_ISO_DATE,
+            DateTimeFormatter.ofPattern("MMddyyyy"),
+            DateTimeFormatter.ofPattern("ddMMyyyy")
         )
     }
 }
