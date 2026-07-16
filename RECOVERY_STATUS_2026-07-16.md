@@ -1131,10 +1131,10 @@ Verified by build/unit tests/code inspection:
 - Flyer imports are store-aware instead of defaulting every scanned deal to `Unknown`, and flyer store names are trimmed with blank values defaulted to `Unknown`.
 - Flyer deals can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Flyer deal edit/review numeric fields accept comma-decimal and leading-decimal corrections for price, PPU, discount, score, and confidence, and block invalid values with visible validation.
-- Receipt photo/gallery/manual text input exists.
+- Receipt photo/gallery/PDF/manual text input exists.
 - Receipt pasted-text import shows processing status, keeps pasted text available when parsing finds no receipt line items, and clears it only after successful receipt import.
 - Receipt imports trim store names and default blank values to `Unknown`.
-- Receipt items can be edited/reviewed after photo, gallery, or pasted OCR import.
+- Receipt items can be edited/reviewed after photo, gallery, PDF, or pasted OCR import.
 - Receipt edit/review numeric fields accept comma-decimal and leading-decimal corrections for quantity, total, and confidence, and block invalid quantity, total, match ID, and confidence values with visible validation.
 - Bundled `demo_receipt.txt` parses into the expected 8 grocery items for the deterministic phone checklist pasted-text receipt test, ignores the EBT/card tender line, applies the `Date: 10/27/2025` header, and totals `$40.65`.
 - Bundled `demo_receipt.txt` also has unit coverage for the phone checklist appended tender lines `VISA DEBIT $40.65` and `CARD TENDER $40.65`.
@@ -1187,7 +1187,7 @@ Not yet verified on a real phone:
 - Flyer PDF picker UX.
 - Flyer pasted OCR text UX.
 - Store-aware flyer import UX.
-- Receipt photo/gallery/manual text UX.
+- Receipt photo/gallery/PDF/manual text UX.
 - ML Kit OCR quality on real pantry/flyer photos.
 - Gemini pantry photo API call.
 - Android permissions flow.
@@ -1280,8 +1280,9 @@ Optional before the phone test run:
    - Deals edit/review dialog for low-confidence OCR results.
    - Deals edit/review dialog comma-decimal and leading-decimal numeric correction such as price `2,99` or `.99`.
    - Receipts photo.
-   - Receipts camera-permission denial, canceled capture/gallery status, and external camera/gallery launch-failure status if reproducible.
+   - Receipts camera-permission denial, canceled capture/gallery/PDF status, and external camera/gallery/PDF launch-failure status if reproducible.
    - Receipts gallery image.
+   - Receipts PDF.
    - Receipts pasted OCR text.
    - Receipts pasted OCR text with prices missing dollar signs.
    - Receipts pasted OCR text with comma-decimal prices such as `BLACK BEANS 1,78` and `2 @ 0,89`.

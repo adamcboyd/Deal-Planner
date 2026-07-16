@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -88,6 +89,16 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
         }
     }
 
+    val pdfPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.processReceiptPdfUri(uri, storeName)
+        } else {
+            viewModel.reportReceiptPdfSelectionCanceled()
+        }
+    }
+
     fun launchReceiptCamera() {
         try {
             val uri = CapturePhotoUriFactory.create(context, "receipt")
@@ -104,6 +115,14 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
             photoPickerLauncher.launch("image/*")
         } catch (e: Exception) {
             viewModel.reportReceiptGalleryLaunchFailed()
+        }
+    }
+
+    fun launchReceiptPdfPicker() {
+        try {
+            pdfPickerLauncher.launch("application/pdf")
+        } catch (e: Exception) {
+            viewModel.reportReceiptPdfLaunchFailed()
         }
     }
 
@@ -214,6 +233,15 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                         Text("Gallery")
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { launchReceiptPdfPicker() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.PictureAsPdf, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("PDF")
+                }
                 if (receiptScanStatus != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -237,7 +265,7 @@ fun ReceiptsScreen(viewModel: AppViewModel) {
                             .padding(32.dp)
                     ) {
                         Text(
-                            "No receipts yet. Add a receipt photo, gallery image, or pasted text.",
+                            "No receipts yet. Add a receipt photo, gallery image, PDF, or pasted text.",
                             modifier = Modifier.padding(24.dp),
                             style = MaterialTheme.typography.bodyLarge
                         )

@@ -15,7 +15,7 @@ Parameters → Deals + Pantry → Meals
 - **Pantry Management**: Natural language input, barcode/code lookup/intake, and duplicate detection
 - **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
 - **Deal Tracking**: Camera, gallery image, PDF, and pasted flyer OCR with regex parsing
-- **Receipt Tracking**: Camera/gallery/manual receipt OCR reconciliation
+- **Receipt Tracking**: Camera, gallery image, PDF, and manual receipt OCR reconciliation
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
@@ -308,7 +308,7 @@ Tap the edit icon on any deal card to correct OCR guesses for item name, price, 
 On the Receipts tab:
 
 1. Enter the store name, or leave it as `Unknown`.
-2. Paste receipt OCR text and tap **Process Text**, or use **Photo** / **Gallery**. Photo capture uses a full-resolution app-cache image for better OCR.
+2. Paste receipt OCR text and tap **Process Text**, or use **Photo**, **Gallery**, or **PDF**. Photo capture uses a full-resolution app-cache image for better OCR; PDF import renders pages locally before OCR.
 3. The app reconciles receipt lines against current deals and pantry items.
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
@@ -452,14 +452,14 @@ As of the latest local pass:
 - Camera/gallery image open failures show on-screen recovery messages instead of failing silently.
 - Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with trimmed, store-aware deal creation.
-- Receipts screen imports receipt photos, gallery images, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names.
+- Receipts screen imports receipt photos, gallery images, PDFs, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names.
 - The bundled demo receipt used by the phone checklist is covered by unit tests.
 - Receipt reconciliation handles fuzzy matching and split or inline weighted receipt quantity lines, including price-per-pound produce lines.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available.
 - Receipt reconciliation accepts item totals and inline quantity lines when OCR drops dollar signs, omits leading zeroes in prices such as `.89`, or uses comma decimals.
 - Receipt reconciliation ignores subtotal, tax, total, savings, coupon, discount, reward, refund, SNAP/EBT/WIC benefit tender, and payment/card-tender lines.
 - Receipt reconciliation rounds imported receipt totals to cents before budget updates.
-- Receipt cards can be edited after photo, gallery, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
+- Receipt cards can be edited after photo, gallery, PDF, or pasted OCR import so review warnings can be corrected during phone testing, including comma-decimal and leading-decimal quantity, total, match ID, and confidence corrections with visible validation for invalid numeric values.
 - Receipt imports, edits, and deletes adjust budget spending totals, daily envelope, and receipt-aware projected spend.
 - Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
@@ -495,7 +495,7 @@ As of the latest local pass:
 - [ ] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Pasted flyer OCR text import
-- [x] Receipt photo/gallery/manual text import
+- [x] Receipt photo/gallery/PDF/manual text import
 - [x] Deal review/edit flow after flyer OCR/PDF/text import
 - [x] Receipt review/edit flow after OCR import
 - [x] Barcode product lookup by verified UPC/EAN

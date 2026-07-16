@@ -516,6 +516,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun processReceiptPdfUri(uri: Uri, store: String = "Unknown") {
+        viewModelScope.launch {
+            importReceiptPdf(uri, store)
+        }
+    }
+
     fun reportReceiptPhotoCaptureCanceled() {
         _receiptScanStatus.value = "Receipt photo canceled."
     }
@@ -530,6 +536,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reportReceiptGalleryLaunchFailed() {
         _receiptScanStatus.value = "Could not open receipt gallery. Try Photo or pasted text."
+    }
+
+    fun reportReceiptPdfSelectionCanceled() {
+        _receiptScanStatus.value = "Receipt PDF selection canceled."
+    }
+
+    fun reportReceiptPdfLaunchFailed() {
+        _receiptScanStatus.value = "Could not open receipt PDF picker. Try Photo, Gallery, or pasted text."
     }
 
     fun reportReceiptCameraPermissionDenied() {
@@ -571,6 +585,20 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             importReceiptOcrText(ocrText, store)
         } catch (e: Exception) {
             _receiptScanStatus.value = "Could not read that receipt photo. Try again with better lighting."
+        }
+    }
+
+    private suspend fun importReceiptPdf(uri: Uri, store: String) {
+        _receiptScanStatus.value = "Reading receipt PDF..."
+
+        try {
+            val pageTexts = renderPdfPages(uri).mapIndexed { index, bitmap ->
+                _receiptScanStatus.value = "Reading receipt PDF page ${index + 1}..."
+                textRecognitionHelper.processImage(bitmap)
+            }
+            importReceiptOcrText(pageTexts.joinToString("\n\n"), store)
+        } catch (e: Exception) {
+            _receiptScanStatus.value = "Could not read that receipt PDF. Try screenshots or receipt photos."
         }
     }
 
