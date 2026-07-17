@@ -2,6 +2,7 @@ param(
     [switch]$Help,
     [switch]$RequirePhone,
     [switch]$RequireGemini,
+    [switch]$TestGeminiLive,
     [switch]$SkipNetwork,
     [string]$JavaHome = "C:\Program Files\Java\jdk-20",
     [string]$PackageName = "com.dealplanner",
@@ -16,11 +17,12 @@ function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\scripts\phone-debug-preflight.ps1"
     Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone"
-    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini"
+    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini -TestGeminiLive"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -RequirePhone    Fail if no connected and authorized Android phone is visible."
     Write-Host "  -RequireGemini   Fail if a real Gemini key/build cannot be verified for AI testing."
+    Write-Host "  -TestGeminiLive  Make a short live Gemini API call without printing the key."
     Write-Host "  -SkipNetwork     Skip GitHub and Open Food Facts network checks."
     Write-Host "  -JavaHome PATH   Java home used for readiness checks. Default: C:\Program Files\Java\jdk-20"
     Write-Host "  -PackageName ID  Expected Android package. Default: com.dealplanner"
@@ -502,6 +504,36 @@ if ($apkInfo -and (Test-Path $localPropertiesPath)) {
     Add-Check $results "Gemini APK freshness" $status "GEMINI_* environment values cannot be timestamp-checked against app-debug.apk. Rebuild before AI phone testing if they changed."
 } elseif ($RequireGemini -and $apkInfo) {
     Add-Check $results "Gemini APK freshness" "FAIL" "Gemini was required, but no local.properties or GEMINI_* configuration was available to verify against app-debug.apk."
+}
+
+if ($TestGeminiLive) {
+    if ($SkipNetwork) {
+        Add-Check $results "Gemini live API" "WARN" "Skipped because -SkipNetwork was used."
+    } else {
+        $geminiTestScript = Join-Path $PSScriptRoot "test-gemini-connection.ps1"
+        if (-not (Test-Path $geminiTestScript)) {
+            Add-Check $results "Gemini live API" "FAIL" "scripts\test-gemini-connection.ps1 was not found."
+        } else {
+            $geminiOutput = @(& powershell -NoProfile -ExecutionPolicy Bypass -File $geminiTestScript 2>&1)
+            $geminiExitCode = $LASTEXITCODE
+            $summaryLine = @(
+                $geminiOutput |
+                    Where-Object { $_ -match "^\[(OK|FAIL)\]" } |
+                    Select-Object -Last 1
+            )
+            $summary = if ($summaryLine.Count -gt 0) {
+                $summaryLine[0]
+            } else {
+                ($geminiOutput -join " ").Trim()
+            }
+
+            if ($geminiExitCode -eq 0) {
+                Add-Check $results "Gemini live API" "OK" $summary
+            } else {
+                Add-Check $results "Gemini live API" "FAIL" $summary
+            }
+        }
+    }
 }
 
 if ($apkInfo) {

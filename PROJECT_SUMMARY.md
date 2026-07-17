@@ -172,6 +172,7 @@ Deal_Planner/
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - ✅ Settings screen AI configuration status and Gemini connection test
+- ✅ Local non-secret Gemini live connection script for pre-phone AI setup verification
 - ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling, hyphenated package-size multi-item splitting, wrapped date continuation handling, and edit-before-save staging
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
@@ -223,7 +224,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (239 Test Cases)
+### 7. Unit Tests (256 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -438,6 +439,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Keeps manual barcode, pasted flyer, and pasted receipt text available after failed imports while clearing only after successful imports
 - ✅ Shows Gemini/OCR fallback status in Settings
 - ✅ Tests Gemini key/model/network connectivity from Settings
+- ✅ Tests Gemini key/model/network connectivity locally before phone testing without printing the key
 - ✅ Validates Settings protein-per-meal values with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans
 - ✅ Imports store-aware flyer deals from camera/gallery photos, PDFs, and pasted OCR text
@@ -502,7 +504,8 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Settings build identity display sourced from `BuildConfig`
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper with on-device package verification
-- ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
+- ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, optional live Gemini API check, and stale source/Gemini APK warnings
+- ✅ PowerShell Gemini live connection helper for pre-phone AI setup verification without printing secrets
 - ✅ Phone preflight/install helpers give specific ADB recovery guidance for no-device and unauthorized/offline states
 - ✅ PowerShell feature readiness report helper can run the local gate, separate local source/test evidence from remaining Android phone and real-Gemini checks, audit the Deal Planner naming transition, account for cached unit/lint report timestamps after a successful gate, and flag stale APK evidence
 - ✅ One-command phone test starter writes setup status/setup mode on success and a failure-state report with stopping reason if setup stops early

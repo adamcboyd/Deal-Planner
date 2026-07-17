@@ -1,6 +1,7 @@
 param(
     [switch]$Help,
     [switch]$RequireGemini,
+    [switch]$TestGeminiLive,
     [switch]$SkipNetwork,
     [switch]$SkipBuild,
     [switch]$NoLaunch,
@@ -16,7 +17,7 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\start-phone-test-run.ps1"
-    Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini"
+    Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
     Write-Host "What it does:"
@@ -29,6 +30,7 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -RequireGemini  Also require a compiled real Gemini key/model before continuing."
+    Write-Host "  -TestGeminiLive Make a short live Gemini API call during preflight without printing the key."
     Write-Host "  -SkipNetwork    Skip GitHub and Open Food Facts checks during preflight."
     Write-Host "  -SkipBuild      Reuse the existing debug APK after install-helper freshness checks."
     Write-Host "  -NoLaunch       Install but do not launch the app."
@@ -93,11 +95,14 @@ if (-not (Test-Path $JavaHome)) {
 $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
 $script:reportCreated = $false
-$setupMode = "RequireGemini=$($RequireGemini.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
+$setupMode = "RequireGemini=$($RequireGemini.IsPresent); TestGeminiLive=$($TestGeminiLive.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
 
 $preflightArgs = @("-RequirePhone", "-JavaHome", $JavaHome)
 if ($RequireGemini) {
     $preflightArgs += "-RequireGemini"
+}
+if ($TestGeminiLive) {
+    $preflightArgs += "-TestGeminiLive"
 }
 if ($SkipNetwork) {
     $preflightArgs += "-SkipNetwork"

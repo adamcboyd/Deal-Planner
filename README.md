@@ -107,6 +107,11 @@ A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks with concise API error summaries.
 The default `gemini-3.5-flash` model code is the stable Gemini 3.5 Flash ID listed in the official Google AI Gemini model docs and supports image inputs plus structured output. The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
 Gemini requests use the model's default sampling settings and only specify output shape/size, reducing the chance that hardcoded sampling parameters drift from current Gemini 3.x guidance.
+Before the final phone AI pass, you can run a local live API check without printing the key:
+
+```powershell
+.\scripts\test-gemini-connection.ps1
+```
 
 ### Build & Run
 
@@ -146,9 +151,10 @@ Command-line phone install helper:
 .\scripts\start-phone-test-run.ps1
 .\scripts\phone-debug-preflight.ps1
 .\scripts\new-feature-readiness-report.ps1 -RunGate
+.\scripts\test-gemini-connection.ps1
 ```
 
-`start-phone-test-run.ps1` is the one-command setup for an authorized Android phone: it runs required-phone preflight, creates and copies deterministic sample files, installs/launches the debug APK, and creates a timestamped report with setup status and setup mode. If setup fails before the final report step, it creates a failure-state report with the stopping reason unless `-SkipReport` was used. Use `.\scripts\start-phone-test-run.ps1 -RequireGemini` for the final AI phone pass after adding a real Gemini key and rebuilding. The preflight helper checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, compiled Gemini key/model readiness without printing secrets, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration, and Open Food Facts barcode lookup reachability. If no phone is ready, the helper reports whether ADB saw no devices or saw an unauthorized/offline phone, then names the next action: connect the phone, enable Developer options > USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and rerun after `adb devices` shows `device`.
+`start-phone-test-run.ps1` is the one-command setup for an authorized Android phone: it runs required-phone preflight, creates and copies deterministic sample files, installs/launches the debug APK, and creates a timestamped report with setup status and setup mode. If setup fails before the final report step, it creates a failure-state report with the stopping reason unless `-SkipReport` was used. Use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive` for the final AI phone pass after adding a real Gemini key and rebuilding. The preflight helper checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, compiled Gemini key/model readiness without printing secrets, optional live Gemini API connectivity without printing secrets, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration, and Open Food Facts barcode lookup reachability. If no phone is ready, the helper reports whether ADB saw no devices or saw an unauthorized/offline phone, then names the next action: connect the phone, enable Developer options > USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and rerun after `adb devices` shows `device`.
 `new-feature-readiness-report.ps1` creates an ignored timestamped readiness report that separates local source/test evidence from phone-only checks for each input path and AI feature. Use `-RunGate` when you need a current recovery snapshot; it runs `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` before writing the report, treats that successful gate as current unit/lint evidence even when cached report-file timestamps do not move, then flags stale APK evidence, an APK source identity that does not match the current clean `HEAD`, or a failed Deal Planner naming-transition audit.
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-install.ps1 -Help` to list available phone-test options.
@@ -156,7 +162,7 @@ Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-instal
 For the final AI phone pass after adding a real Gemini key and rebuilding, run the stricter starter so the generated phone-test report records `RequireGemini=True` in its setup mode:
 
 ```powershell
-.\scripts\start-phone-test-run.ps1 -RequireGemini
+.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive
 ```
 
 Without `-RequireGemini`, missing Gemini configuration remains a warning because the app can still use on-device OCR fallback.
@@ -454,6 +460,7 @@ As of the latest local pass:
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` print specific ADB recovery guidance when no phone is visible or a phone is unauthorized/offline.
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
 - `scripts\phone-debug-preflight.ps1` verifies the local branch is clean, points at `adamcboyd/Deal-Planner`, is synced with its upstream, matches the GitHub branch SHA when network checks are enabled, and reports the generated debug `BuildConfig` source identity and compiled Gemini key/model readiness that Settings should reflect on the phone.
+- `scripts\test-gemini-connection.ps1` performs an optional short live Gemini API check from `local.properties` or `GEMINI_API_KEY` without printing the key, and `-TestGeminiLive` wires that into preflight/starter runs.
 - `scripts\new-feature-readiness-report.ps1 -RunGate` creates an ignored timestamped feature readiness matrix under `phone-test-results\`, runs the local unit/build/lint gate first, shows which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence, audits the Deal Planner app label/package/project naming transition, treats the successful gate as current unit/lint evidence even if Gradle reuses cached report files, and flags stale APK evidence or an APK source identity that does not match the current clean `HEAD`.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, current lint snapshot when available, latest sample folder/manifest, latest sample transfer report when available, setup status/mode/failure reason when provided, and device context.

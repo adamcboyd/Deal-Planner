@@ -2693,3 +2693,40 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `256` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-182456\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after live Gemini preflight helper work:
+
+AI setup checkpoint:
+
+- Added `scripts\test-gemini-connection.ps1` for a short local live Gemini API check before the phone AI pass.
+- The helper reads `local.properties` or `GEMINI_API_KEY`, prints the model and key source, and never prints the key value.
+- Added `-TestGeminiLive` to `scripts\phone-debug-preflight.ps1` and `scripts\start-phone-test-run.ps1` so the final AI setup can require both compiled APK Gemini readiness and a real API response.
+- The normal no-key/OCR-fallback phone path still works without the live API check.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, generated phone reports, and feature readiness reports were updated so the final AI phone pass is `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive`.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$content = Get-Content -Raw -LiteralPath "scripts\test-gemini-connection.ps1"; $null = [scriptblock]::Create($content); "test-gemini-connection.ps1 parsed"'
+powershell -NoProfile -Command '$content = Get-Content -Raw -LiteralPath "scripts\phone-debug-preflight.ps1"; $null = [scriptblock]::Create($content); "phone-debug-preflight.ps1 parsed"'
+powershell -NoProfile -Command '$content = Get-Content -Raw -LiteralPath "scripts\start-phone-test-run.ps1"; $null = [scriptblock]::Create($content); "start-phone-test-run.ps1 parsed"'
+powershell -NoProfile -Command '$content = Get-Content -Raw -LiteralPath "scripts\new-phone-test-report.ps1"; $null = [scriptblock]::Create($content); "new-phone-test-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-gemini-connection.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-gemini-connection.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -TestGeminiLive -SkipNetwork
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -TestGeminiLive
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -SetupStatus "Preflight only" -SetupMode "RequireGemini=True; TestGeminiLive=True; SkipNetwork=False; SkipBuild=False; NoLaunch=False; SkipSamples=False"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1
+git diff --check
+```
+
+Result: parse and help checks passed. The no-key local Gemini script intentionally exited `1` with `No non-placeholder Gemini key found` and did not print a key. Preflight with `-TestGeminiLive -SkipNetwork` exited `0` and marked `Gemini live API` as skipped. Preflight with `-TestGeminiLive` intentionally exited `1` in the current no-key state and marked `Gemini live API` as failed before any phone setup. Generated ignored report `phone-test-results\20260716-183451\PHONE_TEST_REPORT.md` included the new `TestGeminiLive=True` setup-mode rows, and generated ignored report `phone-test-results\20260716-183451\FEATURE_READINESS_REPORT.md` included `scripts\test-gemini-connection.ps1` in the Settings/Gemini evidence list. `git diff --check` passed with line-ending warnings only.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `256` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-183536\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

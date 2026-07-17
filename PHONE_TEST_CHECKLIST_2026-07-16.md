@@ -21,7 +21,7 @@ adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Use `start-phone-test-run.ps1` for the normal phone setup path. It runs required-phone preflight, generates/transfers deterministic sample files, installs/launches the app, and creates a report with `Setup status: Completed` plus the setup mode that was used. Use `start-phone-test-run.ps1 -RequireGemini` for the final AI phone pass after adding a real Gemini key and rebuilding. If setup fails before the final report step, it creates a failure-state report with `Setup status: Failed`, setup mode, and the stopping reason unless `-SkipReport` was used. If running helpers individually, expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. If no phone is ready, preflight/install should say whether ADB listed no devices or a phone was unauthorized/offline, then prompt to enable USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and retry after `adb devices` shows `device`. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
+Use `start-phone-test-run.ps1` for the normal phone setup path. It runs required-phone preflight, generates/transfers deterministic sample files, installs/launches the app, and creates a report with `Setup status: Completed` plus the setup mode that was used. Use `start-phone-test-run.ps1 -RequireGemini -TestGeminiLive` for the final AI phone pass after adding a real Gemini key and rebuilding. If setup fails before the final report step, it creates a failure-state report with `Setup status: Failed`, setup mode, and the stopping reason unless `-SkipReport` was used. If running helpers individually, expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. If no phone is ready, preflight/install should say whether ADB listed no devices or a phone was unauthorized/offline, then prompt to enable USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and retry after `adb devices` shows `device`. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
 Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:
@@ -53,7 +53,7 @@ To create a timestamped report before or during the phone run:
 .\scripts\new-phone-test-report.ps1
 ```
 
-Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes the repo commit, compiled APK source branch/commit/dirty state, current lint snapshot when available, latest sample folder/manifest, and sample transfer report when available. The Setup Run Summary records whether the starter completed, failed, or was not recorded, plus whether strict Gemini mode was requested.
+Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes the repo commit, compiled APK source branch/commit/dirty state, current lint snapshot when available, latest sample folder/manifest, and sample transfer report when available. The Setup Run Summary records whether the starter completed, failed, or was not recorded, plus whether strict Gemini mode and the optional live Gemini API check were requested.
 
 For a local recovery snapshot before the phone run:
 
@@ -92,13 +92,19 @@ Then rebuild and reinstall:
 .\scripts\phone-debug-install.ps1
 ```
 
-Before the AI-specific phone pass, verify the key, rebuilt APK, and connected phone are all ready by running the strict starter:
+Before the AI-specific phone pass, verify the key and model can answer locally without printing the key:
 
 ```powershell
-.\scripts\start-phone-test-run.ps1 -RequireGemini
+.\scripts\test-gemini-connection.ps1
 ```
 
-Expected with a real key after rebuild: preflight reports `Gemini key`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `Setup mode` with `RequireGemini=True`, `APK Gemini configured: True`, and `APK Gemini model: gemini-3.5-flash`.
+Then verify the rebuilt APK, live Gemini call, and connected phone are all ready by running the strict starter:
+
+```powershell
+.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive
+```
+
+Expected with a real key after rebuild: preflight reports `Gemini key`, `Gemini live API`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `Setup mode` with `RequireGemini=True; TestGeminiLive=True`, `APK Gemini configured: True`, and `APK Gemini model: gemini-3.5-flash`.
 Current official Google AI docs list `gemini-3.5-flash` as the stable Gemini 3.5 Flash model code with image input and structured output support. Deal Planner uses that model code by default and keeps Gemini 3.x sampling defaults instead of hardcoding temperature/top-p/top-k values.
 
 Do not commit `local.properties`.
@@ -286,18 +292,19 @@ In `Settings`:
 1. Without `local.properties`, confirm text says Gemini is not configured and OCR fallback is active.
 2. Tap `Test AI Connection`.
 3. Expected without key: status reports that Gemini API key is not configured.
-4. With a real key and rebuilt APK, tap `Test AI Connection`.
-5. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
-6. In the preflight/report output, confirm `APK Gemini configured` is true and `APK Gemini model` is `gemini-3.5-flash` before testing photos.
-7. If the key/model/network is wrong, expected: status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
-8. With key configured, test pantry photo recognition against a real pantry item label.
-9. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
-10. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
-11. If Gemini imports an item with a zero or negative amount, confirm it falls back to quantity 1.0, shows VERIFY, and notes include `Review amount/unit.`.
-12. If Gemini imports an item with Generic or unknown brand details, including punctuated text such as `Generic:` or `Unknown.`, confirm the pantry item shows VERIFY and notes include `Review brand.`.
-13. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
-14. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
-15. Open at least one AI-imported pantry item in the edit dialog and confirm saved unit/location text is clean and canonical, such as plural cans saved as `can`, fluid ounces saved as `oz`, and refrigerator/cold-storage wording saved as `fridge`.
+4. With a real key configured locally, run `.\scripts\test-gemini-connection.ps1` and confirm it reports `Gemini connection OK` without printing the key.
+5. With a real key and rebuilt APK, tap `Test AI Connection`.
+6. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
+7. In the preflight/report output, confirm `Gemini live API` is OK, `APK Gemini configured` is true, and `APK Gemini model` is `gemini-3.5-flash` before testing photos.
+8. If the key/model/network is wrong, expected: script/preflight/UI status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
+9. With key configured, test pantry photo recognition against a real pantry item label.
+10. Use at least one item with a visible sell-by, use-by, best-by, or expiration label date, then confirm that date is imported or preserved for review.
+11. If Gemini imports an item with unclear amount/unit details, confirm the pantry item shows VERIFY and notes include `Review amount/unit.`.
+12. If Gemini imports an item with a zero or negative amount, confirm it falls back to quantity 1.0, shows VERIFY, and notes include `Review amount/unit.`.
+13. If Gemini imports an item with Generic or unknown brand details, including punctuated text such as `Generic:` or `Unknown.`, confirm the pantry item shows VERIFY and notes include `Review brand.`.
+14. If Gemini imports an item with unclear pantry/fridge/freezer location, confirm the pantry item shows VERIFY and notes include `Review pantry/fridge/freezer location.`.
+15. If Gemini imports an item without a clear expiration or best-by date, confirm the pantry item shows VERIFY and notes include `Review expiration or best-by date.`.
+16. Open at least one AI-imported pantry item in the edit dialog and confirm saved unit/location text is clean and canonical, such as plural cans saved as `can`, fluid ounces saved as `oz`, and refrigerator/cold-storage wording saved as `fridge`.
 
 ## Settings Save Check
 
