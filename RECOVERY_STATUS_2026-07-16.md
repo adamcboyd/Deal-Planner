@@ -2965,3 +2965,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `259` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-184332\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after current-status helper work:
+
+Recovery helper checkpoint:
+
+- Added `scripts\show-current-status.ps1` as a read-only lost-context snapshot helper.
+- The helper prints the current repo root, branch, commit, GitHub remote/sync state, git status, debug APK path/source identity, Gemini key/model readiness without printing secrets, ADB phone visibility, latest phone/readiness report paths, latest sample folder, and the exact normal/AI phone-test commands.
+- The helper does not build, install, call the network, or call Gemini, so it is safe to run before opening Android Studio, before plugging in the phone, or after a chat/context failure.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and the generated feature-readiness report template now list the status helper as part of the phone-test/recovery baseline.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\show-current-status.ps1")); "show-current-status.ps1 parsed"'
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\show-current-status.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\show-current-status.ps1
+git diff --check
+```
+
+Result: parse/help checks passed. The status helper correctly reported branch `codex/deal-planner-baseline`, commit `4a1fe23`, GitHub remote `https://github.com/adamcboyd/Deal-Planner.git`, no authorized Android phone, no real local/env Gemini key, no compiled APK Gemini key, model `gemini-3.5-flash`, latest phone report `phone-test-results\20260716-211513\PHONE_TEST_REPORT.md`, latest feature readiness report `phone-test-results\20260716-212108\FEATURE_READINESS_REPORT.md`, and sample folder `phone-test-samples\20260716-210435`. `git diff --check` passed with line-ending warnings only.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `265` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `23` warnings. The dirty-state readiness report `phone-test-results\20260716-212108\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

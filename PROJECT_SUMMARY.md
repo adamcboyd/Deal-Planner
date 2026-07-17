@@ -228,7 +228,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (256 Test Cases)
+### 7. Unit Tests (265 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -269,6 +269,15 @@ Deal_Planner/
 | Target SDK | 36 |
 
 ## 🚀 How to Build & Run
+
+For a quick lost-context checkpoint before opening Android Studio or plugging in the phone:
+
+```powershell
+cd C:\Users\adamc\AndroidStudioProjects\Deal_Planner
+.\scripts\show-current-status.ps1
+```
+
+This read-only helper prints the current branch/commit, debug APK source identity, Gemini readiness without printing secrets, ADB phone visibility, latest report/sample paths, and the next normal/AI phone-test commands.
 
 1. **Open in Android Studio**:
    ```bash
