@@ -189,6 +189,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-r
 
 Result: parse/help checks passed, help documents `-WaitForPhone` and `-WaitSeconds`, the wait-enabled starter timed out as expected in the current no-phone state with concrete ADB authorization guidance instead of running required-phone preflight immediately, and the Gradle gate stayed green. With a connected authorized phone, the normal setup path can use `.\scripts\start-phone-test-run.ps1 -WaitForPhone`; the final AI pass can use `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage`.
 
+Latest wait-enabled report template checkpoint:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-phone-test-report.ps1")); "new-phone-test-report.ps1 parsed"'
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result: parse checks passed, generated phone reports point the install/launch and final AI checklist at `.\scripts\start-phone-test-run.ps1 -WaitForPhone`, and generated feature readiness reports list `.\scripts\start-phone-test-run.ps1 -WaitForPhone` as the required phone setup evidence plus `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage` as the final AI setup evidence.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

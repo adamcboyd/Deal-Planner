@@ -484,7 +484,7 @@ $features = @(
         -Area "Current source, APK, and repo identity" `
         -Evidence @("gradlew.bat", "settings.gradle.kts", "app\build.gradle.kts", "scripts\phone-debug-preflight.ps1", "scripts\phone-debug-install.ps1") `
         -LocalChecks @("Git branch/remote", "APK source BuildConfig", "preflight helper") `
-        -PhoneCheck "Run .\scripts\start-phone-test-run.ps1 with an authorized Android phone." `
+        -PhoneCheck "Run .\scripts\start-phone-test-run.ps1 -WaitForPhone with an authorized Android phone." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Deal Planner naming transition" `
@@ -532,13 +532,13 @@ $features = @(
         -Area "Settings and Gemini connection test" `
         -Evidence @("app\src\main\java\com\dealplanner\ui\screens\ParamsScreen.kt", "app\src\main\java\com\dealplanner\ui\state\SettingsInputValidator.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ui\state\SettingsInputValidatorTest.kt", "scripts\test-gemini-connection.ps1", "local.properties.example") `
         -LocalChecks @("Gemini missing-key/error summary tests", "settings numeric validation tests", "custom restriction normalization tests", "BuildConfig Gemini snapshot", "optional live Gemini text/image script") `
-        -PhoneCheck "Verify no-key fallback and custom avoid-list save, then rebuild with real key and run text/image Test AI Connection plus pantry AI photo. For final AI setup, use -TestGeminiLive -TestGeminiImage." `
+        -PhoneCheck "Verify no-key fallback and custom avoid-list save, then rebuild with real key and run text/image Test AI Connection plus pantry AI photo. For final AI setup, use -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Phone test helpers and deterministic samples" `
         -Evidence @("scripts\start-phone-test-run.ps1", "scripts\new-phone-test-samples.ps1", "scripts\send-phone-test-samples.ps1", "scripts\new-phone-test-report.ps1", "scripts\phone-debug-logs.ps1", "PHONE_TEST_CHECKLIST_2026-07-16.md") `
         -LocalChecks @("sample generator verify mode", "preflight/install/report helper parse checks", "checklist coverage") `
-        -PhoneCheck "Run one-command phone setup, complete checklist, and attach generated report/logs for failures." `
+        -PhoneCheck "Run one-command phone setup with -WaitForPhone, complete checklist, and attach generated report/logs for failures." `
         -GateGreen $gateGreen
 )
 
@@ -614,9 +614,9 @@ $($namingAudit.Details)
 ## Next Required External Evidence
 
 - Authorized Android phone visible in adb devices as device.
-- `.\scripts\start-phone-test-run.ps1` completed and generated a phone report with `Setup status: Completed`.
+- `.\scripts\start-phone-test-run.ps1 -WaitForPhone` completed and generated a phone report with `Setup status: Completed`.
 - Manual checklist results recorded for every input path in `PHONE_TEST_CHECKLIST_2026-07-16.md`.
-- Real Gemini key configured locally, APK rebuilt, `.\scripts\phone-debug-preflight.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage` passed, and Settings -> Test AI Connection reported text and image OK.
+- Real Gemini key configured locally, APK rebuilt, `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage` completed, and Settings -> Test AI Connection reported text and image OK.
 - Pantry Gemini photo import verified on the phone with reviewable VERIFY notes.
 "@
 
