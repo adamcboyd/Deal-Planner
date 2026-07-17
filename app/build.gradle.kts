@@ -140,7 +140,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
 
     // ML Kit Text Recognition
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // ZXing for barcode
     implementation("com.google.zxing:core:3.5.2")

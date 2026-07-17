@@ -255,7 +255,7 @@ Deal_Planner/
 | Language | Kotlin 1.9.20 |
 | UI | Jetpack Compose + Material 3 |
 | Database | Room 2.6.1 |
-| OCR | ML Kit Text Recognition 16.0.0 |
+| OCR | ML Kit Text Recognition 16.0.1 |
 | AI Vision | Optional Gemini API |
 | Barcode | ZXing 3.5.2 + JourneyApps scanner |
 | Coroutines | Kotlinx Coroutines 1.7.3 |

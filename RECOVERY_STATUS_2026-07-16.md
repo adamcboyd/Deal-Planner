@@ -106,7 +106,15 @@ Latest Android 16/API 36 target checkpoint:
 .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
 ```
 
-Result: `BUILD SUCCESSFUL`. The app now compiles and targets SDK 36, matching the locally installed Android 16 platform and current Google Play API-level direction for new apps/updates. The build toolchain was aligned to Android Gradle Plugin `8.13.2` and Gradle wrapper `8.14.5`, so the previous unsupported compile SDK warning is gone. The obsolete `android.enableDexingArtifactTransform=false` property was removed because AGP removed it after 8.3, and debug `BuildConfig` Git metadata now uses Gradle's provider-based exec API instead of deprecated project `exec`. The current lint snapshot is `0` errors and `33` warnings: dependency update advisories, three ML Kit 16 KB native-library alignment warnings, one obsolete launcher resource-folder warning, and two KTX suggestions. `--warning-mode all` still reports plugin/tooling deprecation warnings for Gradle 9/10 compatibility, so a later Kotlin/Compose/plugin modernization pass remains useful before store-readiness polish.
+Result: `BUILD SUCCESSFUL`. The app now compiles and targets SDK 36, matching the locally installed Android 16 platform and current Google Play API-level direction for new apps/updates. The build toolchain was aligned to Android Gradle Plugin `8.13.2` and Gradle wrapper `8.14.5`, so the previous unsupported compile SDK warning is gone. The obsolete `android.enableDexingArtifactTransform=false` property was removed because AGP removed it after 8.3, and debug `BuildConfig` Git metadata now uses Gradle's provider-based exec API instead of deprecated project `exec`. `--warning-mode all` still reports plugin/tooling deprecation warnings for Gradle 9/10 compatibility, so a later Kotlin/Compose/plugin modernization pass remains useful before store-readiness polish.
+
+Latest ML Kit OCR fallback dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. ML Kit Text Recognition was updated from `16.0.0` to `16.0.1`, keeping the no-key on-device OCR fallback current enough to remove the three `Aligned16KB` native-library lint warnings. The current lint snapshot is `0` errors and `29` warnings: dependency update advisories, one obsolete launcher resource-folder warning, and two KTX suggestions.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
