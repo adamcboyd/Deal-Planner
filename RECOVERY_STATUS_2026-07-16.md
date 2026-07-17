@@ -7,13 +7,13 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after APK source identity freshness work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after one-command phone starter build/preflight ordering work; confirm the exact commit with `git log -1 --oneline`.
 - Previous pushed app-code checkpoint: `dab9add fix: refresh generated menu with shopping`
 - Previous pushed helper checkpoint: `9664a3c chore: add live gemini setup check`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest full local gate used `testDebugUnitTest assembleDebug lintDebug`.
-- Recent full readiness report before the APK identity guard update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184702\FEATURE_READINESS_REPORT.md`
-- Recent phone test report template before the APK identity guard update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184711\PHONE_TEST_REPORT.md`
+- Recent full readiness report before the starter build/preflight ordering update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-185600\FEATURE_READINESS_REPORT.md`
+- Recent phone test report template before the starter build/preflight ordering update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-185552\PHONE_TEST_REPORT.md`
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - `BuildConfig` generation tracks Git branch/SHA/dirty state as Gradle task inputs. If the branch head changes, rebuild before phone testing so Settings -> About and generated reports point at the current source.
 
@@ -38,7 +38,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner
 
 Do not continue current app work in:
 
-- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer` - stale same-remote checkout at `b1366ad`, while GitHub `codex/deal-planner-baseline` is `dab9add`.
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer` - stale same-remote checkout at `b1366ad`, behind the current `codex/deal-planner-baseline` branch head.
 - `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer_BROKEN` or `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer.new` - 2025 SNAP Optimizer folders on the old `com.snapoptimizer` package.
 - `F:\PROJECTS\...` Deal Planner/SNAP folders - legacy/reference material unless an explicit archival comparison task is opened.
 
@@ -63,6 +63,15 @@ Latest APK source identity guard checkpoint:
 ```
 
 Expected result after committing and rebuilding: `BUILD SUCCESSFUL`; preflight reports `0 failure(s)` with only the expected no-phone/no-Gemini warnings, and `APK source identity` matches the current `git log -1 --oneline` commit.
+
+Latest one-command phone starter ordering checkpoint:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -SkipNetwork -SkipSamples -NoLaunch
+```
+
+Expected local no-phone result: the starter builds the current debug APK first unless `-SkipBuild` is used, then required-phone preflight stops at the expected no connected/authorized phone condition and writes a failure-state phone-test report. With a connected authorized phone, this means strict Gemini runs inspect the rebuilt APK instead of an older BuildConfig.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 

@@ -21,11 +21,12 @@ function Show-Usage {
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
     Write-Host "What it does:"
-    Write-Host "  1. Runs phone preflight with -RequirePhone."
-    Write-Host "  2. Creates deterministic TXT, PDF, PNG, pantry-label, and UPC-A barcode samples."
-    Write-Host "  3. Copies those samples to the phone Downloads folder and verifies transfer."
-    Write-Host "  4. Builds/installs/launches the debug APK."
-    Write-Host "  5. Creates a timestamped phone-test report."
+    Write-Host "  1. Builds the current debug APK unless -SkipBuild is used."
+    Write-Host "  2. Runs phone preflight with -RequirePhone against the APK that will be installed."
+    Write-Host "  3. Creates deterministic TXT, PDF, PNG, pantry-label, and UPC-A barcode samples."
+    Write-Host "  4. Copies those samples to the phone Downloads folder and verifies transfer."
+    Write-Host "  5. Installs/launches the debug APK."
+    Write-Host "  6. Creates a timestamped phone-test report."
     Write-Host "     If setup fails before that step, a failure-state report is still created unless -SkipReport is used."
     Write-Host ""
     Write-Host "Options:"
@@ -56,6 +57,20 @@ function Invoke-Helper {
     Write-Host ""
     Write-Host "==> $Label"
     & powershell -NoProfile -ExecutionPolicy Bypass -File $ScriptPath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Label failed with exit code $LASTEXITCODE."
+    }
+}
+
+function Invoke-Step {
+    param(
+        [string]$Label,
+        [scriptblock]$Command
+    )
+
+    Write-Host ""
+    Write-Host "==> $Label"
+    & $Command
     if ($LASTEXITCODE -ne 0) {
         throw "$Label failed with exit code $LASTEXITCODE."
     }
@@ -109,6 +124,12 @@ if ($SkipNetwork) {
 }
 
 try {
+    if (-not $SkipBuild) {
+        Invoke-Step "Build current debug APK" {
+            .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+        }
+    }
+
     Invoke-Helper "Phone preflight" (Join-Path $PSScriptRoot "phone-debug-preflight.ps1") $preflightArgs
 
     if (-not $SkipSamples) {
@@ -116,10 +137,7 @@ try {
         Invoke-Helper "Copy deterministic samples to phone" (Join-Path $PSScriptRoot "send-phone-test-samples.ps1")
     }
 
-    $installArgs = @("-JavaHome", $JavaHome)
-    if ($SkipBuild) {
-        $installArgs += "-SkipBuild"
-    }
+    $installArgs = @("-JavaHome", $JavaHome, "-SkipBuild")
     if ($NoLaunch) {
         $installArgs += "-NoLaunch"
     }

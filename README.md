@@ -155,12 +155,12 @@ Command-line phone install helper:
 .\scripts\test-gemini-connection.ps1
 ```
 
-`start-phone-test-run.ps1` is the one-command setup for an authorized Android phone: it runs required-phone preflight, creates and copies deterministic sample files, installs/launches the debug APK, and creates a timestamped report with setup status and setup mode. If setup fails before the final report step, it creates a failure-state report with the stopping reason unless `-SkipReport` was used. Use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive` for the final AI phone pass after adding a real Gemini key and rebuilding. The preflight helper checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, compiled Gemini key/model readiness without printing secrets, optional live Gemini API connectivity without printing secrets, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration, and Open Food Facts barcode lookup reachability. If no phone is ready, the helper reports whether ADB saw no devices or saw an unauthorized/offline phone, then names the next action: connect the phone, enable Developer options > USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and rerun after `adb devices` shows `device`.
+`start-phone-test-run.ps1` is the one-command setup for an authorized Android phone: it builds the current debug APK unless `-SkipBuild` is used, runs required-phone preflight against that APK, creates and copies deterministic sample files, installs/launches the APK, and creates a timestamped report with setup status and setup mode. If setup fails before the final report step, it creates a failure-state report with the stopping reason unless `-SkipReport` was used. Use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive` for the final AI phone pass after adding a real Gemini key; the starter rebuilds first unless `-SkipBuild` is explicitly used. The preflight helper checks the repo state, GitHub origin/upstream sync, debug APK, APK identity/permissions, generated `BuildConfig` source branch/commit/dirty state, compiled Gemini key/model readiness without printing secrets, optional live Gemini API connectivity without printing secrets, APK freshness against app source/resources/build config, ADB/device visibility, Gemini configuration, and Open Food Facts barcode lookup reachability. If no phone is ready, the helper reports whether ADB saw no devices or saw an unauthorized/offline phone, then names the next action: connect the phone, enable Developer options > USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and rerun after `adb devices` shows `device`.
 `new-feature-readiness-report.ps1` creates an ignored timestamped readiness report that separates local source/test evidence from phone-only checks for each input path and AI feature. Use `-RunGate` when you need a current recovery snapshot; it runs `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` before writing the report, treats that successful gate as current unit/lint evidence even when cached report-file timestamps do not move, then flags stale APK evidence, an APK source identity that does not match the current clean `HEAD`, or a failed Deal Planner naming-transition audit.
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-install.ps1 -Help` to list available phone-test options.
 
-For the final AI phone pass after adding a real Gemini key and rebuilding, run the stricter starter so the generated phone-test report records `RequireGemini=True` in its setup mode:
+For the final AI phone pass after adding a real Gemini key, run the stricter starter so the generated phone-test report records `RequireGemini=True` and `TestGeminiLive=True` in its setup mode:
 
 ```powershell
 .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive
@@ -178,7 +178,7 @@ If the debug APK is already built and you only want to reinstall/launch on a con
 .\scripts\phone-debug-install.ps1 -SkipBuild
 ```
 
-Use `-SkipBuild` only when you have not changed app code/resources, Gradle config, `local.properties`, or Gemini environment values since the APK was built.
+Use `-SkipBuild` only when you have not changed app code/resources, Gradle config, `local.properties`, Gemini environment values, or Git branch/head state since the APK was built.
 
 Phone log capture helper:
 
@@ -456,7 +456,7 @@ As of the latest local pass:
 - Builds debug APK successfully.
 - Unit tests pass with `testDebugUnitTest`.
 - `scripts\phone-debug-install.ps1` can build, verify, print generated APK source/Gemini identity, install, confirm the package on-device, and launch the debug APK when an authorized Android phone is connected.
-- `scripts\start-phone-test-run.ps1` orchestrates required-phone preflight, sample generation/transfer, debug APK install/launch, and timestamped report creation for the real Android run, including setup status/setup mode on success and failure-state report creation with the stopping reason when setup stops early and `-SkipReport` was not used.
+- `scripts\start-phone-test-run.ps1` builds the current debug APK first unless `-SkipBuild` is used, then orchestrates required-phone preflight, sample generation/transfer, debug APK install/launch, and timestamped report creation for the real Android run, including setup status/setup mode on success and failure-state report creation with the stopping reason when setup stops early and `-SkipReport` was not used.
 - `scripts\phone-debug-install.ps1 -SkipBuild` refuses to install an APK older than app source/resources/build config or `local.properties`, preventing stale code or Gemini key/model values from reaching the phone.
 - `scripts\phone-debug-preflight.ps1` and `scripts\phone-debug-install.ps1` print specific ADB recovery guidance when no phone is visible or a phone is unauthorized/offline.
 - `scripts\phone-debug-install.ps1` and `scripts\phone-debug-preflight.ps1` inspect `app-debug.apk` with Android SDK `aapt` when available, confirming the APK is `com.dealplanner` / `Deal Planner`, includes network/camera permissions, and does not request broad storage/media permissions before phone testing.
