@@ -24,6 +24,7 @@ import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
 import com.dealplanner.ui.export.ShoppingListPdfExporter
+import com.dealplanner.ui.state.PantryImportReviewQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -70,6 +71,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _shoppingList = MutableStateFlow<List<MealPlanningEngine.ShoppingListItem>>(emptyList())
     val shoppingList: StateFlow<List<MealPlanningEngine.ShoppingListItem>> = _shoppingList.asStateFlow()
+
+    private val _pendingPantryReviewItems = MutableStateFlow<List<PantryItem>>(emptyList())
+    val pendingPantryReviewItems: StateFlow<List<PantryItem>> = _pendingPantryReviewItems.asStateFlow()
 
     private val _shoppingListExportStatus = MutableStateFlow<String?>(null)
     val shoppingListExportStatus: StateFlow<String?> = _shoppingListExportStatus.asStateFlow()
@@ -155,6 +159,50 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updatePendingPantryReviewItem(index: Int, item: PantryItem) {
+        _pendingPantryReviewItems.value = PantryImportReviewQueue.updateAt(
+            _pendingPantryReviewItems.value,
+            index,
+            item
+        )
+        _pantryPhotoStatus.value = "Updated pending pantry review item."
+    }
+
+    fun removePendingPantryReviewItem(index: Int) {
+        _pendingPantryReviewItems.value = PantryImportReviewQueue.removeAt(
+            _pendingPantryReviewItems.value,
+            index
+        )
+        _pantryPhotoStatus.value = if (_pendingPantryReviewItems.value.isEmpty()) {
+            "No pending pantry imports."
+        } else {
+            "Removed pending pantry review item."
+        }
+    }
+
+    fun clearPendingPantryReviewItems() {
+        _pendingPantryReviewItems.value = emptyList()
+        _pantryPhotoStatus.value = "Cleared pending pantry imports."
+    }
+
+    fun savePendingPantryReviewItems() {
+        viewModelScope.launch {
+            val pendingItems = _pendingPantryReviewItems.value
+            if (pendingItems.isEmpty()) {
+                _pantryPhotoStatus.value = "No pending pantry imports to save."
+                return@launch
+            }
+
+            val upsertResult = upsertPantryItems(pendingItems)
+            _pendingPantryReviewItems.value = emptyList()
+            refreshShoppingListFromCurrentInputs()
+            _pantryPhotoStatus.value = PantryImportReviewQueue.savedStatus(
+                savedCount = pendingItems.size,
+                updatedCount = upsertResult.updated
+            )
+        }
+    }
+
     fun reportPantryPhotoCaptureCanceled() {
         _pantryPhotoStatus.value = "Pantry photo canceled."
     }
@@ -221,16 +269,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 val items = result.items.mapNotNull { it.toPantryItem(result.warnings) }
 
                 if (items.isNotEmpty()) {
-                    val upsertResult = upsertPantryItems(items)
-                    refreshShoppingListFromCurrentInputs()
-                    _pantryPhotoStatus.value = buildString {
-                        append("Added/updated ${items.size} photo item")
-                        if (items.size != 1) append("s")
-                        if (items.any { it.needsVerify }) append(" with VERIFY checks")
-                        if (upsertResult.updated > 0) {
-                            append(" (${upsertResult.updated} merged)")
-                        }
-                    }
+                    stagePendingPantryReviewItems(items)
                     true
                 } else {
                     _pantryPhotoStatus.value = "AI did not identify pantry items; trying label OCR..."
@@ -277,17 +316,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             )
         }
 
-        val upsertResult = upsertPantryItems(importedItems)
-        refreshShoppingListFromCurrentInputs()
+        stagePendingPantryReviewItems(importedItems)
+    }
 
-        _pantryPhotoStatus.value = buildString {
-            append("Added/updated ${importedItems.size} photo item")
-            if (importedItems.size != 1) append("s")
-            append(" with VERIFY checks")
-            if (upsertResult.updated > 0) {
-                append(" (${upsertResult.updated} merged)")
-            }
-        }
+    private fun stagePendingPantryReviewItems(items: List<PantryItem>) {
+        val result = PantryImportReviewQueue.stage(_pendingPantryReviewItems.value, items)
+        _pendingPantryReviewItems.value = result.items
+        _pantryPhotoStatus.value = result.status
     }
 
     private fun buildPantryOcrQuestions(item: PantryItem): List<String> {

@@ -13,7 +13,7 @@ Parameters → Deals + Pantry → Meals
 ### ✅ Complete Implementation
 
 - **Pantry Management**: Natural language input, barcode/code lookup/intake, and duplicate detection
-- **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision and ML Kit OCR fallback
+- **Photo Pantry Intake**: Camera/gallery import with optional Gemini Vision, ML Kit OCR fallback, and edit-before-save review
 - **Deal Tracking**: Camera, gallery image, PDF, and pasted flyer OCR with regex parsing
 - **Receipt Tracking**: Camera, gallery image, PDF, and manual receipt OCR reconciliation
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
@@ -267,7 +267,7 @@ The parser handles:
 - Dates (opened and best-by style cues independently, including `YYYY-MM-DD`, unpadded `YYYY-M-D`, two-digit dash dates such as `MM-DD-YY`, `opened on`, `best before`, `best-by`, `use by`, `use-by`, `exp`, `expiration date`, `best by date`, and punctuated label cues such as `best by:` or `exp:`)
 - Forms (canned, frozen, fresh)
 
-Repeated typed/photo/barcode imports merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
+Repeated typed/barcode imports, and reviewed photo imports after `Save All`, merge into existing pantry rows when the app can safely identify the same item. Product barcodes only merge with the same barcode, so two different UPCs stay separate until reviewed.
 If the manual pantry text field is blank, **Add** shows a visible no-text status instead of silently doing nothing.
 
 ### Adding Pantry Items From Photos
@@ -276,9 +276,10 @@ On the Pantry tab:
 
 1. Tap **Photo** to capture a full-resolution app-cache image, or **Gallery** to choose an image.
 2. If `gemini.api.key` is configured, Gemini Vision extracts brand, product, amount, size, dates, and clarification questions.
-3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser imports the best candidate. If OCR sees at least two complete item lines, Deal Planner imports those as separate reviewable items instead of collapsing the whole photo into one pantry row.
+3. If Gemini is not configured or fails, ML Kit OCR reads visible label text and the pantry parser stages the best candidate for review. If OCR sees at least two complete item lines, Deal Planner stages those as separate reviewable items instead of collapsing the whole photo into one pantry row.
 4. Missing brand, amount/unit, location, or expiration information is marked with a VERIFY badge and notes such as `Review brand.`, `Review amount/unit.`, `Review pantry/fridge/freezer location.`, or `Review expiration or best-by date.`.
-5. Tap the edit icon on any pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`; best-by date corrections accept common label formats such as `2026-12-31`, `12/31/2026`, or `12-31-26`.
+5. Review staged photo items in `Review Pantry Imports`. Edit or remove each pending row, then tap `Save All` to merge them into Pantry.
+6. Tap the edit icon on any pending or saved pantry card to correct item name, quantity, unit, size, brand, location, best-by date, notes, and verification status. Quantity corrections accept dot, comma, and leading-decimal text, such as `1.5`, `1,5`, `.5`, or `,5`; best-by date corrections accept common label formats such as `2026-12-31`, `12/31/2026`, or `12-31-26`.
 
 ### Adding Pantry Items From Barcodes
 
@@ -380,6 +381,7 @@ Run unit tests:
 Tests cover:
 - Pantry phrase parsing (fractions, dozen/count quantities, brands, dates, common container/count units, fluid-ounce, gallon/quart/pint, and hyphenated package labels such as `16-ounce` or `12-count`, net-weight label wording, punctuated label cues such as `net wt:` or `best by:`, comma-decimal and leading-decimal OCR quantities/sizes)
 - Pantry OCR candidate extraction for single-label fallback and clear multi-item label rows, including package `NET WT` lines that should not become separate products, hyphenated package-size lines such as `16-ounce` or `12-count`, and wrapped date/opened continuation lines
+- Pantry photo import review queue behavior for staging, editing, removing, and saving multi-item OCR/AI results
 - Pantry duplicate detection/merging, including compatible missing-brand/known-brand matches and barcode-specific matching
 - Open Food Facts barcode response parsing and barcode normalization, including pasted UPC/EAN label text and labels with unrelated item/date numbers
 - Barcode lookup result mapping into reviewable pantry rows and phone-visible add/update status messages
@@ -471,10 +473,11 @@ As of the latest local pass:
 - Pantry parser handles common package sizes such as `1 gal`, `1 quart`, `1 pint`, `16-ounce`, and `12-count`.
 - Pantry screen supports typed entry, barcode scan/manual code intake, photo import, and gallery import.
 - Typed pantry entry shows a visible added/updated status after a successful add or merge.
-- Typed, photo/OCR, AI, and barcode pantry imports upsert safe duplicates instead of creating repeated pantry rows; missing, Generic, or unknown brands can merge into a known-brand row when item, size, and location match, while different known brands stay separate.
+- Typed, barcode, and reviewed photo/OCR or AI pantry imports upsert safe duplicates instead of creating repeated pantry rows; missing, Generic, or unknown brands can merge into a known-brand row when item, size, and location match, while different known brands stay separate.
 - Barcode/code pantry entries create VERIFY items with the barcode preserved in notes.
 - Barcode/code normalization extracts 8-14 digit UPC/EAN/GTIN codes from pasted label text, prefers labeled codes over unrelated item/date numbers, accepts valid bare product codes near label dates, and rejects non-code date, item, lot, SKU, or plain text.
-- Pantry cards can be edited after typed, barcode/code, OCR, or AI import so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections plus common best-by date formats.
+- Pantry photo OCR/AI imports stage editable pending rows before saving, so multi-item shelf scans can be corrected or removed before they change the saved Pantry list.
+- Pantry cards can be edited after typed, barcode/code, OCR, or AI save so VERIFY items can be corrected during phone testing, including comma-decimal and leading-decimal quantity corrections plus common best-by date formats.
 - Pantry edit quantity and best-by date fields block invalid values with visible validation instead of silently preserving old values.
 - Deals parser handles price/lb, package prices, N-for-X including `2/$5`, buy-N-get-M with digits or words such as `Buy One Get One Free`, buy-get percent-off promos such as `Buy One Get One 50% off`, `BOGO Free`, `B1G1`, and `BOGO 50% off`, percent-off, Member Price/coupon flags, and limits.
 - Deals parser is covered against bundled demo flyer structures including multi-line names and modifiers.
@@ -538,7 +541,7 @@ As of the latest local pass:
 - [x] Camera/gallery pantry photo import
 - [x] Single-item pantry review/edit flow after OCR or AI import
 - [x] Barcode/manual code intake for pantry seeding
-- [ ] Full multi-item shelf review flow with edit-before-save
+- [x] Full multi-item shelf review flow with edit-before-save
 - [x] Flyer PDF import through local page rendering and OCR
 - [x] Pasted flyer OCR text import
 - [x] Receipt photo/gallery/PDF/manual text import

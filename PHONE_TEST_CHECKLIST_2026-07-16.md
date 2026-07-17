@@ -233,15 +233,16 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 4. Pantry photo:
    - Tap `Photo`.
    - Take a clear label/photo, ideally one with a best-by date such as `12/31/2026`.
-   - Expected without Gemini: ML Kit OCR fallback creates a VERIFY item or gives a visible recovery message.
-   - Expected with Gemini: AI item recognition creates one or more VERIFY items when details are uncertain and preserves common label dates when visible.
+   - Expected without Gemini: ML Kit OCR fallback creates one or more pending `Review Pantry Imports` rows with VERIFY checks, or gives a visible recovery message.
+   - Expected with Gemini: AI item recognition creates one or more pending `Review Pantry Imports` rows when details are uncertain and preserves common label dates when visible.
+   - Edit at least one pending row, remove a junk pending row if present, tap `Save All`, and confirm the saved Pantry list updates only after `Save All`.
 5. Pantry gallery:
    - Tap `Gallery`.
    - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` from a generated `phone-test-samples\<timestamp>\` folder.
-   - Expected: same as pantry photo, including common label-date handling and separate rows for the generated `16-ounce` peanut butter, `12-count` eggs, punctuated label-cue, slash-date, and two-digit dash-date labels when OCR can read them. If OCR wraps the date onto the next line, the date should stay attached to that item.
+   - Expected: same as pantry photo, including common label-date handling and separate pending review rows for the generated `16-ounce` peanut butter, `12-count` eggs, punctuated label-cue, slash-date, and two-digit dash-date labels when OCR can read them. If OCR wraps the date onto the next line, the date should stay attached to that pending item.
 6. Optional multi-item OCR fallback:
    - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`, or hyphenated label rows such as `Great Value Peanut Butter 16-ounce` and `Kroger Eggs 12-count`.
-   - Expected without Gemini or after AI fallback: the clear item lines import as separate VERIFY pantry rows instead of one combined row.
+   - Expected without Gemini or after AI fallback: the clear item lines stage as separate VERIFY pantry review rows instead of one combined row, and `Save All` saves them together.
 7. Optional liquid-size check:
    - Enter or OCR `Kroger milk 1 gal fridge`, `chicken broth 1 quart pantry`, or `cream 1 pint fridge`.
    - Expected: liquid size/unit is preserved as `gal`, `qt`, or `pt`.
@@ -350,6 +351,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry, deal, and receipt review dialogs accept common date corrections such as `12/31/2026` and `12-31-26`.
 - Pantry typed/OCR intake preserves gallon, quart, pint, and hyphenated package sizes such as `16-ounce` and `12-count`.
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows, including `16-ounce` and `12-count` label rows, into separate VERIFY rows with wrapped date/opened lines attached to the matching item.
+- Pantry photo/Gallery imports stage editable `Review Pantry Imports` rows before saving, and `Save All` is required before they merge into the saved Pantry list.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Shopping list PDF export opens Android's share sheet from app cache without requesting broad storage/media-library permissions.

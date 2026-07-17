@@ -419,8 +419,9 @@ $adbBlock
 - [ ] Manual barcode/code lookup/fallback works.
 - [ ] Barcode scanner works.
 - [ ] Generated UPC-A barcode sample was available for manual code and scanner checks, if used.
-- [ ] Pantry photo works or shows a clear recovery message.
-- [ ] Pantry gallery works or shows a clear recovery message.
+- [ ] Pantry photo creates editable pending Review Pantry Imports rows or shows a clear recovery message.
+- [ ] Pantry gallery creates editable pending Review Pantry Imports rows or shows a clear recovery message.
+- [ ] Pantry pending import Save All saves reviewed photo/Gallery rows into Pantry.
 - [ ] Flyer photo works or shows a clear recovery message.
 - [ ] Flyer gallery works or shows a clear recovery message.
 - [ ] Flyer PDF works or shows a clear recovery message.

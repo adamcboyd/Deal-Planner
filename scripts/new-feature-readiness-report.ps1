@@ -506,9 +506,9 @@ $features = @(
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Pantry photo/gallery, OCR fallback, and Gemini vision" `
-        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\PantryScreen.kt", "app\src\main\java\com\dealplanner\ui\viewmodel\AppViewModel.kt", "app\src\main\java\com\dealplanner\ocr\PantryOcrCandidateExtractor.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ocr\PantryOcrCandidateExtractorTest.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ai\PantryVisionItemMapperTest.kt") `
-        -LocalChecks @("OCR candidate tests", "Gemini response/client parsing tests", "AI-to-pantry VERIFY mapping tests") `
-        -PhoneCheck "Test pantry Photo/Gallery without key for OCR fallback, then with real Gemini key for AI vision." `
+        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\PantryScreen.kt", "app\src\main\java\com\dealplanner\ui\viewmodel\AppViewModel.kt", "app\src\main\java\com\dealplanner\ui\state\PantryImportReviewQueue.kt", "app\src\main\java\com\dealplanner\ocr\PantryOcrCandidateExtractor.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ui\state\PantryImportReviewQueueTest.kt", "app\src\test\java\com\dealplanner\ocr\PantryOcrCandidateExtractorTest.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ai\PantryVisionItemMapperTest.kt") `
+        -LocalChecks @("Photo import review queue tests", "OCR candidate tests", "Gemini response/client parsing tests", "AI-to-pantry VERIFY mapping tests") `
+        -PhoneCheck "Test pantry Photo/Gallery pending review and Save All without key for OCR fallback, then with real Gemini key for AI vision." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Flyer deals text/photo/gallery/PDF" `

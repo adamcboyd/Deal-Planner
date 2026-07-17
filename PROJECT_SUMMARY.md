@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 73
+- **Total Kotlin Files**: 75
 - **Configuration Files**: 15
-- **Test Files**: 20 (comprehensive unit tests)
+- **Test Files**: 21 (comprehensive unit tests)
 - **Lines of Code**: ~5,000+
 
 ## 📁 Complete File Structure
@@ -109,6 +109,7 @@ Deal_Planner/
             │   ├── BudgetInputValidatorTest.kt ✅ Budget numeric validation tests
             │   ├── DealItemInputValidatorTest.kt ✅ Deal edit validation tests
             │   ├── ManualInputClearPolicyTest.kt ✅ Manual input clear/retain tests
+            │   ├── PantryImportReviewQueueTest.kt ✅ Photo import review queue tests
             │   ├── PantryItemInputValidatorTest.kt ✅ Pantry edit validation tests
             │   ├── ReceiptItemInputValidatorTest.kt ✅ Receipt edit validation tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
@@ -158,7 +159,7 @@ Deal_Planner/
 - ✅ Bounded flyer/receipt PDF page rendering with capped-page status for OCR reliability
 - ✅ Camera/gallery/PDF permission and cancel status feedback for phone testing
 - ✅ Blank manual input status feedback for pantry, barcode, flyer text, and receipt text actions
-- ✅ Pantry camera/gallery/barcode/manual code import
+- ✅ Pantry camera/gallery review-before-save import plus barcode/manual code import
 - ✅ Open Food Facts product lookup for barcode/manual code intake with reviewable fallback
 - ✅ Flyer camera/gallery/PDF/manual text import
 - ✅ Receipt camera/gallery/PDF/manual text import
@@ -169,7 +170,7 @@ Deal_Planner/
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - ✅ Settings screen AI configuration status and Gemini connection test
-- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling, hyphenated package-size multi-item splitting, and wrapped date continuation handling
+- ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling, hyphenated package-size multi-item splitting, wrapped date continuation handling, and edit-before-save staging
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
 
 ### 4. Business Logic Engines
@@ -416,9 +417,9 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Prefers labeled UPC/EAN/GTIN values over unrelated item/date numbers in pasted barcode text
 - ✅ Looks up scanned/manually entered barcodes with Open Food Facts and falls back to reviewable barcode rows
 - ✅ Maps barcode lookup found/not-found/error results into reviewable pantry rows and phone-visible add/update status messages
-- ✅ Merges safe duplicate pantry imports from typed, OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
-- ✅ Imports pantry items from camera/gallery photos
-- ✅ Lets users correct pantry OCR/AI output, common best-by date formats, and verification status
+- ✅ Merges safe duplicate pantry imports from typed, reviewed OCR/AI photo, and barcode paths, including missing-brand to known-brand matches
+- ✅ Stages pantry camera/gallery photo results in an edit-before-save review queue
+- ✅ Lets users correct or remove pantry OCR/AI output, common best-by date formats, and verification status before saving
 - ✅ Validates pantry edit quantities and best-by dates with dot, comma, leading-decimal, and flexible date input while blocking invalid values
 - ✅ Uses Gemini Vision when configured and ML Kit OCR when not configured
 - ✅ Normalizes Gemini key/model setup mistakes before API calls

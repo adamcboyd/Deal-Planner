@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
@@ -37,6 +38,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 fun PantryScreen(viewModel: AppViewModel) {
     val context = LocalContext.current
     val pantryItems by viewModel.pantryItems.collectAsState()
+    val pendingPantryReviewItems by viewModel.pendingPantryReviewItems.collectAsState()
     val pantryPhotoStatus by viewModel.pantryPhotoStatus.collectAsState()
     var inputText by remember { mutableStateOf("") }
     var barcodeText by remember { mutableStateOf("") }
@@ -275,9 +277,19 @@ fun PantryScreen(viewModel: AppViewModel) {
             }
         }
 
+        if (pendingPantryReviewItems.isNotEmpty()) {
+            PendingPantryReviewSection(
+                items = pendingPantryReviewItems,
+                onSaveAll = { viewModel.savePendingPantryReviewItems() },
+                onClear = { viewModel.clearPendingPantryReviewItems() },
+                onRemove = { index -> viewModel.removePendingPantryReviewItem(index) },
+                onUpdate = { index, item -> viewModel.updatePendingPantryReviewItem(index, item) }
+            )
+        }
+
         // Pantry list
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
             items(pantryItems) { item ->
@@ -287,6 +299,65 @@ fun PantryScreen(viewModel: AppViewModel) {
                     onUpdate = { viewModel.updatePantryItem(it) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun PendingPantryReviewSection(
+    items: List<PantryItem>,
+    onSaveAll: () -> Unit,
+    onClear: () -> Unit,
+    onRemove: (Int) -> Unit,
+    onUpdate: (Int, PantryItem) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            "Review Pantry Imports",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            "Edit or remove photo items before saving them to Pantry.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                onClick = onClear,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Clear")
+            }
+            Button(
+                onClick = onSaveAll,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Save All")
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 360.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(items) { index, item ->
+                PantryItemCard(
+                    item = item,
+                    onDelete = { onRemove(index) },
+                    onUpdate = { updatedItem -> onUpdate(index, updatedItem) }
+                )
             }
         }
     }
@@ -400,15 +471,15 @@ fun PantryItemEditDialog(
     onDismiss: () -> Unit,
     onSave: (PantryItem) -> Unit
 ) {
-    var itemName by remember(item.id) { mutableStateOf(item.item) }
-    var quantity by remember(item.id) { mutableStateOf(item.qty.toString()) }
-    var unit by remember(item.id) { mutableStateOf(item.unit.orEmpty()) }
-    var size by remember(item.id) { mutableStateOf(item.size.orEmpty()) }
-    var brand by remember(item.id) { mutableStateOf(item.brand.orEmpty()) }
-    var location by remember(item.id) { mutableStateOf(item.location.orEmpty()) }
-    var bestBy by remember(item.id) { mutableStateOf(item.bestBy?.toString().orEmpty()) }
-    var notes by remember(item.id) { mutableStateOf(item.notes.orEmpty()) }
-    var needsVerify by remember(item.id) { mutableStateOf(item.needsVerify) }
+    var itemName by remember(item) { mutableStateOf(item.item) }
+    var quantity by remember(item) { mutableStateOf(item.qty.toString()) }
+    var unit by remember(item) { mutableStateOf(item.unit.orEmpty()) }
+    var size by remember(item) { mutableStateOf(item.size.orEmpty()) }
+    var brand by remember(item) { mutableStateOf(item.brand.orEmpty()) }
+    var location by remember(item) { mutableStateOf(item.location.orEmpty()) }
+    var bestBy by remember(item) { mutableStateOf(item.bestBy?.toString().orEmpty()) }
+    var notes by remember(item) { mutableStateOf(item.notes.orEmpty()) }
+    var needsVerify by remember(item) { mutableStateOf(item.needsVerify) }
     val quantityValidation = PantryItemInputValidator.validateQuantity(quantity)
     val bestByValidation = PantryItemInputValidator.validateBestByDate(bestBy)
     val isQuantityValid = quantityValidation.isValid
