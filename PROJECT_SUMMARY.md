@@ -258,12 +258,13 @@ Deal_Planner/
 | OCR | ML Kit Text Recognition 16.0.1 |
 | AI Vision | Optional Gemini API |
 | Barcode | ZXing 3.5.4 + JourneyApps scanner |
+| JSON | Gson 2.14.0 |
 | Coroutines | Kotlinx Coroutines 1.7.3 |
 | Architecture | MVVM + Repository |
 | Testing | JUnit 4.13.2 + Truth 1.1.5 |
 | Min SDK | 26 (Android 8.0) |
-| Compile SDK | 34 (Android 14) |
-| Target SDK | 33 |
+| Compile SDK | 36 (Android 16) |
+| Target SDK | 36 |
 
 ## 🚀 How to Build & Run
 

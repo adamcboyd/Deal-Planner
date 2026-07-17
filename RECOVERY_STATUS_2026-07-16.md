@@ -133,6 +133,15 @@ Latest barcode dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. ZXing core was updated from `3.5.2` to `3.5.4` for barcode/manual UPC intake while leaving the JourneyApps scanner wrapper unchanged. Barcode-focused tests passed before the full gate, covering UPC/EAN normalization, Open Food Facts response handling, pantry fallback mapping, and barcode-aware duplicate behavior. The current lint snapshot is `0` errors and `26` warnings.
 
+Latest JSON parser dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest --tests com.dealplanner.lookup.OpenFoodFactsBarcodeClientTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Gson was updated from `2.10.1` to `2.14.0` for Gemini pantry parsing, Gemini error summaries, Open Food Facts product parsing, and Room list converters. Focused parser tests passed before the full gate, covering Gemini pantry response parsing, Gemini API status parsing, and Open Food Facts product parsing. The Gson 2.14.0 annotation cleanup also removed a new `CheckResult` lint warning in the Gemini pantry parser, leaving the current lint snapshot at `0` errors and `25` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

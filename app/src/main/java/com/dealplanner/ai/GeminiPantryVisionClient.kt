@@ -310,7 +310,7 @@ class GeminiPantryVisionClient(
         if (isJsonArray) return asJsonArray
         if (!isJsonObject) return null
 
-        val root = asJsonObject
+        val root = this.asJsonObject
         listOf("items", "pantry_items", "pantryItems", "foods", "food_items")
             .firstNotNullOfOrNull { name ->
                 root.get(name)?.let { element ->
