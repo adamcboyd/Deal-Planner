@@ -42,7 +42,8 @@ class PantryPhraseParser {
 
     private val commonBrands = listOf(
         "great value", "kroger", "walmart", "target", "kirkland", "365",
-        "trader joe", "aldi", "simple truth", "o organics", "nature's promise"
+        "trader joe", "aldi", "simple truth", "private selection",
+        "o organics", "nature's promise"
     )
 
     data class ParseResult(

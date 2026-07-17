@@ -66,6 +66,16 @@ class PantryPhraseParserTest {
     }
 
     @Test
+    fun `parse private label brand without keeping brand in item name`() {
+        val result = parser.parse("Private Selection salsa 16 oz fridge")
+
+        assertThat(result.item.item).isEqualTo("salsa")
+        assertThat(result.item.brand).isEqualTo("Private Selection")
+        assertThat(result.item.size).isEqualTo("16oz")
+        assertThat(result.item.location).isEqualTo("fridge")
+    }
+
+    @Test
     fun `parse item with location`() {
         val result = parser.parse("milk in fridge")
 

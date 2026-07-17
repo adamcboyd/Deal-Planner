@@ -223,6 +223,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-sam
 
 Result: targeted pantry OCR tests and full gate returned `BUILD SUCCESSFUL`. The phone pantry-label sample now comes from `app\src\main\assets\demo_pantry_labels.txt`; generated sample folder `phone-test-samples\20260716-210435` verified successfully, and its `deal-planner-demo-pantry-label.txt` matched the asset text byte-for-byte. `PantryOcrCandidateExtractorTest` now parses that exact asset through OCR candidate extraction plus `PantryPhraseParser` for black beans, pasta, peanut butter, eggs, and salsa label rows.
 
+Latest pantry-label brand cleanup checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.parser.PantryPhraseParserTest --tests com.dealplanner.ocr.PantryOcrCandidateExtractorTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: targeted parser/OCR tests and `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` returned `BUILD SUCCESSFUL`. The parser now recognizes `Private Selection` as a brand so the demo pantry-label salsa row becomes item `salsa` with brand `Private Selection` instead of item `private selection salsa`.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

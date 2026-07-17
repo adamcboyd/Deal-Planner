@@ -141,7 +141,8 @@ class PantryOcrCandidateExtractorTest {
         assertThat(eggs.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
 
         val salsa = items[4]
-        assertThat(salsa.item).isEqualTo("private selection salsa")
+        assertThat(salsa.item).isEqualTo("salsa")
+        assertThat(salsa.brand).isEqualTo("Private Selection")
         assertThat(salsa.size).isEqualTo("16oz")
         assertThat(salsa.location).isEqualTo("fridge")
         assertThat(salsa.opened).isEqualTo(LocalDate.of(2026, 7, 1))
