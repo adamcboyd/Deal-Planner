@@ -1,5 +1,7 @@
 param(
     [switch]$Help,
+    [switch]$RunGate,
+    [string]$JavaHome = "C:\Program Files\Java\jdk-20",
     [string]$OutputDir = "phone-test-results"
 )
 
@@ -10,10 +12,12 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\new-feature-readiness-report.ps1"
+    Write-Host "  .\scripts\new-feature-readiness-report.ps1 -RunGate"
     Write-Host "  .\scripts\new-feature-readiness-report.ps1 -OutputDir phone-test-results"
     Write-Host ""
     Write-Host "Creates an ignored timestamped Markdown report that separates local build/test evidence from phone-only checks."
-    Write-Host "Run after .\gradlew.bat testDebugUnitTest assembleDebug lintDebug for the strongest local snapshot."
+    Write-Host "Use -RunGate to run .\gradlew.bat testDebugUnitTest assembleDebug lintDebug before the snapshot."
+    Write-Host "Without -RunGate, the report inspects existing outputs and flags stale/missing evidence where possible."
 }
 
 function Get-CommandOutput {
@@ -68,6 +72,71 @@ function Test-RealGeminiKey {
         $trimmed.Equals("YOUR_GEMINI_API_KEY", [System.StringComparison]::OrdinalIgnoreCase) -or
         $trimmed.StartsWith("YOUR_", [System.StringComparison]::OrdinalIgnoreCase)
     )
+}
+
+function Format-ReadinessTimestamp {
+    param($Value)
+
+    if ($null -eq $Value) {
+        return "not available"
+    }
+
+    return $Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss K")
+}
+
+function Get-LatestInputTimestamp {
+    param([string[]]$Paths)
+
+    $items = @(
+        foreach ($path in $Paths) {
+            $fullPath = Join-Path $repoRoot $path
+            if (Test-Path -LiteralPath $fullPath -PathType Container) {
+                Get-ChildItem -LiteralPath $fullPath -Recurse -File -Force
+            } elseif (Test-Path -LiteralPath $fullPath -PathType Leaf) {
+                Get-Item -LiteralPath $fullPath
+            }
+        }
+    )
+
+    if ($items.Count -eq 0) {
+        return $null
+    }
+
+    return ($items | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+}
+
+function Get-FreshnessSnapshot {
+    param(
+        [string]$Label,
+        $LatestInputUtc,
+        [System.IO.FileInfo[]]$Outputs
+    )
+
+    if ($Outputs.Count -eq 0) {
+        return [pscustomobject]@{
+            Summary = "missing; rerun the matching Gradle/helper command."
+            Detail = "$Label output was not found."
+            IsFresh = $false
+        }
+    }
+
+    if ($null -eq $LatestInputUtc) {
+        return [pscustomobject]@{
+            Summary = "unknown; no input timestamp was found."
+            Detail = "$Label output exists, but source input timestamps could not be calculated."
+            IsFresh = $false
+        }
+    }
+
+    $oldestOutputUtc = ($Outputs | Sort-Object LastWriteTimeUtc | Select-Object -First 1).LastWriteTimeUtc
+    $isFresh = $oldestOutputUtc -ge $LatestInputUtc
+    $summaryPrefix = if ($isFresh) { "current" } else { "stale" }
+
+    return [pscustomobject]@{
+        Summary = "$summaryPrefix; oldest output $(Format-ReadinessTimestamp $oldestOutputUtc), latest input $(Format-ReadinessTimestamp $LatestInputUtc)."
+        Detail = "$Label oldest output: $(Format-ReadinessTimestamp $oldestOutputUtc); latest input: $(Format-ReadinessTimestamp $LatestInputUtc)."
+        IsFresh = $isFresh
+    }
 }
 
 function Get-UnitTestSnapshot {
@@ -172,9 +241,9 @@ function New-FeatureRow {
             Where-Object { -not (Test-Path (Join-Path $repoRoot $_)) }
     )
     $localStatus = if ($missing.Count -eq 0 -and $GateGreen) {
-        "Local evidence present; build/test/lint gate green."
+        "Local evidence present; build/test/lint/APK evidence green and current."
     } elseif ($missing.Count -eq 0) {
-        "Local evidence present; rerun or fix local gate before phone signoff."
+        "Local evidence present; rerun or fix local gate/freshness checks before phone signoff."
     } else {
         "Missing local evidence: $($missing -join ', ')"
     }
@@ -200,6 +269,23 @@ if (-not (Test-Path ".\gradlew.bat")) {
     throw "Run this script from the Deal Planner repo, or keep it under scripts\ in that repo."
 }
 
+$gateRunSummary = "Not run by this report; existing outputs were inspected."
+$gateExecuted = $false
+if ($RunGate) {
+    if (-not (Test-Path $JavaHome)) {
+        throw "JavaHome does not exist: $JavaHome"
+    }
+
+    $env:JAVA_HOME = $JavaHome
+    $env:Path = "$JavaHome\bin;$env:Path"
+    & .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+    if ($LASTEXITCODE -ne 0) {
+        throw "Gradle readiness gate failed with exit code $LASTEXITCODE."
+    }
+    $gateRunSummary = "Ran .\gradlew.bat testDebugUnitTest assembleDebug lintDebug successfully before this snapshot."
+    $gateExecuted = $true
+}
+
 if ([System.IO.Path]::IsPathRooted($OutputDir)) {
     $outputRoot = $OutputDir
 } else {
@@ -217,9 +303,27 @@ $branch = Get-CommandOutput { git rev-parse --abbrev-ref HEAD }
 $head = Get-CommandOutput { git rev-parse --short HEAD }
 $status = Get-CommandOutput { git status --short --branch }
 $remote = Get-CommandOutput { git remote get-url origin }
-$testSnapshot = Get-UnitTestSnapshot (Join-Path $repoRoot "app\build\test-results\testDebugUnitTest")
-$lintSnapshot = Get-LintSnapshot (Join-Path $repoRoot "app\build\reports\lint-results-debug.xml")
-$gateGreen = $testSnapshot.IsGreen -and $lintSnapshot.IsGreen
+$testResultDir = Join-Path $repoRoot "app\build\test-results\testDebugUnitTest"
+$lintReportPath = Join-Path $repoRoot "app\build\reports\lint-results-debug.xml"
+$apkPath = Join-Path $repoRoot "app\build\outputs\apk\debug\app-debug.apk"
+$appInputPaths = @(
+    "app\src",
+    "app\build.gradle.kts",
+    "build.gradle.kts",
+    "settings.gradle.kts",
+    "gradle.properties"
+)
+$apkInputPaths = @($appInputPaths + @("local.properties"))
+$latestAppInputUtc = Get-LatestInputTimestamp $appInputPaths
+$latestApkInputUtc = Get-LatestInputTimestamp $apkInputPaths
+$testOutputFiles = @(Get-ChildItem -LiteralPath $testResultDir -Filter "TEST-*.xml" -File -ErrorAction SilentlyContinue)
+$lintOutputFiles = @(Get-Item -LiteralPath $lintReportPath -ErrorAction SilentlyContinue)
+$apkOutputFiles = @(Get-Item -LiteralPath $apkPath -ErrorAction SilentlyContinue)
+$testSnapshot = Get-UnitTestSnapshot $testResultDir
+$lintSnapshot = Get-LintSnapshot $lintReportPath
+$testFreshness = Get-FreshnessSnapshot "Unit test" $latestAppInputUtc $testOutputFiles
+$lintFreshness = Get-FreshnessSnapshot "Lint" $latestAppInputUtc $lintOutputFiles
+$apkFreshness = Get-FreshnessSnapshot "Debug APK" $latestApkInputUtc $apkOutputFiles
 $buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
 $apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
 $apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
@@ -233,6 +337,23 @@ if ([string]::IsNullOrWhiteSpace($apkSourceSha)) { $apkSourceSha = "UNKNOWN" }
 if ([string]::IsNullOrWhiteSpace($apkSourceDirty)) { $apkSourceDirty = "UNKNOWN" }
 if ([string]::IsNullOrWhiteSpace($apkGeminiConfigured)) { $apkGeminiConfigured = "UNKNOWN" }
 if ([string]::IsNullOrWhiteSpace($apkGeminiModel)) { $apkGeminiModel = "UNKNOWN" }
+
+$apkIdentityMatchesHead = $apkSourceSha -eq $head -and $apkSourceDirty.ToString().ToLowerInvariant() -eq "false"
+$apkIdentitySummary = if ($apkIdentityMatchesHead) {
+    "matches current HEAD $head and clean BuildConfig."
+} else {
+    "does not match current clean HEAD. Rebuild with .\gradlew.bat assembleDebug before phone testing."
+}
+$testAndLintEvidenceCurrent = if ($gateExecuted) {
+    $true
+} else {
+    $testFreshness.IsFresh -and $lintFreshness.IsFresh
+}
+$gateGreen = $testSnapshot.IsGreen -and
+    $lintSnapshot.IsGreen -and
+    $testAndLintEvidenceCurrent -and
+    $apkFreshness.IsFresh -and
+    $apkIdentityMatchesHead
 
 $features = @(
     New-FeatureRow `
@@ -304,11 +425,16 @@ $report = @"
 - Branch: $branch
 - Commit: $head
 - Remote: $remote
+- Gradle gate run by report: $gateRunSummary
 - Unit tests: $($testSnapshot.Summary)
+- Unit test freshness: $($testFreshness.Summary)
 - Lint: $($lintSnapshot.Summary)
+- Lint freshness: $($lintFreshness.Summary)
+- Debug APK freshness: $($apkFreshness.Summary)
 - APK source branch: $apkSourceBranch
 - APK source commit: $apkSourceSha
 - APK source dirty: $apkSourceDirty
+- APK identity: $apkIdentitySummary
 - APK Gemini configured: $apkGeminiConfigured
 - APK Gemini model: $apkGeminiModel
 
@@ -337,6 +463,16 @@ $(
 ~~~text
 $($lintSnapshot.Groups)
 ~~~
+
+## Evidence Freshness
+
+- Gradle gate run by report: $gateRunSummary
+- Unit test evidence: $($testFreshness.Detail)
+- Lint evidence: $($lintFreshness.Detail)
+- Debug APK evidence: $($apkFreshness.Detail)
+- APK identity: $apkIdentitySummary
+
+When `-RunGate` is used, the successful Gradle run is treated as stronger local evidence than report-file timestamps for unit test and lint outputs. APK freshness and APK source identity still have to match the current source and Git HEAD before phone testing.
 
 ## Next Required External Evidence
 

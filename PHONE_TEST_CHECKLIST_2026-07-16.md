@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness report work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness freshness work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -58,10 +58,10 @@ Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark 
 For a local recovery snapshot before the phone run:
 
 ```powershell
-.\scripts\new-feature-readiness-report.ps1
+.\scripts\new-feature-readiness-report.ps1 -RunGate
 ```
 
-Use the generated `phone-test-results\<timestamp>\FEATURE_READINESS_REPORT.md` to see which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence and which still require Android phone or real Gemini-key evidence.
+Use the generated `phone-test-results\<timestamp>\FEATURE_READINESS_REPORT.md` to see which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence and which still require Android phone or real Gemini-key evidence. The `-RunGate` path runs the local unit/build/lint gate first and flags stale test/lint/APK evidence or an APK source identity that does not match the current clean `HEAD`.
 
 To create deterministic sample files for pasted text, gallery image, and PDF picker checks:
 
