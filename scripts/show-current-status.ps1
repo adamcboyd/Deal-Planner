@@ -1,5 +1,7 @@
 param(
     [switch]$Help,
+    [switch]$WriteReport,
+    [string]$OutputDir = "phone-test-results",
     [string]$PackageName = "com.dealplanner"
 )
 
@@ -10,9 +12,11 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\show-current-status.ps1"
+    Write-Host "  .\scripts\show-current-status.ps1 -WriteReport"
     Write-Host ""
     Write-Host "Prints a read-only recovery snapshot: repo state, debug APK identity, Gemini key/model readiness,"
     Write-Host "ADB phone visibility, latest generated reports/samples, and the next phone-test commands."
+    Write-Host "Use -WriteReport to save the same snapshot as phone-test-results\<timestamp>\CURRENT_STATUS.md."
     Write-Host "No build, install, network, or live Gemini request is run."
 }
 
@@ -182,14 +186,6 @@ function Get-AdbStatus {
     }
 }
 
-function Write-Section {
-    param([string]$Title)
-
-    Write-Host ""
-    Write-Host $Title
-    Write-Host ("-" * $Title.Length)
-}
-
 if ($Help) {
     Show-Usage
     exit 0
@@ -254,62 +250,95 @@ $latestPhoneReport = Get-LatestReport (Join-Path $repoRoot "phone-test-results")
 $latestFeatureReport = Get-LatestReport (Join-Path $repoRoot "phone-test-results") "FEATURE_READINESS_REPORT.md"
 $latestSamples = Get-LatestSampleDir (Join-Path $repoRoot "phone-test-samples")
 
-Write-Host "Deal Planner current status"
-Write-Host "Repo: $repoRoot"
-
-Write-Section "Source"
-Write-Host "Branch: $branch"
-Write-Host "Commit: $commit"
-Write-Host "Remote: $remote"
-Write-Host "Sync: $aheadBehind"
-Write-Host "Git status:"
-Write-Host $status
-
-Write-Section "Debug APK"
+$statusLines = @()
+$statusLines += "Deal Planner current status"
+$statusLines += "Repo: $repoRoot"
+$statusLines += ""
+$statusLines += "Source"
+$statusLines += "------"
+$statusLines += "Branch: $branch"
+$statusLines += "Commit: $commit"
+$statusLines += "Remote: $remote"
+$statusLines += "Sync: $aheadBehind"
+$statusLines += "Git status:"
+$statusLines += $status
+$statusLines += ""
+$statusLines += "Debug APK"
+$statusLines += "---------"
 if ($apk) {
-    Write-Host "APK: $($apk.FullName)"
-    Write-Host "APK updated: $($apk.LastWriteTime)"
-    Write-Host "APK size: $($apk.Length) bytes"
+    $statusLines += "APK: $($apk.FullName)"
+    $statusLines += "APK updated: $($apk.LastWriteTime)"
+    $statusLines += "APK size: $($apk.Length) bytes"
 } else {
-    Write-Host "APK: not built"
+    $statusLines += "APK: not built"
 }
-Write-Host "APK source branch: $buildBranch"
-Write-Host "APK source commit: $buildCommit"
-Write-Host "APK source dirty: $buildDirty"
-Write-Host "APK identity: $apkIdentity"
-
-Write-Section "Gemini"
-Write-Host "Local key present: $(Format-Boolean $localGeminiReady)"
-Write-Host "Environment key present: $(Format-Boolean $envGeminiReady)"
-Write-Host "APK key compiled: $(Format-Boolean $buildGeminiReady)"
-Write-Host "Model: $configuredModel"
-
-Write-Section "Phone"
-Write-Host "ADB status: $($adb.Status)"
-Write-Host "Detail: $($adb.Detail)"
-Write-Host "adb devices:"
-Write-Host $adb.Devices
-
-Write-Section "Latest Evidence"
-Write-Host "Phone report: $(if ($latestPhoneReport) { $latestPhoneReport.FullName } else { 'not generated yet' })"
-Write-Host "Feature readiness report: $(if ($latestFeatureReport) { $latestFeatureReport.FullName } else { 'not generated yet' })"
-Write-Host "Sample folder: $(if ($latestSamples) { $latestSamples.FullName } else { 'not generated yet' })"
-
-Write-Section "Next Commands"
-Write-Host "Normal phone setup:"
-Write-Host "  .\scripts\start-phone-test-run.ps1 -WaitForPhone"
-Write-Host "Final AI phone pass after adding a real Gemini key:"
-Write-Host "  .\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage"
-Write-Host "Fresh local readiness snapshot:"
-Write-Host "  .\scripts\new-feature-readiness-report.ps1 -RunGate"
+$statusLines += "APK source branch: $buildBranch"
+$statusLines += "APK source commit: $buildCommit"
+$statusLines += "APK source dirty: $buildDirty"
+$statusLines += "APK identity: $apkIdentity"
+$statusLines += ""
+$statusLines += "Gemini"
+$statusLines += "------"
+$statusLines += "Local key present: $(Format-Boolean $localGeminiReady)"
+$statusLines += "Environment key present: $(Format-Boolean $envGeminiReady)"
+$statusLines += "APK key compiled: $(Format-Boolean $buildGeminiReady)"
+$statusLines += "Model: $configuredModel"
+$statusLines += ""
+$statusLines += "Phone"
+$statusLines += "-----"
+$statusLines += "ADB status: $($adb.Status)"
+$statusLines += "Detail: $($adb.Detail)"
+$statusLines += "adb devices:"
+$statusLines += $adb.Devices
+$statusLines += ""
+$statusLines += "Latest Evidence"
+$statusLines += "---------------"
+$statusLines += "Phone report: $(if ($latestPhoneReport) { $latestPhoneReport.FullName } else { 'not generated yet' })"
+$statusLines += "Feature readiness report: $(if ($latestFeatureReport) { $latestFeatureReport.FullName } else { 'not generated yet' })"
+$statusLines += "Sample folder: $(if ($latestSamples) { $latestSamples.FullName } else { 'not generated yet' })"
+$statusLines += ""
+$statusLines += "Next Commands"
+$statusLines += "-------------"
+$statusLines += "Normal phone setup:"
+$statusLines += "  .\scripts\start-phone-test-run.ps1 -WaitForPhone"
+$statusLines += "Final AI phone pass after adding a real Gemini key:"
+$statusLines += "  .\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage"
+$statusLines += "Fresh local readiness snapshot:"
+$statusLines += "  .\scripts\new-feature-readiness-report.ps1 -RunGate"
 
 if ($adb.Status -ne "ready") {
-    Write-Host ""
-    Write-Host "Phone note: connect the Android phone, enable USB debugging, accept the prompt, and wait for adb devices to show device."
+    $statusLines += ""
+    $statusLines += "Phone note: connect the Android phone, enable USB debugging, accept the prompt, and wait for adb devices to show device."
 }
 
 if (-not ($localGeminiReady -or $envGeminiReady)) {
-    Write-Host "Gemini note: no real local/env key is configured yet; no-key OCR fallback can still be phone-tested."
+    $statusLines += "Gemini note: no real local/env key is configured yet; no-key OCR fallback can still be phone-tested."
 } elseif (-not $buildGeminiReady) {
-    Write-Host "Gemini note: a key is available to the build environment, but the current APK does not include it. Rebuild/reinstall before AI phone testing."
+    $statusLines += "Gemini note: a key is available to the build environment, but the current APK does not include it. Rebuild/reinstall before AI phone testing."
+}
+
+$statusText = $statusLines -join [Environment]::NewLine
+Write-Host $statusText
+
+if ($WriteReport) {
+    $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $reportRoot = Join-Path $repoRoot $OutputDir
+    $reportDir = Join-Path $reportRoot $stamp
+    New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+    $reportPath = Join-Path $reportDir "CURRENT_STATUS.md"
+
+    $markdown = @()
+    $markdown += "# Deal Planner Current Status - $stamp"
+    $markdown += ""
+    $markdown += 'This report is generated by `scripts\show-current-status.ps1 -WriteReport`.'
+    $markdown += "It is read-only evidence and does not include Gemini key values."
+    $markdown += ""
+    $markdown += '```text'
+    $markdown += $statusLines
+    $markdown += '```'
+
+    Set-Content -LiteralPath $reportPath -Value $markdown
+    Write-Host ""
+    Write-Host "Wrote current status report:"
+    Write-Host $reportPath
 }

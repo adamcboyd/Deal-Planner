@@ -2994,3 +2994,31 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `265` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `23` warnings. The dirty-state readiness report `phone-test-results\20260716-212108\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after current-status handoff report mode:
+
+Persistent recovery checkpoint:
+
+- Extended `scripts\show-current-status.ps1` with `-WriteReport`.
+- The default command still prints the read-only current status snapshot and still avoids builds, installs, network calls, live Gemini calls, and key values.
+- `-WriteReport` now saves the same non-secret snapshot to `phone-test-results\<timestamp>\CURRENT_STATUS.md`, giving future recovery chats a durable handoff file when console output or chat history is lost.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and the generated feature-readiness report template now document the persistent current-status report mode.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\show-current-status.ps1")); "show-current-status.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\show-current-status.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\show-current-status.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\show-current-status.ps1 -WriteReport
+```
+
+Result before commit: parse/help/status checks passed. The report-writing path generated ignored handoff report `phone-test-results\20260716-212623\CURRENT_STATUS.md` with the same non-secret current status snapshot.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `265` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `23` warnings. The dirty-state readiness report `phone-test-results\20260716-212730\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

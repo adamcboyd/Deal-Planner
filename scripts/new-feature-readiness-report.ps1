@@ -483,7 +483,7 @@ $features = @(
     New-FeatureRow `
         -Area "Current source, APK, and repo identity" `
         -Evidence @("gradlew.bat", "settings.gradle.kts", "app\build.gradle.kts", "scripts\show-current-status.ps1", "scripts\phone-debug-preflight.ps1", "scripts\phone-debug-install.ps1") `
-        -LocalChecks @("Git branch/remote", "APK source BuildConfig", "current status helper", "preflight helper") `
+        -LocalChecks @("Git branch/remote", "APK source BuildConfig", "current status helper/report mode", "preflight helper") `
         -PhoneCheck "Run .\scripts\start-phone-test-run.ps1 -WaitForPhone with an authorized Android phone." `
         -GateGreen $gateGreen
     New-FeatureRow `
@@ -537,7 +537,7 @@ $features = @(
     New-FeatureRow `
         -Area "Phone test helpers and deterministic samples" `
         -Evidence @("scripts\show-current-status.ps1", "scripts\start-phone-test-run.ps1", "scripts\new-phone-test-samples.ps1", "scripts\send-phone-test-samples.ps1", "scripts\new-phone-test-report.ps1", "scripts\phone-debug-logs.ps1", "app\src\main\assets\demo_pantry_labels.txt", "PHONE_TEST_CHECKLIST_2026-07-16.md") `
-        -LocalChecks @("current status helper", "sample generator verify mode", "preflight/install/report helper parse checks", "checklist coverage") `
+        -LocalChecks @("current status helper/report mode", "sample generator verify mode", "preflight/install/report helper parse checks", "checklist coverage") `
         -PhoneCheck "Run one-command phone setup with -WaitForPhone, complete checklist, and attach generated report/logs for failures." `
         -GateGreen $gateGreen
 )
