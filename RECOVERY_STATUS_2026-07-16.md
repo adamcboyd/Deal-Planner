@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini 3.5 request-defaults work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: feature readiness freshness work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Deal Planner naming readiness audit work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: Gemini 3.5 request-defaults work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2492,3 +2492,32 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-172819\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after Deal Planner naming readiness audit work:
+
+Naming checkpoint:
+
+- Added a Deal Planner naming-transition audit to `scripts\new-feature-readiness-report.ps1`.
+- The audit verifies the app label, Gradle application ID, Gradle namespace, and root project name are all on Deal Planner / `com.dealplanner`.
+- The audit scans active app/docs/scripts for exact old app-name strings while allowing normal SNAP/EBT/WIC benefit wording.
+- Added a readiness-matrix row and phone checklist item for confirming no legacy SNAP-era app naming appears on-device.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and this recovery log were updated to make the naming audit part of the recovery baseline.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -Help
+rg -n --hidden -S "SNAP Optimizer|SNAP_Optimizer|snap_optimizer|SNAP SHOPPER" scripts README.md PHONE_TEST_CHECKLIST_2026-07-16.md PROJECT_SUMMARY.md app\src settings.gradle.kts app\build.gradle.kts local.properties.example -g "!app/build"
+git diff --check
+```
+
+Result: parse and help checks passed. The exact old app-name scan returned no active matches. `git diff --check` passed.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-173828\FEATURE_READINESS_REPORT.md` showed `Naming audit: OK` and correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

@@ -216,7 +216,7 @@ Deal_Planner/
   - Resettable default meal params
   - Auto-generated 7-day meal plan
 
-### 7. Unit Tests (237 Test Cases)
+### 7. Unit Tests (239 Test Cases)
 - ✅ GeminiPantryVisionClientTest
 - ✅ PantryVisionItemMapperTest
 - ✅ BarcodePantryMapperTest
@@ -493,7 +493,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ Phone preflight/install helpers give specific ADB recovery guidance for no-device and unauthorized/offline states
-- ✅ PowerShell feature readiness report helper can run the local gate, separate local source/test evidence from remaining Android phone and real-Gemini checks, and flag stale evidence
+- ✅ PowerShell feature readiness report helper can run the local gate, separate local source/test evidence from remaining Android phone and real-Gemini checks, audit the Deal Planner naming transition, and flag stale evidence
 - ✅ One-command phone test starter writes setup status on success and a failure-state report with stopping reason if setup stops early
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone test report includes current lint snapshot and latest sample folder/manifest evidence when available
@@ -501,7 +501,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility
-- ✅ 237 unit tests
+- ✅ 239 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -139,6 +139,112 @@ function Get-FreshnessSnapshot {
     }
 }
 
+function Get-NamingAudit {
+    $expectedChecks = @(
+        [pscustomobject]@{
+            Label = "App label"
+            Path = "app\src\main\res\values\strings.xml"
+            Expected = '<string name="app_name">Deal Planner</string>'
+        },
+        [pscustomobject]@{
+            Label = "Application ID"
+            Path = "app\build.gradle.kts"
+            Expected = 'applicationId = "com.dealplanner"'
+        },
+        [pscustomobject]@{
+            Label = "Package namespace"
+            Path = "app\build.gradle.kts"
+            Expected = 'namespace = "com.dealplanner"'
+        },
+        [pscustomobject]@{
+            Label = "Root project name"
+            Path = "settings.gradle.kts"
+            Expected = 'rootProject.name = "Deal Planner"'
+        }
+    )
+
+    $details = New-Object System.Collections.Generic.List[string]
+    $failedChecks = New-Object System.Collections.Generic.List[string]
+
+    foreach ($check in $expectedChecks) {
+        $fullPath = Join-Path $repoRoot $check.Path
+        if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+            $failedChecks.Add($check.Label)
+            $details.Add("MISSING - $($check.Label): $($check.Path)")
+            continue
+        }
+
+        $content = Get-Content -Raw -LiteralPath $fullPath
+        if ($content.Contains($check.Expected)) {
+            $details.Add("OK - $($check.Label): $($check.Expected)")
+        } else {
+            $failedChecks.Add($check.Label)
+            $details.Add("MISMATCH - $($check.Label): expected $($check.Expected) in $($check.Path)")
+        }
+    }
+
+    $oldAppNames = @(
+        ("SNAP " + "Optimizer"),
+        ("SNAP" + "_Optimizer"),
+        ("snap" + "_optimizer"),
+        ("SNAP " + "SHOPPER")
+    )
+    $scanPaths = @(
+        "app\src",
+        "scripts",
+        "README.md",
+        "PHONE_TEST_CHECKLIST_2026-07-16.md",
+        "PROJECT_SUMMARY.md",
+        "local.properties.example",
+        "settings.gradle.kts",
+        "app\build.gradle.kts"
+    )
+    $oldNameHits = New-Object System.Collections.Generic.List[string]
+
+    foreach ($scanPath in $scanPaths) {
+        $fullPath = Join-Path $repoRoot $scanPath
+        if (Test-Path -LiteralPath $fullPath -PathType Container) {
+            $files = Get-ChildItem -LiteralPath $fullPath -Recurse -File -Force -ErrorAction SilentlyContinue |
+                Where-Object { $_.FullName -notmatch "\\app\\build\\" -and $_.FullName -notmatch "\\.gradle\\" }
+        } elseif (Test-Path -LiteralPath $fullPath -PathType Leaf) {
+            $files = @(Get-Item -LiteralPath $fullPath)
+        } else {
+            $files = @()
+        }
+
+        foreach ($file in $files) {
+            $matches = @(Select-String -LiteralPath $file.FullName -Pattern $oldAppNames -SimpleMatch -ErrorAction SilentlyContinue)
+            foreach ($match in $matches) {
+                $relativePath = $file.FullName.Substring($repoRoot.Length).TrimStart([char[]]@('\', '/'))
+                $oldNameHits.Add("${relativePath}:$($match.LineNumber): $($match.Pattern)")
+            }
+        }
+    }
+
+    if ($oldNameHits.Count -eq 0) {
+        $details.Add("OK - Old app-name scan: no active legacy app naming found in app/docs/scripts.")
+    } else {
+        $failedChecks.Add("Old app-name scan")
+        $details.Add("MISMATCH - Old app-name scan found active old-name references:")
+        foreach ($hit in $oldNameHits) {
+            $details.Add("  $hit")
+        }
+    }
+
+    $isOk = $failedChecks.Count -eq 0
+    $summary = if ($isOk) {
+        "OK; active app identity is Deal Planner / com.dealplanner and no old app-name strings were found in active app/docs/scripts."
+    } else {
+        "needs attention; failed checks: $($failedChecks -join ', ')."
+    }
+
+    return [pscustomobject]@{
+        Summary = $summary
+        Details = ($details -join [Environment]::NewLine)
+        IsOk = $isOk
+    }
+}
+
 function Get-UnitTestSnapshot {
     param([string]$ResultDir)
 
@@ -324,6 +430,7 @@ $lintSnapshot = Get-LintSnapshot $lintReportPath
 $testFreshness = Get-FreshnessSnapshot "Unit test" $latestAppInputUtc $testOutputFiles
 $lintFreshness = Get-FreshnessSnapshot "Lint" $latestAppInputUtc $lintOutputFiles
 $apkFreshness = Get-FreshnessSnapshot "Debug APK" $latestApkInputUtc $apkOutputFiles
+$namingAudit = Get-NamingAudit
 $buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
 $apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
 $apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
@@ -353,7 +460,8 @@ $gateGreen = $testSnapshot.IsGreen -and
     $lintSnapshot.IsGreen -and
     $testAndLintEvidenceCurrent -and
     $apkFreshness.IsFresh -and
-    $apkIdentityMatchesHead
+    $apkIdentityMatchesHead -and
+    $namingAudit.IsOk
 
 $features = @(
     New-FeatureRow `
@@ -361,6 +469,12 @@ $features = @(
         -Evidence @("gradlew.bat", "settings.gradle.kts", "app\build.gradle.kts", "scripts\phone-debug-preflight.ps1", "scripts\phone-debug-install.ps1") `
         -LocalChecks @("Git branch/remote", "APK source BuildConfig", "preflight helper") `
         -PhoneCheck "Run .\scripts\start-phone-test-run.ps1 with an authorized Android phone." `
+        -GateGreen $gateGreen
+    New-FeatureRow `
+        -Area "Deal Planner naming transition" `
+        -Evidence @("app\src\main\res\values\strings.xml", "app\build.gradle.kts", "settings.gradle.kts", "README.md", "PROJECT_SUMMARY.md") `
+        -LocalChecks @("App label", "Application ID", "Package namespace", "Root project name", "Old app-name scan") `
+        -PhoneCheck "Confirm Settings -> About Deal Planner shows package com.dealplanner and no legacy SNAP-era app naming appears on-device." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Pantry manual text and edit/review" `
@@ -435,6 +549,7 @@ $report = @"
 - APK source commit: $apkSourceSha
 - APK source dirty: $apkSourceDirty
 - APK identity: $apkIdentitySummary
+- Naming audit: $($namingAudit.Summary)
 - APK Gemini configured: $apkGeminiConfigured
 - APK Gemini model: $apkGeminiModel
 
@@ -473,6 +588,12 @@ $($lintSnapshot.Groups)
 - APK identity: $apkIdentitySummary
 
 When `-RunGate` is used, the successful Gradle run is treated as stronger local evidence than report-file timestamps for unit test and lint outputs. APK freshness and APK source identity still have to match the current source and Git HEAD before phone testing.
+
+## Naming Audit
+
+~~~text
+$($namingAudit.Details)
+~~~
 
 ## Next Required External Evidence
 
