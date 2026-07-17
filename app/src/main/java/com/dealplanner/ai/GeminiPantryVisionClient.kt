@@ -69,7 +69,7 @@ class GeminiPantryVisionClient(
         }
 
         val base64Image = bitmap.toJpegBase64()
-        val requestBody = buildRequest(base64Image).toString()
+        val requestBody = buildPantryPhotoRequest(base64Image).toString()
         val responseText = postGenerateContent(requestBody)
 
         parseVisionResult(extractResponseText(responseText))
@@ -153,7 +153,7 @@ class GeminiPantryVisionClient(
         return "HTTP $responseCode ${detail.truncateStatusDetail()}"
     }
 
-    private fun buildRequest(base64Image: String): JsonObject {
+    internal fun buildPantryPhotoRequest(base64Image: String): JsonObject {
         val imagePart = JsonObject().apply {
             add(
                 "inline_data",
@@ -180,14 +180,13 @@ class GeminiPantryVisionClient(
             add(
                 "generationConfig",
                 JsonObject().apply {
-                    addProperty("temperature", 0.1)
                     addProperty("responseMimeType", "application/json")
                 }
             )
         }
     }
 
-    private fun buildConnectionTestRequest(): JsonObject {
+    internal fun buildConnectionTestRequest(): JsonObject {
         val promptPart = JsonObject().apply {
             addProperty("text", "Reply with OK to confirm this Deal Planner Gemini setup works.")
         }
@@ -201,7 +200,6 @@ class GeminiPantryVisionClient(
             add(
                 "generationConfig",
                 JsonObject().apply {
-                    addProperty("temperature", 0.0)
                     addProperty("maxOutputTokens", 16)
                 }
             )

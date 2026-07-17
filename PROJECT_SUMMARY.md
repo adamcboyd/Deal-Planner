@@ -161,6 +161,7 @@ Deal_Planner/
 - ✅ Receipt camera/gallery/PDF/manual text import
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
+- ✅ Stable `gemini-3.5-flash` default model with Gemini 3.x default sampling behavior
 - ✅ Concise Gemini API success, empty-response, missing-key, and failure summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording

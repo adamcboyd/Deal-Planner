@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness freshness work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: feature readiness report work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini 3.5 request-defaults work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: feature readiness freshness work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2463,3 +2463,32 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 ```
 
 Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
+
+Latest recovery checkpoint after Gemini 3.5 request-defaults work:
+
+AI checkpoint:
+
+- Verified current official Google AI documentation lists `gemini-3.5-flash` as the stable Gemini 3.5 Flash model code with image input and structured output support.
+- Removed hardcoded Gemini `temperature` fields from pantry photo extraction and Settings connection-test requests so Gemini 3.x sampling defaults are used.
+- Added unit coverage that pantry photo requests still ask for JSON output and connection-test requests still cap output, while neither request overrides `temperature`, `topP`, or `topK`.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and `local.properties.example` were updated with the stable model/default-sampling behavior.
+
+Focused AI gate:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests "com.dealplanner.ai.GeminiPantryVisionClientTest"
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full local gate:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-172819\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

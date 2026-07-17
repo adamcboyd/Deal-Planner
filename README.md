@@ -105,7 +105,8 @@ The phone preflight and generated phone-test report verify whether the debug APK
 
 A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks with concise API error summaries.
-The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
+The default `gemini-3.5-flash` model code is the stable Gemini 3.5 Flash ID listed in the official Google AI Gemini model docs and supports image inputs plus structured output. The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
+Gemini requests use the model's default sampling settings and only specify output shape/size, reducing the chance that hardcoded sampling parameters drift from current Gemini 3.x guidance.
 
 ### Build & Run
 
@@ -395,7 +396,7 @@ Tests cover:
 - Shopping list consolidation with persisted and pre-database deal identities, plus planned-quantity estimated costs
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total/negative-return line filtering)
-- Gemini configuration guardrails and pantry response parsing (placeholder keys, model fallback, whitespace/prefix normalization, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields, and non-finite numeric fallback)
+- Gemini configuration guardrails and pantry response parsing (placeholder keys, stable `gemini-3.5-flash` default model, model fallback, whitespace/prefix normalization, default sampling settings, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields, and non-finite numeric fallback)
 - Gemini connection-test success, empty-response, missing-key, and concise failure status handling without requiring live network calls
 - AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - AI pantry review-note reasons for missing, non-positive, or uncertain brand, amount/unit, storage location, and best-by date details
@@ -508,6 +509,7 @@ As of the latest local pass:
 - Manual numeric edit fields reject non-finite text such as `NaN` or `Infinity` instead of saving invalid calculations.
 - Meal planning guards against negative saved protein settings so Shopping quantities and estimated costs cannot go below zero.
 - Gemini setup trims accidental key/model whitespace and normalizes a pasted `models/` prefix before calling the API.
+- Gemini requests keep Gemini 3.x sampling defaults and only set the JSON response shape for pantry photo extraction or the short max output for connection testing.
 - Gemini pantry response parsing handles fenced JSON, minor surrounding text, scalar/object-wrapped warnings/questions, alternate review-question aliases such as `clarifying_questions` and `followUpQuestions`, warning aliases such as `review_notes`, top-level arrays, single-item objects, plural or singular item wrappers, snake_case/camelCase/name aliases, common label-date aliases such as `sell_by_date` and `expirationDateText`, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases such as `amount: "2 cans"`, `amount: "1,5 lb"`, `amount: ".5 lb"`, `amount: "two cans"`, `amount: "a dozen eggs"`, `quantity: { value: "half dozen" }`, or `quantity: { value: "2", unit: "cans" }`, storage aliases, malformed string/list fields, non-finite numeric text fallback, non-JSON model text fallback, and confidence clamping.
 - AI pantry saved rows normalize raw model wording before storage, so values like plural cans, fluid ounces, extra whitespace, and refrigerator/cold-storage aliases become canonical pantry fields such as `can`, `oz`, and `fridge`.
 - AI pantry photo dates accept common label formats such as `12/31/2026`, `12-31-26`, `2026/12/31`, and unpadded `2026-7-1` before saving review items.

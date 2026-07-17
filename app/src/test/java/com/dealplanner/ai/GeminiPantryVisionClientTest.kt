@@ -94,6 +94,32 @@ class GeminiPantryVisionClientTest {
         assertThat(capturedModel).isEqualTo("gemini-3.5-flash")
         assertThat(capturedKey).isEqualTo("test-real-key-for-unit-tests")
         assertThat(capturedRequestBody).contains("Reply with OK")
+        assertThat(capturedRequestBody).doesNotContain("temperature")
+    }
+
+    @Test
+    fun `pantry photo request asks for json without overriding model sampling defaults`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+
+        val request = client.buildPantryPhotoRequest("base64-image").toString()
+
+        assertThat(request).contains("inline_data")
+        assertThat(request).contains("application/json")
+        assertThat(request).doesNotContain("temperature")
+        assertThat(request).doesNotContain("topP")
+        assertThat(request).doesNotContain("topK")
+    }
+
+    @Test
+    fun `connection test request caps output without overriding model sampling defaults`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+
+        val request = client.buildConnectionTestRequest().toString()
+
+        assertThat(request).contains("maxOutputTokens")
+        assertThat(request).doesNotContain("temperature")
+        assertThat(request).doesNotContain("topP")
+        assertThat(request).doesNotContain("topK")
     }
 
     @Test

@@ -4,4 +4,5 @@
 # Optional: enables Gemini Vision pantry photo extraction.
 gemini.api.key=YOUR_GEMINI_API_KEY
 # Bare model code is preferred. The app also accepts values pasted as models/gemini-3.5-flash.
+# The app uses Gemini 3.x default sampling settings for request compatibility.
 gemini.model=gemini-3.5-flash
