@@ -3022,3 +3022,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `265` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `23` warnings. The dirty-state readiness report `phone-test-results\20260716-212730\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after starter current-status handoff report work:
+
+Phone starter evidence checkpoint:
+
+- `scripts\start-phone-test-run.ps1` now writes a non-secret `CURRENT_STATUS.md` handoff report at the beginning of a starter run unless `-SkipReport` is used.
+- This means even a no-phone/unauthorized-phone setup failure leaves a durable current-state recovery file before the script waits for ADB, builds, installs, or reaches the final phone-test report.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST now document that the starter creates the handoff report plus the existing success/failure phone-test report.
+- A failed attempt to move adaptive launcher resources out of `mipmap-anydpi-v26` was tested and reverted after resource linking failed; the launcher files remain in their working tracked location.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\start-phone-test-run.ps1")); "start-phone-test-run.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -WaitForPhone -WaitSeconds 1 -SkipBuild -SkipNetwork -SkipSamples -NoLaunch
+```
+
+Result before commit: parse/help checks passed. The expected no-phone starter run wrote ignored current-status handoff report `phone-test-results\20260716-213239\CURRENT_STATUS.md`, then timed out waiting for one authorized Android phone, then created ignored failure-state phone report `phone-test-results\20260716-213242\PHONE_TEST_REPORT.md` with `Setup status: Failed`, `WaitForPhone=True`, and `WaitSeconds=1`.
+
+Focused lint recovery check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat lintDebug
+```
+
+Result before commit: `BUILD SUCCESSFUL`; lint remained at `0` errors with `23` warnings (`GradleDependency`, `NewerVersionAvailable`, and `ObsoleteSdkInt`).

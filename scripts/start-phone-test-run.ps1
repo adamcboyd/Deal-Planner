@@ -25,12 +25,13 @@ function Show-Usage {
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
     Write-Host "What it does:"
-    Write-Host "  1. Builds the current debug APK unless -SkipBuild is used."
-    Write-Host "  2. Runs phone preflight with -RequirePhone against the APK that will be installed."
-    Write-Host "  3. Creates deterministic TXT, PDF, PNG, pantry-label, and UPC-A barcode samples."
-    Write-Host "  4. Copies those samples to the phone Downloads folder and verifies transfer."
-    Write-Host "  5. Installs/launches the debug APK."
-    Write-Host "  6. Creates a timestamped phone-test report."
+    Write-Host "  1. Writes a non-secret current-status handoff report unless -SkipReport is used."
+    Write-Host "  2. Builds the current debug APK unless -SkipBuild is used."
+    Write-Host "  3. Runs phone preflight with -RequirePhone against the APK that will be installed."
+    Write-Host "  4. Creates deterministic TXT, PDF, PNG, pantry-label, and UPC-A barcode samples."
+    Write-Host "  5. Copies those samples to the phone Downloads folder and verifies transfer."
+    Write-Host "  6. Installs/launches the debug APK."
+    Write-Host "  7. Creates a timestamped phone-test report."
     Write-Host "     If setup fails before that step, a failure-state report is still created unless -SkipReport is used."
     Write-Host ""
     Write-Host "Options:"
@@ -180,6 +181,10 @@ if ($SkipNetwork) {
 }
 
 try {
+    if (-not $SkipReport) {
+        Invoke-Helper "Write current-status handoff report" (Join-Path $PSScriptRoot "show-current-status.ps1") @("-WriteReport")
+    }
+
     if (-not $SkipBuild) {
         Invoke-Step "Build current debug APK" {
             .\gradlew.bat testDebugUnitTest assembleDebug lintDebug

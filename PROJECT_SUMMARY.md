@@ -277,7 +277,7 @@ cd C:\Users\adamc\AndroidStudioProjects\Deal_Planner
 .\scripts\show-current-status.ps1
 ```
 
-This read-only helper prints the current branch/commit, debug APK source identity, Gemini readiness without printing secrets, ADB phone visibility, latest report/sample paths, and the next normal/AI phone-test commands. Use `.\scripts\show-current-status.ps1 -WriteReport` to save the same snapshot as a persistent `phone-test-results\<timestamp>\CURRENT_STATUS.md` handoff file.
+This read-only helper prints the current branch/commit, debug APK source identity, Gemini readiness without printing secrets, ADB phone visibility, latest report/sample paths, and the next normal/AI phone-test commands. Use `.\scripts\show-current-status.ps1 -WriteReport` to save the same snapshot as a persistent `phone-test-results\<timestamp>\CURRENT_STATUS.md` handoff file. The one-command phone starter writes that handoff report automatically unless `-SkipReport` is used.
 
 1. **Open in Android Studio**:
    ```bash
