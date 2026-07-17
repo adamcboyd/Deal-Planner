@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Deal Planner naming readiness audit work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: Gemini 3.5 request-defaults work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness freshness wording work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: Deal Planner naming readiness audit work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2521,3 +2521,30 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-173828\FEATURE_READINESS_REPORT.md` showed `Naming audit: OK` and correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after feature readiness freshness wording work:
+
+Readiness evidence checkpoint:
+
+- Updated `scripts\new-feature-readiness-report.ps1` so a successful `-RunGate` is treated as current unit-test and lint evidence even when Gradle reuses cached XML/report files whose timestamps did not move.
+- The report still shows the raw file freshness for transparency.
+- APK freshness and APK source identity remain file/BuildConfig based before phone testing.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and this recovery log were updated so the cached-report behavior is documented.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -Help
+git diff --check
+```
+
+Result: parse and help checks passed. `git diff --check` passed.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-174315\FEATURE_READINESS_REPORT.md` now marks `Unit test freshness` and `Lint freshness` current via the successful `-RunGate`, while still showing raw report-file freshness. It correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

@@ -61,7 +61,7 @@ For a local recovery snapshot before the phone run:
 .\scripts\new-feature-readiness-report.ps1 -RunGate
 ```
 
-Use the generated `phone-test-results\<timestamp>\FEATURE_READINESS_REPORT.md` to see which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence and which still require Android phone or real Gemini-key evidence. The `-RunGate` path runs the local unit/build/lint gate first and flags stale test/lint/APK evidence, failed Deal Planner naming-transition checks, or an APK source identity that does not match the current clean `HEAD`.
+Use the generated `phone-test-results\<timestamp>\FEATURE_READINESS_REPORT.md` to see which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence and which still require Android phone or real Gemini-key evidence. The `-RunGate` path runs the local unit/build/lint gate first, treats that successful gate as current unit/lint evidence even if Gradle reuses cached report files, and flags stale APK evidence, failed Deal Planner naming-transition checks, or an APK source identity that does not match the current clean `HEAD`.
 
 To create deterministic sample files for pasted text, gallery image, and PDF picker checks:
 

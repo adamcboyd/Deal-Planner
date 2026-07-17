@@ -139,6 +139,24 @@ function Get-FreshnessSnapshot {
     }
 }
 
+function Get-EffectiveFreshnessSnapshot {
+    param(
+        [string]$Label,
+        $Freshness,
+        [bool]$GateExecuted
+    )
+
+    if (-not $GateExecuted) {
+        return $Freshness
+    }
+
+    return [pscustomobject]@{
+        Summary = "current; successful -RunGate executed $Label during this report. Raw file freshness: $($Freshness.Summary)"
+        Detail = "$Label gate: current because -RunGate completed successfully. Raw file freshness: $($Freshness.Detail)"
+        IsFresh = $true
+    }
+}
+
 function Get-NamingAudit {
     $expectedChecks = @(
         [pscustomobject]@{
@@ -430,6 +448,8 @@ $lintSnapshot = Get-LintSnapshot $lintReportPath
 $testFreshness = Get-FreshnessSnapshot "Unit test" $latestAppInputUtc $testOutputFiles
 $lintFreshness = Get-FreshnessSnapshot "Lint" $latestAppInputUtc $lintOutputFiles
 $apkFreshness = Get-FreshnessSnapshot "Debug APK" $latestApkInputUtc $apkOutputFiles
+$testEvidenceFreshness = Get-EffectiveFreshnessSnapshot "unit tests" $testFreshness $gateExecuted
+$lintEvidenceFreshness = Get-EffectiveFreshnessSnapshot "lint" $lintFreshness $gateExecuted
 $namingAudit = Get-NamingAudit
 $buildConfigPath = Join-Path $repoRoot "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
 $apkSourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
@@ -451,11 +471,7 @@ $apkIdentitySummary = if ($apkIdentityMatchesHead) {
 } else {
     "does not match current clean HEAD. Rebuild with .\gradlew.bat assembleDebug before phone testing."
 }
-$testAndLintEvidenceCurrent = if ($gateExecuted) {
-    $true
-} else {
-    $testFreshness.IsFresh -and $lintFreshness.IsFresh
-}
+$testAndLintEvidenceCurrent = $testEvidenceFreshness.IsFresh -and $lintEvidenceFreshness.IsFresh
 $gateGreen = $testSnapshot.IsGreen -and
     $lintSnapshot.IsGreen -and
     $testAndLintEvidenceCurrent -and
@@ -541,9 +557,9 @@ $report = @"
 - Remote: $remote
 - Gradle gate run by report: $gateRunSummary
 - Unit tests: $($testSnapshot.Summary)
-- Unit test freshness: $($testFreshness.Summary)
+- Unit test freshness: $($testEvidenceFreshness.Summary)
 - Lint: $($lintSnapshot.Summary)
-- Lint freshness: $($lintFreshness.Summary)
+- Lint freshness: $($lintEvidenceFreshness.Summary)
 - Debug APK freshness: $($apkFreshness.Summary)
 - APK source branch: $apkSourceBranch
 - APK source commit: $apkSourceSha
@@ -582,8 +598,8 @@ $($lintSnapshot.Groups)
 ## Evidence Freshness
 
 - Gradle gate run by report: $gateRunSummary
-- Unit test evidence: $($testFreshness.Detail)
-- Lint evidence: $($lintFreshness.Detail)
+- Unit test evidence: $($testEvidenceFreshness.Detail)
+- Lint evidence: $($lintEvidenceFreshness.Detail)
 - Debug APK evidence: $($apkFreshness.Detail)
 - APK identity: $apkIdentitySummary
 
