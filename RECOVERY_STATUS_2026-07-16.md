@@ -124,6 +124,15 @@ Latest image helper KTX cleanup checkpoint:
 
 Result: `BUILD SUCCESSFUL`. `AppViewModel` now uses AndroidX KTX `Bitmap.scale` and `createBitmap` helpers in the image/PDF preprocessing paths, clearing the two `UseKtx` lint suggestions without changing the rendered bitmap dimensions or OCR input flow. The current lint snapshot is `0` errors and `27` warnings: dependency update advisories plus the launcher resource-folder warning.
 
+Latest barcode dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.lookup.OpenFoodFactsBarcodeClientTest --tests com.dealplanner.lookup.BarcodePantryMapperTest --tests com.dealplanner.parser.PantryPhraseParserTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. ZXing core was updated from `3.5.2` to `3.5.4` for barcode/manual UPC intake while leaving the JourneyApps scanner wrapper unchanged. Barcode-focused tests passed before the full gate, covering UPC/EAN normalization, Open Food Facts response handling, pantry fallback mapping, and barcode-aware duplicate behavior. The current lint snapshot is `0` errors and `26` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

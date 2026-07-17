@@ -257,7 +257,7 @@ Deal_Planner/
 | Database | Room 2.6.1 |
 | OCR | ML Kit Text Recognition 16.0.1 |
 | AI Vision | Optional Gemini API |
-| Barcode | ZXing 3.5.2 + JourneyApps scanner |
+| Barcode | ZXing 3.5.4 + JourneyApps scanner |
 | Coroutines | Kotlinx Coroutines 1.7.3 |
 | Architecture | MVVM + Repository |
 | Testing | JUnit 4.13.2 + Truth 1.1.5 |

@@ -143,7 +143,7 @@ dependencies {
     implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // ZXing for barcode
-    implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.zxing:core:3.5.4")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // Coroutines
