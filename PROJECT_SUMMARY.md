@@ -74,8 +74,9 @@ Deal_Planner/
         │   │       │   └── ParamsScreen.kt
         │   │       └── theme/                    ✅ Material 3 theme
         │   ├── assets/
-        │   │   ├── demo_flyer.txt     ✅ Sample OCR input
-        │   │   └── demo_receipt.txt   ✅ Sample receipt
+        │   │   ├── demo_flyer.txt          ✅ Sample OCR input
+        │   │   ├── demo_pantry_labels.txt  ✅ Sample pantry-label OCR rows
+        │   │   └── demo_receipt.txt        ✅ Sample receipt
         │   └── res/
         │       ├── values/
         │       │   ├── strings.xml    ✅ String resources
@@ -517,7 +518,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ One-command phone test starter can wait for an authorized ADB phone, builds the current APK before preflight unless `-SkipBuild` is used, then writes setup status/setup mode on success and a failure-state report with stopping reason if setup stops early
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
 - ✅ Phone test report includes setup mode, current lint snapshot, and latest sample folder/manifest evidence when available
-- ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce`, `12-count`, punctuated label cues, slash dates, and two-digit dash dates plus local manifest/hash verification
+- ✅ Phone sample generator copies pantry-label OCR rows from `app\src\main\assets\demo_pantry_labels.txt`; unit tests parse that exact asset through OCR candidate extraction and pantry parsing for `16-ounce`, `12-count`, punctuated label cues, slash dates, and two-digit dash dates
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility

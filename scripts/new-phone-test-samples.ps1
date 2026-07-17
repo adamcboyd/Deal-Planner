@@ -469,12 +469,16 @@ Set-Location $repoRoot
 $assetsRoot = Join-Path $repoRoot "app\src\main\assets"
 $receiptAsset = Join-Path $assetsRoot "demo_receipt.txt"
 $flyerAsset = Join-Path $assetsRoot "demo_flyer.txt"
+$pantryAsset = Join-Path $assetsRoot "demo_pantry_labels.txt"
 
 if (-not (Test-Path $receiptAsset)) {
     throw "Missing bundled demo receipt asset: $receiptAsset"
 }
 if (-not (Test-Path $flyerAsset)) {
     throw "Missing bundled demo flyer asset: $flyerAsset"
+}
+if (-not (Test-Path $pantryAsset)) {
+    throw "Missing bundled demo pantry-label asset: $pantryAsset"
 }
 
 if ([System.IO.Path]::IsPathRooted($OutputDir)) {
@@ -522,14 +526,8 @@ $manifestPath = Join-Path $sessionDir "SAMPLE_MANIFEST.md"
 
 Copy-Item -LiteralPath $receiptAsset -Destination $receiptText -Force
 Copy-Item -LiteralPath $flyerAsset -Destination $flyerText -Force
-$pantryLines = @(
-    "Great Value Black Beans net wt: 15 oz pantry best by: 12/31/2026",
-    "Kroger Pasta 16 oz pantry exp: 12-31-26",
-    "Great Value Peanut Butter 16-ounce pantry best-by 2027-03-04",
-    "Kroger Eggs 12-count fridge use by 12-31-26",
-    "Private Selection Salsa 16 oz fridge opened: 2026-07-01 use by: 12/31/2026"
-)
-Set-Content -LiteralPath $pantryText -Value $pantryLines -Encoding UTF8
+Copy-Item -LiteralPath $pantryAsset -Destination $pantryText -Force
+$pantryLines = Get-Content -LiteralPath $pantryText
 $barcodeValue = "012345678905"
 $barcodeLines = @(
     "UPC-A: $barcodeValue",

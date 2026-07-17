@@ -70,7 +70,7 @@ To create deterministic sample files for pasted text, gallery image, and PDF pic
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper requires the generated `SAMPLE_MANIFEST.md`, verifies its byte counts and SHA-256 hashes, copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, requests Android media scans so picker apps can see the files sooner, and writes `PHONE_SAMPLE_TRANSFER.md` with the Android destination and verified byte sizes. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples. The pantry-label sample includes hyphenated `16-ounce` and `12-count` rows, punctuated `net wt:`/`best by:` cues, slash dates, and two-digit dash dates for OCR fallback checks.
+Copy or upload the generated `phone-test-samples\<timestamp>\` folder to a location the phone can open, or use `send-phone-test-samples.ps1` after USB debugging is authorized. The transfer helper requires the generated `SAMPLE_MANIFEST.md`, verifies its byte counts and SHA-256 hashes, copies the latest generated folder to `/sdcard/Download/DealPlannerPhoneTestSamples/<timestamp>/`, verifies remote byte sizes, requests Android media scans so picker apps can see the files sooner, and writes `PHONE_SAMPLE_TRANSFER.md` with the Android destination and verified byte sizes. The folder contains demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples. The pantry-label sample is generated from `app\src\main\assets\demo_pantry_labels.txt` and includes hyphenated `16-ounce` and `12-count` rows, punctuated `net wt:`/`best by:` cues, slash dates, and two-digit dash dates for OCR fallback checks.
 Each generated sample folder also includes `SAMPLE_MANIFEST.md` with byte counts and SHA-256 hashes. To verify the latest local bundle before phone transfer, run:
 
 ```powershell
@@ -245,7 +245,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
    - Edit at least one pending row, remove a junk pending row if present, tap `Save All`, and confirm the saved Pantry list updates only after `Save All`.
 5. Pantry gallery:
    - Tap `Gallery`.
-   - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` from a generated `phone-test-samples\<timestamp>\` folder.
+   - Pick a pantry image, such as `deal-planner-demo-pantry-label.png` generated from `app\src\main\assets\demo_pantry_labels.txt` in a `phone-test-samples\<timestamp>\` folder.
    - Expected: same as pantry photo, including common label-date handling and separate pending review rows for the generated `16-ounce` peanut butter, `12-count` eggs, punctuated label-cue, slash-date, and two-digit dash-date labels when OCR can read them. If OCR wraps the date onto the next line, the date should stay attached to that pending item.
 6. Optional multi-item OCR fallback:
    - Use a pantry photo/gallery image where at least two visible lines each look like complete items, such as `Great Value Black Beans 15 oz pantry` and `Kroger Pasta 16 oz pantry`, or hyphenated label rows such as `Great Value Peanut Butter 16-ounce` and `Kroger Eggs 12-count`.

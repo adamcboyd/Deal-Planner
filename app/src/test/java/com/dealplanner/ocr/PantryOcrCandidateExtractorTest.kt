@@ -1,7 +1,10 @@
 package com.dealplanner.ocr
 
+import com.dealplanner.parser.PantryPhraseParser
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import java.io.File
+import java.time.LocalDate
 
 class PantryOcrCandidateExtractorTest {
 
@@ -93,6 +96,56 @@ class PantryOcrCandidateExtractorTest {
             "Great Value Peanut Butter 16-ounce",
             "Kroger Eggs 12-count"
         ).inOrder()
+    }
+
+    @Test
+    fun `bundled demo pantry labels parse into expected phone checklist rows`() {
+        val text = File("src/main/assets/demo_pantry_labels.txt").readText()
+        val parser = PantryPhraseParser()
+
+        val candidates = PantryOcrCandidateExtractor.extractCandidates(text)
+        val items = candidates.map { parser.parse(it).item }
+
+        assertThat(candidates).containsExactly(
+            "Great Value Black Beans net wt: 15 oz pantry best by: 12/31/2026",
+            "Kroger Pasta 16 oz pantry exp: 12-31-26",
+            "Great Value Peanut Butter 16-ounce pantry best-by 2027-03-04",
+            "Kroger Eggs 12-count fridge use by 12-31-26",
+            "Private Selection Salsa 16 oz fridge opened: 2026-07-01 use by: 12/31/2026"
+        ).inOrder()
+
+        val blackBeans = items[0]
+        assertThat(blackBeans.item).isEqualTo("black beans")
+        assertThat(blackBeans.brand).isEqualTo("Great Value")
+        assertThat(blackBeans.size).isEqualTo("15oz")
+        assertThat(blackBeans.location).isEqualTo("pantry")
+        assertThat(blackBeans.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        val pasta = items[1]
+        assertThat(pasta.item).isEqualTo("pasta")
+        assertThat(pasta.brand).isEqualTo("Kroger")
+        assertThat(pasta.size).isEqualTo("16oz")
+        assertThat(pasta.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        val peanutButter = items[2]
+        assertThat(peanutButter.item).isEqualTo("peanut butter")
+        assertThat(peanutButter.brand).isEqualTo("Great Value")
+        assertThat(peanutButter.size).isEqualTo("16oz")
+        assertThat(peanutButter.bestBy).isEqualTo(LocalDate.of(2027, 3, 4))
+
+        val eggs = items[3]
+        assertThat(eggs.item).isEqualTo("eggs")
+        assertThat(eggs.brand).isEqualTo("Kroger")
+        assertThat(eggs.size).isEqualTo("12ct")
+        assertThat(eggs.location).isEqualTo("fridge")
+        assertThat(eggs.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
+
+        val salsa = items[4]
+        assertThat(salsa.item).isEqualTo("private selection salsa")
+        assertThat(salsa.size).isEqualTo("16oz")
+        assertThat(salsa.location).isEqualTo("fridge")
+        assertThat(salsa.opened).isEqualTo(LocalDate.of(2026, 7, 1))
+        assertThat(salsa.bestBy).isEqualTo(LocalDate.of(2026, 12, 31))
     }
 
     @Test

@@ -506,7 +506,7 @@ $features = @(
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Pantry photo/gallery, OCR fallback, and Gemini vision" `
-        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\PantryScreen.kt", "app\src\main\java\com\dealplanner\ui\viewmodel\AppViewModel.kt", "app\src\main\java\com\dealplanner\ui\state\PantryImportReviewQueue.kt", "app\src\main\java\com\dealplanner\ocr\PantryOcrCandidateExtractor.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ui\state\PantryImportReviewQueueTest.kt", "app\src\test\java\com\dealplanner\ocr\PantryOcrCandidateExtractorTest.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ai\PantryVisionItemMapperTest.kt") `
+        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\PantryScreen.kt", "app\src\main\java\com\dealplanner\ui\viewmodel\AppViewModel.kt", "app\src\main\java\com\dealplanner\ui\state\PantryImportReviewQueue.kt", "app\src\main\java\com\dealplanner\ocr\PantryOcrCandidateExtractor.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\main\assets\demo_pantry_labels.txt", "app\src\test\java\com\dealplanner\ui\state\PantryImportReviewQueueTest.kt", "app\src\test\java\com\dealplanner\ocr\PantryOcrCandidateExtractorTest.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ai\PantryVisionItemMapperTest.kt") `
         -LocalChecks @("Photo import review queue tests", "OCR candidate tests", "Gemini response/client parsing tests", "AI-to-pantry VERIFY mapping tests") `
         -PhoneCheck "Test pantry Photo/Gallery pending review and Save All without key for OCR fallback, then with real Gemini key for AI vision." `
         -GateGreen $gateGreen
@@ -536,7 +536,7 @@ $features = @(
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Phone test helpers and deterministic samples" `
-        -Evidence @("scripts\start-phone-test-run.ps1", "scripts\new-phone-test-samples.ps1", "scripts\send-phone-test-samples.ps1", "scripts\new-phone-test-report.ps1", "scripts\phone-debug-logs.ps1", "PHONE_TEST_CHECKLIST_2026-07-16.md") `
+        -Evidence @("scripts\start-phone-test-run.ps1", "scripts\new-phone-test-samples.ps1", "scripts\send-phone-test-samples.ps1", "scripts\new-phone-test-report.ps1", "scripts\phone-debug-logs.ps1", "app\src\main\assets\demo_pantry_labels.txt", "PHONE_TEST_CHECKLIST_2026-07-16.md") `
         -LocalChecks @("sample generator verify mode", "preflight/install/report helper parse checks", "checklist coverage") `
         -PhoneCheck "Run one-command phone setup with -WaitForPhone, complete checklist, and attach generated report/logs for failures." `
         -GateGreen $gateGreen

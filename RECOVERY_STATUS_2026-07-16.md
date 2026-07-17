@@ -210,6 +210,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-r
 
 Result: parse/help checks passed and `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` returned `BUILD SUCCESSFUL`. Starter help now shows the final AI phone pass as `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage`, matching README, checklist, and generated report templates.
 
+Latest pantry-label sample asset checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ocr.PantryOcrCandidateExtractorTest
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-phone-test-samples.ps1")); "new-phone-test-samples.ps1 parsed"'
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-samples.ps1 -VerifyOnly -SamplesDir phone-test-samples\20260716-210435
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: targeted pantry OCR tests and full gate returned `BUILD SUCCESSFUL`. The phone pantry-label sample now comes from `app\src\main\assets\demo_pantry_labels.txt`; generated sample folder `phone-test-samples\20260716-210435` verified successfully, and its `deal-planner-demo-pantry-label.txt` matched the asset text byte-for-byte. `PantryOcrCandidateExtractorTest` now parses that exact asset through OCR candidate extraction plus `PantryPhraseParser` for black beans, pasta, peanut butter, eggs, and salsa label rows.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

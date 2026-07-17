@@ -74,8 +74,9 @@ app/
 │   │   │   └── theme/          # Material 3 theme
 │   │   └── MainActivity.kt
 │   ├── assets/
-│   │   ├── demo_flyer.txt      # Sample flyer for demo
-│   │   └── demo_receipt.txt    # Sample receipt for demo
+│   │   ├── demo_flyer.txt          # Sample flyer for demo
+│   │   ├── demo_pantry_labels.txt  # Sample pantry-label OCR rows
+│   │   └── demo_receipt.txt        # Sample receipt for demo
 │   └── res/
 └── src/test/                   # Unit tests
 ```
@@ -211,7 +212,7 @@ Phone test sample helper:
 .\scripts\send-phone-test-samples.ps1
 ```
 
-Samples are saved under ignored `phone-test-samples\` folders and include demo receipt/flyer TXT, PDF, and PNG files, a pantry-label PNG with multi-item rows, hyphenated package sizes, punctuated label cues, slash dates, and two-digit dash dates, a valid UPC-A barcode PNG/text sample, and `SAMPLE_MANIFEST.md` byte counts plus SHA-256 hashes for deterministic pasted-text, gallery-image, barcode, and PDF picker checks. `new-phone-test-samples.ps1 -VerifyOnly` verifies the latest local bundle before phone transfer. When an authorized Android phone is connected, `send-phone-test-samples.ps1` requires that manifest, verifies its byte counts and SHA-256 hashes, copies the latest generated sample folder to `/sdcard/Download/DealPlannerPhoneTestSamples/`, verifies remote byte sizes, requests Android media scans for picker visibility, and writes `PHONE_SAMPLE_TRANSFER.md` with the Android destination and verified byte-size evidence.
+Samples are saved under ignored `phone-test-samples\` folders and include demo receipt/flyer TXT, PDF, and PNG files, a pantry-label TXT/PNG generated from `app\src\main\assets\demo_pantry_labels.txt` with multi-item rows, hyphenated package sizes, punctuated label cues, slash dates, and two-digit dash dates, a valid UPC-A barcode PNG/text sample, and `SAMPLE_MANIFEST.md` byte counts plus SHA-256 hashes for deterministic pasted-text, gallery-image, barcode, and PDF picker checks. `new-phone-test-samples.ps1 -VerifyOnly` verifies the latest local bundle before phone transfer. When an authorized Android phone is connected, `send-phone-test-samples.ps1` requires that manifest, verifies its byte counts and SHA-256 hashes, copies the latest generated sample folder to `/sdcard/Download/DealPlannerPhoneTestSamples/`, verifies remote byte sizes, requests Android media scans for picker visibility, and writes `PHONE_SAMPLE_TRANSFER.md` with the Android destination and verified byte-size evidence.
 
 Debug APK output:
 
@@ -467,7 +468,7 @@ As of the latest local pass:
 - `scripts\new-feature-readiness-report.ps1 -RunGate` creates an ignored timestamped feature readiness matrix under `phone-test-results\`, runs the local unit/build/lint gate first, shows which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence, audits the Deal Planner app label/package/project naming transition, treats the successful gate as current unit/lint evidence even if Gradle reuses cached report files, and flags stale APK evidence or an APK source identity that does not match the current clean `HEAD`.
 - `scripts\phone-debug-logs.ps1` captures device metadata, full logcat, and a Deal Planner/crash-filtered log under ignored local `phone-test-logs\`.
 - `scripts\new-phone-test-report.ps1` creates ignored timestamped `phone-test-results\` report folders for recording real-phone checklist pass/fail evidence, repo commit, compiled APK source branch/commit/dirty state, compiled Gemini readiness, current lint snapshot when available, latest sample folder/manifest, latest sample transfer report when available, setup status/mode/failure reason when provided, and device context.
-- `scripts\new-phone-test-samples.ps1` creates ignored timestamped `phone-test-samples\` folders with demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples for deterministic phone input checks. The pantry-label sample includes `16-ounce`, `12-count`, punctuated `net wt:`/`best by:` cues, slash dates, and two-digit dash dates for OCR fallback checks, and `SAMPLE_MANIFEST.md` records byte counts plus SHA-256 hashes. `-VerifyOnly` checks the latest bundle without needing a connected phone.
+- `scripts\new-phone-test-samples.ps1` creates ignored timestamped `phone-test-samples\` folders with demo receipt/flyer TXT, PDF, and PNG files plus pantry-label and UPC-A barcode samples for deterministic phone input checks. The pantry-label sample is copied from `app\src\main\assets\demo_pantry_labels.txt`, includes `16-ounce`, `12-count`, punctuated `net wt:`/`best by:` cues, slash dates, and two-digit dash dates for OCR fallback checks, and `SAMPLE_MANIFEST.md` records byte counts plus SHA-256 hashes. `-VerifyOnly` checks the latest bundle without needing a connected phone.
 - `scripts\send-phone-test-samples.ps1` requires the generated `SAMPLE_MANIFEST.md`, verifies its byte counts and SHA-256 hashes, copies the latest generated demo receipt/flyer/pantry/barcode TXT, PDF, and PNG files to an authorized Android phone's Downloads folder, verifies remote byte sizes, requests Android media scans for deterministic picker checks, and writes local transfer evidence to `PHONE_SAMPLE_TRANSFER.md`.
 - App label, application ID, package namespace, and Room database filename use Deal Planner naming.
 - Adaptive launcher icons include a monochrome themed-icon asset, reducing current debug lint to dependency/SDK drift warnings only.
