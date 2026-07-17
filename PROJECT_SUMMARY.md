@@ -260,7 +260,7 @@ Deal_Planner/
 | Barcode | ZXing 3.5.4 + JourneyApps scanner |
 | Camera input | CameraX 1.4.2 |
 | JSON | Gson 2.14.0 |
-| Coroutines | Kotlinx Coroutines 1.7.3 |
+| Coroutines | Kotlinx Coroutines 1.8.1 |
 | Architecture | MVVM + Repository |
 | Testing | JUnit 4.13.2 + Truth 1.4.5 |
 | Min SDK | 26 (Android 8.0) |

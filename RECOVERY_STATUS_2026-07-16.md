@@ -169,6 +169,15 @@ Latest unit-test assertion dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. Truth was updated from `1.1.5` to `1.4.5` for the JVM unit-test assertion suite that covers Gemini parsing, pantry AI mapping, pantry/deal parsing, and receipt reconciliation. This keeps the local verification harness current without changing app runtime behavior. The current lint snapshot is `0` errors and `23` warnings.
 
+Latest coroutine dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest --tests com.dealplanner.lookup.OpenFoodFactsBarcodeClientTest --tests com.dealplanner.ui.state.PantryImportReviewQueueTest --tests com.dealplanner.domain.ShoppingListExportFormatterTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Kotlinx Coroutines was updated from `1.7.3` to `1.8.1` across Android, core, Play Services task awaiting, and unit-test artifacts. This keeps the async paths used by Gemini calls, Open Food Facts lookup, ML Kit OCR `tasks.await()`, view-model imports, and `runTest` coverage on one verified version while staying inside the current Kotlin `1.9.20` toolchain. Lint still reports `1.11.0` availability, so a later Kotlin/Compose modernization pass is needed before jumping to that line. The current lint snapshot remains `0` errors and `23` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell
