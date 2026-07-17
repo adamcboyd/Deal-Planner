@@ -23,6 +23,7 @@ import com.dealplanner.ocr.PantryOcrCandidateExtractor
 import com.dealplanner.ocr.TextRecognitionHelper
 import com.dealplanner.parser.DealsParser
 import com.dealplanner.parser.PantryPhraseParser
+import com.dealplanner.ui.export.ShoppingListPdfExporter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -51,6 +52,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val textRecognitionHelper = TextRecognitionHelper()
     private val pantryVisionClient = GeminiPantryVisionClient()
     private val barcodeLookupClient = OpenFoodFactsBarcodeClient()
+    private val shoppingListPdfExporter = ShoppingListPdfExporter()
 
     val aiVisionConfigured: Boolean = pantryVisionClient.isConfigured()
     val aiVisionModel: String = pantryVisionClient.modelName
@@ -68,6 +70,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _shoppingList = MutableStateFlow<List<MealPlanningEngine.ShoppingListItem>>(emptyList())
     val shoppingList: StateFlow<List<MealPlanningEngine.ShoppingListItem>> = _shoppingList.asStateFlow()
+
+    private val _shoppingListExportStatus = MutableStateFlow<String?>(null)
+    val shoppingListExportStatus: StateFlow<String?> = _shoppingListExportStatus.asStateFlow()
 
     private val _mealPlanStatus = MutableStateFlow<String?>(null)
     val mealPlanStatus: StateFlow<String?> = _mealPlanStatus.asStateFlow()
@@ -479,6 +484,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             pantryItems = pantry,
             deals = currentDeals
         )
+    }
+
+    suspend fun exportShoppingListPdf(): Uri? {
+        val items = _shoppingList.value
+        if (items.isEmpty()) {
+            _shoppingListExportStatus.value = "Generate a meal plan before exporting."
+            return null
+        }
+
+        _shoppingListExportStatus.value = "Creating shopping list PDF..."
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                shoppingListPdfExporter.export(getApplication(), items)
+            }.onSuccess {
+                _shoppingListExportStatus.value = "Shopping list PDF ready to share."
+            }.onFailure {
+                _shoppingListExportStatus.value = "Could not export shopping list PDF."
+            }.getOrNull()
+        }
+    }
+
+    fun reportShoppingListPdfShareLaunchFailed() {
+        _shoppingListExportStatus.value = "Could not open share sheet for shopping list PDF."
     }
 
     fun updateMealPlan(plan: MealPlan) {

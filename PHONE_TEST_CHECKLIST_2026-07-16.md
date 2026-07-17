@@ -124,6 +124,7 @@ Do not commit `local.properties`.
 5. Close and relaunch Deal Planner.
 6. Confirm the `Shopping` tab still has the generated list without tapping `Generate` again.
 7. After a generated plan exists, edit or add a pantry/deal/receipt/settings input and confirm `Shopping` rederives from the current inputs without needing an app relaunch.
+8. In `Shopping`, tap `Export PDF` and confirm Android opens a share sheet for a generated PDF.
 
 ## Deterministic Text Tests
 
@@ -351,6 +352,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows, including `16-ounce` and `12-count` label rows, into separate VERIFY rows with wrapped date/opened lines attached to the matching item.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
+- Shopping list PDF export opens Android's share sheet from app cache without requesting broad storage/media-library permissions.
 - Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.
 - Gemini no-key fallback is clear.
 - Gemini live test passes only after a real key is configured and APK is rebuilt.

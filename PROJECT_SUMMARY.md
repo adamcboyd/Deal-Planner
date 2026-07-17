@@ -6,10 +6,10 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 51
+- **Total Kotlin Files**: 73
 - **Configuration Files**: 15
-- **Test Files**: 19 (comprehensive unit tests)
-- **Lines of Code**: ~4,000+
+- **Test Files**: 20 (comprehensive unit tests)
+- **Lines of Code**: ~5,000+
 
 ## 📁 Complete File Structure
 
@@ -52,12 +52,14 @@ Deal_Planner/
         │   │   │   ├── MealPlanningEngine.kt     ✅ Rules-based engine
         │   │   │   ├── BudgetEngine.kt           ✅ Budget tracking
         │   │   │   ├── ReceiptAdjustmentCalculator.kt ✅ Receipt edit/delete deltas
-        │   │   │   └── ReceiptReconciler.kt      ✅ Fuzzy matching
+        │   │   │   ├── ReceiptReconciler.kt      ✅ Fuzzy matching
+        │   │   │   └── ShoppingListExportFormatter.kt ✅ Shopping PDF contents
         │   │   ├── util/
         │   │   │   └── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
         │   │   └── ui/
         │   │       ├── camera/CapturePhotoUriFactory.kt ✅ Full-resolution capture URIs
         │   │       ├── state/                   ✅ UI validation and clear/retain helpers
+        │   │       ├── export/                  ✅ Shopping list PDF export
         │   │       ├── viewmodel/AppViewModel.kt ✅ MVVM ViewModel
         │   │       ├── navigation/Screen.kt      ✅ Navigation setup
         │   │       ├── screens/                  ✅ 7 Compose screens
@@ -99,7 +101,8 @@ Deal_Planner/
             │   ├── MealPlanningEngineTest.kt  ✅ Meal planning tests
             │   ├── BudgetEngineTest.kt        ✅ Budget tests
             │   ├── ReceiptAdjustmentCalculatorTest.kt ✅ Receipt edit/delete delta tests
-            │   └── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
+            │   ├── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
+            │   └── ShoppingListExportFormatterTest.kt ✅ Shopping PDF content tests
             ├── ocr/
             │   └── PantryOcrCandidateExtractorTest.kt ✅ Pantry OCR fallback tests
             ├── ui/state/
@@ -176,7 +179,7 @@ Deal_Planner/
   - Recognized meal-side filtering so household/non-food flyer deals are ignored
   - Pantry anchor utilization
   - Freezer directive calculation
-  - Shopping list consolidation, planned-quantity estimated costs, and startup restore from current inputs after a plan exists
+  - Shopping list consolidation, planned-quantity estimated costs, PDF export formatting, and startup restore from current inputs after a plan exists
   - Freshness reordering
 
 - ✅ **BudgetEngine**:
@@ -202,7 +205,7 @@ Deal_Planner/
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, confidence, and flexible valid-until date text
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/PDF/manual text import, processing status, failed-parse text retention, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, flexible date text, and review status
-- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, and startup restore from current pantry/deals/settings after a plan exists
+- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, shareable PDF export, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
@@ -459,10 +462,12 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Shows meal-generation status and planner warnings
 - ✅ Prevents negative protein-per-meal settings from creating negative Shopping quantities or costs
 - ✅ Refreshes the visible shopping list after pantry/deals/receipts/settings changes once meal plans exist
+- ✅ Exports the generated Shopping list as a shareable PDF from app cache through the FileProvider
 - ✅ Tracks budget
 - ✅ Editable budget settings with validation and saved feedback
 - ✅ Creates shopping lists
 - ✅ Keeps different shopping-list deal identities separate before and after Room assigns ids
+- ✅ Formats shopping-list PDF contents with totals, store, brand/size, coupon, limit, and meal-purpose details
 - ✅ Passes all unit tests
 
 ## 📦 Deliverables Checklist

@@ -524,9 +524,9 @@ $features = @(
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Meal plan, shopping list, and budget core" `
-        -Evidence @("app\src\main\java\com\dealplanner\domain\MealPlanningEngine.kt", "app\src\main\java\com\dealplanner\domain\BudgetEngine.kt", "app\src\main\java\com\dealplanner\ui\screens\MenuScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\ShoppingListScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\BudgetScreen.kt", "app\src\test\java\com\dealplanner\domain\MealPlanningEngineTest.kt", "app\src\test\java\com\dealplanner\domain\BudgetEngineTest.kt") `
-        -LocalChecks @("Meal planning engine tests", "budget engine tests", "receipt budget delta tests") `
-        -PhoneCheck "Load Demo, generate menu, verify shopping list, edit budget, and relaunch to confirm persistence." `
+        -Evidence @("app\src\main\java\com\dealplanner\domain\MealPlanningEngine.kt", "app\src\main\java\com\dealplanner\domain\BudgetEngine.kt", "app\src\main\java\com\dealplanner\domain\ShoppingListExportFormatter.kt", "app\src\main\java\com\dealplanner\ui\export\ShoppingListPdfExporter.kt", "app\src\main\java\com\dealplanner\ui\screens\MenuScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\ShoppingListScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\BudgetScreen.kt", "app\src\test\java\com\dealplanner\domain\MealPlanningEngineTest.kt", "app\src\test\java\com\dealplanner\domain\BudgetEngineTest.kt", "app\src\test\java\com\dealplanner\domain\ShoppingListExportFormatterTest.kt") `
+        -LocalChecks @("Meal planning engine tests", "budget engine tests", "receipt budget delta tests", "shopping list export formatter tests") `
+        -PhoneCheck "Load Demo, generate menu, verify shopping list, export PDF/share sheet, edit budget, and relaunch to confirm persistence." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Settings and Gemini connection test" `

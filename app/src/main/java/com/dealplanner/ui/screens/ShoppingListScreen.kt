@@ -1,18 +1,40 @@
 package com.dealplanner.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.dealplanner.ui.viewmodel.AppViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ShoppingListScreen(viewModel: AppViewModel) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val shoppingList by viewModel.shoppingList.collectAsState()
+    val shoppingListExportStatus by viewModel.shoppingListExportStatus.collectAsState()
+
+    fun launchShoppingListPdfShare(uri: Uri) {
+        try {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Share shopping list PDF"))
+        } catch (e: Exception) {
+            viewModel.reportShoppingListPdfShareLaunchFailed()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header
@@ -29,6 +51,32 @@ fun ShoppingListScreen(viewModel: AppViewModel) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (shoppingList.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                val uri = viewModel.exportShoppingListPdf()
+                                if (uri != null) {
+                                    launchShoppingListPdfShare(uri)
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.PictureAsPdf, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Export PDF")
+                    }
+                }
+                if (shoppingListExportStatus != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        shoppingListExportStatus.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 
