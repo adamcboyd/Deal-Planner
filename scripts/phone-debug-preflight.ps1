@@ -3,6 +3,7 @@ param(
     [switch]$RequirePhone,
     [switch]$RequireGemini,
     [switch]$TestGeminiLive,
+    [switch]$TestGeminiImage,
     [switch]$SkipNetwork,
     [string]$JavaHome = "C:\Program Files\Java\jdk-20",
     [string]$PackageName = "com.dealplanner",
@@ -17,12 +18,13 @@ function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\scripts\phone-debug-preflight.ps1"
     Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone"
-    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini -TestGeminiLive"
+    Write-Host "  .\scripts\phone-debug-preflight.ps1 -RequirePhone -RequireGemini -TestGeminiLive -TestGeminiImage"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -RequirePhone    Fail if no connected and authorized Android phone is visible."
     Write-Host "  -RequireGemini   Fail if a real Gemini key/build cannot be verified for AI testing."
     Write-Host "  -TestGeminiLive  Make a short live Gemini API call without printing the key."
+    Write-Host "  -TestGeminiImage Make a live Gemini image request using the latest pantry-label sample."
     Write-Host "  -SkipNetwork     Skip GitHub and Open Food Facts network checks."
     Write-Host "  -JavaHome PATH   Java home used for readiness checks. Default: C:\Program Files\Java\jdk-20"
     Write-Host "  -PackageName ID  Expected Android package. Default: com.dealplanner"
@@ -539,6 +541,36 @@ if ($TestGeminiLive) {
                 Add-Check $results "Gemini live API" "OK" $summary
             } else {
                 Add-Check $results "Gemini live API" "FAIL" $summary
+            }
+        }
+    }
+}
+
+if ($TestGeminiImage) {
+    if ($SkipNetwork) {
+        Add-Check $results "Gemini live image API" "WARN" "Skipped because -SkipNetwork was used."
+    } else {
+        $geminiTestScript = Join-Path $PSScriptRoot "test-gemini-connection.ps1"
+        if (-not (Test-Path $geminiTestScript)) {
+            Add-Check $results "Gemini live image API" "FAIL" "scripts\test-gemini-connection.ps1 was not found."
+        } else {
+            $geminiOutput = @(& powershell -NoProfile -ExecutionPolicy Bypass -File $geminiTestScript -TestPantryImage 2>&1)
+            $geminiExitCode = $LASTEXITCODE
+            $summaryLine = @(
+                $geminiOutput |
+                    Where-Object { $_ -match "^\[(OK|FAIL)\]" } |
+                    Select-Object -Last 1
+            )
+            $summary = if ($summaryLine.Count -gt 0) {
+                $summaryLine[0]
+            } else {
+                ($geminiOutput -join " ").Trim()
+            }
+
+            if ($geminiExitCode -eq 0) {
+                Add-Check $results "Gemini live image API" "OK" $summary
+            } else {
+                Add-Check $results "Gemini live image API" "FAIL" $summary
             }
         }
     }

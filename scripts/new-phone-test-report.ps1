@@ -16,7 +16,7 @@ function Show-Usage {
     Write-Host "  .\scripts\new-phone-test-report.ps1"
     Write-Host "  .\scripts\new-phone-test-report.ps1 -OutputDir phone-test-results"
     Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupStatus Failed -SetupFailure ""Phone preflight failed"""
-    Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupMode ""RequireGemini=True; TestGeminiLive=True; SkipBuild=False"""
+    Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupMode ""RequireGemini=True; TestGeminiLive=True; TestGeminiImage=True; SkipBuild=False"""
     Write-Host ""
     Write-Host "Creates an ignored timestamped Markdown report for recording real-phone pass/fail evidence."
     Write-Host "Includes repo/APK identity, Gemini readiness, lint snapshot, sample evidence, setup status, and device context."
@@ -437,8 +437,9 @@ $adbBlock
 
 - [ ] Without Gemini key, Settings reports OCR fallback and Test AI Connection reports key not configured.
 - [ ] .\scripts\test-gemini-connection.ps1 reports Gemini connection OK without printing the key.
-- [ ] .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive completed after adding the key and rebuilding the APK.
-- [ ] Setup Run Summary shows RequireGemini=True and TestGeminiLive=True for the AI-specific phone pass.
+- [ ] .\scripts\test-gemini-connection.ps1 -TestPantryImage reports Gemini image connection OK without printing the key.
+- [ ] .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage completed after adding the key.
+- [ ] Setup Run Summary shows RequireGemini=True, TestGeminiLive=True, and TestGeminiImage=True for the AI-specific phone pass.
 - [ ] Source Snapshot shows APK Gemini configured is True and APK Gemini model is the expected model.
 - [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.

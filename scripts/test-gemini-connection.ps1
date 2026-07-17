@@ -1,5 +1,7 @@
 param(
     [switch]$Help,
+    [switch]$TestPantryImage,
+    [string]$ImagePath = "",
     [string]$Model = "",
     [string]$Prompt = "Reply with OK to confirm this Deal Planner Gemini setup works.",
     [int]$TimeoutSec = 30
@@ -13,8 +15,11 @@ function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\scripts\test-gemini-connection.ps1"
     Write-Host "  .\scripts\test-gemini-connection.ps1 -Model gemini-3.5-flash"
+    Write-Host "  .\scripts\test-gemini-connection.ps1 -TestPantryImage"
+    Write-Host "  .\scripts\test-gemini-connection.ps1 -ImagePath phone-test-samples\20260716-163910\deal-planner-demo-pantry-label.png"
     Write-Host ""
     Write-Host "Reads gemini.api.key and gemini.model from local.properties, or GEMINI_API_KEY and GEMINI_MODEL from the environment."
+    Write-Host "Use -TestPantryImage to make a live image-capable Gemini request using the latest generated pantry-label sample."
     Write-Host "The key value is never printed."
 }
 
@@ -60,6 +65,39 @@ function Normalize-GeminiModel {
     }
 
     return $normalized
+}
+
+function Get-LatestPantrySampleImage {
+    param([string]$Root)
+
+    $sampleRoot = Join-Path $Root "phone-test-samples"
+    if (-not (Test-Path $sampleRoot)) {
+        return $null
+    }
+
+    $latestSampleDirs = Get-ChildItem -LiteralPath $sampleRoot -Directory |
+        Sort-Object Name -Descending
+
+    foreach ($sampleDir in $latestSampleDirs) {
+        $candidate = Join-Path $sampleDir.FullName "deal-planner-demo-pantry-label.png"
+        if (Test-Path $candidate) {
+            return $candidate
+        }
+    }
+
+    return $null
+}
+
+function Get-ImageMimeType {
+    param([string]$Path)
+
+    switch ([System.IO.Path]::GetExtension($Path).ToLowerInvariant()) {
+        ".png" { return "image/png" }
+        ".jpg" { return "image/jpeg" }
+        ".jpeg" { return "image/jpeg" }
+        ".webp" { return "image/webp" }
+        default { return "image/jpeg" }
+    }
 }
 
 function ConvertTo-StatusDetail {
@@ -187,14 +225,53 @@ if ([string]::IsNullOrWhiteSpace($apiKey)) {
 
 Write-Host "Key source: $keySource (value not printed)"
 
+$resolvedImagePath = ""
+if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+    $resolvedImagePath = (Resolve-Path -LiteralPath $ImagePath -ErrorAction Stop).Path
+} elseif ($TestPantryImage) {
+    $latestPantrySample = Get-LatestPantrySampleImage $repoRoot
+    if ($latestPantrySample) {
+        $resolvedImagePath = $latestPantrySample
+    }
+}
+
+$useImage = -not [string]::IsNullOrWhiteSpace($resolvedImagePath)
+if ($TestPantryImage -and -not $useImage) {
+    Write-Host "[FAIL] Pantry image sample not found. Run .\scripts\new-phone-test-samples.ps1 or pass -ImagePath."
+    exit 1
+}
+
+$effectivePrompt = $Prompt
+if ($useImage -and $Prompt -eq "Reply with OK to confirm this Deal Planner Gemini setup works.") {
+    $effectivePrompt = "Reply with OK if you can process this Deal Planner pantry label image."
+}
+
+$parts = @()
+if ($useImage) {
+    $imageInfo = Get-Item -LiteralPath $resolvedImagePath
+    if ($imageInfo.Length -gt 15MB) {
+        Write-Host "[FAIL] Image is too large for the inline Gemini test. Use a smaller image under 15 MB."
+        exit 1
+    }
+
+    $imageBase64 = [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($resolvedImagePath))
+    $parts += @{
+        inline_data = @{
+            mime_type = Get-ImageMimeType $resolvedImagePath
+            data = $imageBase64
+        }
+    }
+    Write-Host "Image test: $resolvedImagePath"
+}
+
+$parts += @{
+    text = $effectivePrompt
+}
+
 $body = @{
     contents = @(
         @{
-            parts = @(
-                @{
-                    text = $Prompt
-                }
-            )
+            parts = $parts
         }
     )
     generationConfig = @{
@@ -226,7 +303,11 @@ try {
         exit 1
     }
 
-    Write-Host "[OK] Gemini connection OK using $modelName."
+    if ($useImage) {
+        Write-Host "[OK] Gemini image connection OK using $modelName."
+    } else {
+        Write-Host "[OK] Gemini connection OK using $modelName."
+    }
     exit 0
 } catch {
     $statusCode = Get-WebExceptionStatusCode $_

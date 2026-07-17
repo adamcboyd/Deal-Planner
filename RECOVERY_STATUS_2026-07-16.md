@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after one-command phone starter build/preflight ordering work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini live image-check preflight work; confirm the exact commit with `git log -1 --oneline`.
 - Previous pushed app-code checkpoint: `dab9add fix: refresh generated menu with shopping`
 - Previous pushed helper checkpoint: `9664a3c chore: add live gemini setup check`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -72,6 +72,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-r
 ```
 
 Expected local no-phone result: the starter builds the current debug APK first unless `-SkipBuild` is used, then required-phone preflight stops at the expected no connected/authorized phone condition and writes a failure-state phone-test report. With a connected authorized phone, this means strict Gemini runs inspect the rebuilt APK instead of an older BuildConfig.
+
+Latest Gemini image live-check checkpoint:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-gemini-connection.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-gemini-connection.ps1 -TestPantryImage
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -TestGeminiImage -SkipNetwork
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -TestGeminiImage
+```
+
+Expected local no-key result: help documents the image check; the no-key image script fails before network access without printing a key; `-SkipNetwork` marks `Gemini live image API` skipped; and without `-SkipNetwork` preflight fails until a real Gemini key is configured. With a real key, final AI setup should use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage`.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 

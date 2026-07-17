@@ -2,6 +2,7 @@ param(
     [switch]$Help,
     [switch]$RequireGemini,
     [switch]$TestGeminiLive,
+    [switch]$TestGeminiImage,
     [switch]$SkipNetwork,
     [switch]$SkipBuild,
     [switch]$NoLaunch,
@@ -17,7 +18,7 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\start-phone-test-run.ps1"
-    Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive"
+    Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
     Write-Host "What it does:"
@@ -32,6 +33,7 @@ function Show-Usage {
     Write-Host "Options:"
     Write-Host "  -RequireGemini  Also require a compiled real Gemini key/model before continuing."
     Write-Host "  -TestGeminiLive Make a short live Gemini API call during preflight without printing the key."
+    Write-Host "  -TestGeminiImage Make a live Gemini image request using the generated pantry-label sample."
     Write-Host "  -SkipNetwork    Skip GitHub and Open Food Facts checks during preflight."
     Write-Host "  -SkipBuild      Reuse the existing debug APK after install-helper freshness checks."
     Write-Host "  -NoLaunch       Install but do not launch the app."
@@ -110,7 +112,8 @@ if (-not (Test-Path $JavaHome)) {
 $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
 $script:reportCreated = $false
-$setupMode = "RequireGemini=$($RequireGemini.IsPresent); TestGeminiLive=$($TestGeminiLive.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
+$script:samplesCreatedBeforePreflight = $false
+$setupMode = "RequireGemini=$($RequireGemini.IsPresent); TestGeminiLive=$($TestGeminiLive.IsPresent); TestGeminiImage=$($TestGeminiImage.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
 
 $preflightArgs = @("-RequirePhone", "-JavaHome", $JavaHome)
 if ($RequireGemini) {
@@ -118,6 +121,9 @@ if ($RequireGemini) {
 }
 if ($TestGeminiLive) {
     $preflightArgs += "-TestGeminiLive"
+}
+if ($TestGeminiImage) {
+    $preflightArgs += "-TestGeminiImage"
 }
 if ($SkipNetwork) {
     $preflightArgs += "-SkipNetwork"
@@ -130,10 +136,17 @@ try {
         }
     }
 
+    if ($TestGeminiImage -and -not $SkipSamples) {
+        Invoke-Helper "Create deterministic phone samples for Gemini image check" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
+        $script:samplesCreatedBeforePreflight = $true
+    }
+
     Invoke-Helper "Phone preflight" (Join-Path $PSScriptRoot "phone-debug-preflight.ps1") $preflightArgs
 
     if (-not $SkipSamples) {
-        Invoke-Helper "Create deterministic phone samples" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
+        if (-not $script:samplesCreatedBeforePreflight) {
+            Invoke-Helper "Create deterministic phone samples" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
+        }
         Invoke-Helper "Copy deterministic samples to phone" (Join-Path $PSScriptRoot "send-phone-test-samples.ps1")
     }
 

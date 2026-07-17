@@ -21,7 +21,7 @@ adb devices
 .\scripts\phone-debug-install.ps1
 ```
 
-Use `start-phone-test-run.ps1` for the normal phone setup path. It builds the current debug APK unless `-SkipBuild` is used, runs required-phone preflight against that APK, generates/transfers deterministic sample files, installs/launches the app, and creates a report with `Setup status: Completed` plus the setup mode that was used. Use `start-phone-test-run.ps1 -RequireGemini -TestGeminiLive` for the final AI phone pass after adding a real Gemini key; the starter rebuilds first unless `-SkipBuild` is explicitly used. If setup fails before the final report step, it creates a failure-state report with `Setup status: Failed`, setup mode, and the stopping reason unless `-SkipReport` was used. If running helpers individually, expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. If no phone is ready, preflight/install should say whether ADB listed no devices or a phone was unauthorized/offline, then prompt to enable USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and retry after `adb devices` shows `device`. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
+Use `start-phone-test-run.ps1` for the normal phone setup path. It builds the current debug APK unless `-SkipBuild` is used, runs required-phone preflight against that APK, generates/transfers deterministic sample files, installs/launches the app, and creates a report with `Setup status: Completed` plus the setup mode that was used. Use `start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage` for the final AI phone pass after adding a real Gemini key; the starter rebuilds first unless `-SkipBuild` is explicitly used and creates local sample files before preflight so the live image probe has a pantry-label PNG. If setup fails before the final report step, it creates a failure-state report with `Setup status: Failed`, setup mode, and the stopping reason unless `-SkipReport` was used. If running helpers individually, expected before install: preflight shows no failures, confirms the branch is clean and synced with GitHub, reports `APK source identity` with a clean generated `BuildConfig`, and `adb devices` shows exactly one authorized phone. If no phone is ready, preflight/install should say whether ADB listed no devices or a phone was unauthorized/offline, then prompt to enable USB debugging, use a data-capable USB mode/cable, accept the USB debugging prompt, and retry after `adb devices` shows `device`. During install, the helper should print the generated APK source identity, generated APK Gemini model/configured state, and that `com.dealplanner` was verified on the device.
 Expected APK permission check: preflight reports required network/camera permissions and `APK storage permissions` as OK, confirming gallery/PDF imports use picker-scoped grants instead of broad storage/media permissions.
 
 If the APK is already built:
@@ -96,15 +96,16 @@ Before the AI-specific phone pass, verify the key and model can answer locally w
 
 ```powershell
 .\scripts\test-gemini-connection.ps1
+.\scripts\test-gemini-connection.ps1 -TestPantryImage
 ```
 
 Then verify the rebuilt APK, live Gemini call, and connected phone are all ready by running the strict starter:
 
 ```powershell
-.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive
+.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage
 ```
 
-Expected with a real key after the starter rebuilds: preflight reports `Gemini key`, `Gemini live API`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `Setup mode` with `RequireGemini=True; TestGeminiLive=True`, `APK Gemini configured: True`, and `APK Gemini model: gemini-3.5-flash`.
+Expected with a real key after the starter rebuilds: preflight reports `Gemini key`, `Gemini live API`, `Gemini live image API`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `Setup mode` with `RequireGemini=True; TestGeminiLive=True; TestGeminiImage=True`, `APK Gemini configured: True`, and `APK Gemini model: gemini-3.5-flash`.
 Current official Google AI docs list `gemini-3.5-flash` as the stable Gemini 3.5 Flash model code with image input and structured output support. Deal Planner uses that model code by default and keeps Gemini 3.x sampling defaults instead of hardcoding temperature/top-p/top-k values.
 
 Do not commit `local.properties`.
@@ -292,7 +293,7 @@ In `Settings`:
 1. Without `local.properties`, confirm text says Gemini is not configured and OCR fallback is active.
 2. Tap `Test AI Connection`.
 3. Expected without key: status reports that Gemini API key is not configured.
-4. With a real key configured locally, run `.\scripts\test-gemini-connection.ps1` and confirm it reports `Gemini connection OK` without printing the key.
+4. With a real key configured locally, run `.\scripts\test-gemini-connection.ps1` and `.\scripts\test-gemini-connection.ps1 -TestPantryImage`; confirm they report Gemini text and image connection OK without printing the key.
 5. With a real key and rebuilt APK, tap `Test AI Connection`.
 6. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
 7. In the preflight/report output, confirm `Gemini live API` is OK, `APK Gemini configured` is true, and `APK Gemini model` is `gemini-3.5-flash` before testing photos.
