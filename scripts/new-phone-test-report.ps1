@@ -3,7 +3,8 @@ param(
     [string]$OutputDir = "phone-test-results",
     [string]$PackageName = "com.dealplanner",
     [string]$SetupStatus = "Not recorded",
-    [string]$SetupFailure = ""
+    [string]$SetupFailure = "",
+    [string]$SetupMode = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,10 +16,11 @@ function Show-Usage {
     Write-Host "  .\scripts\new-phone-test-report.ps1"
     Write-Host "  .\scripts\new-phone-test-report.ps1 -OutputDir phone-test-results"
     Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupStatus Failed -SetupFailure ""Phone preflight failed"""
+    Write-Host "  .\scripts\new-phone-test-report.ps1 -SetupMode ""RequireGemini=True; SkipBuild=False"""
     Write-Host ""
     Write-Host "Creates an ignored timestamped Markdown report for recording real-phone pass/fail evidence."
     Write-Host "Includes repo/APK identity, Gemini readiness, lint snapshot, sample evidence, setup status, and device context."
-    Write-Host "SetupStatus/SetupFailure are optional; start-phone-test-run.ps1 fills them automatically."
+    Write-Host "SetupStatus/SetupFailure/SetupMode are optional; start-phone-test-run.ps1 fills them automatically."
     Write-Host "Set ANDROID_SERIAL when more than one authorized device is connected."
 }
 
@@ -311,6 +313,11 @@ $setupFailureLine = if ([string]::IsNullOrWhiteSpace($SetupFailure)) {
 } else {
     ($SetupFailure -replace "\r?\n", " ").Trim()
 }
+$setupModeLine = if ([string]::IsNullOrWhiteSpace($SetupMode)) {
+    "Not recorded."
+} else {
+    ($SetupMode -replace "\r?\n", " ").Trim()
+}
 
 $report = @"
 # Deal Planner Phone Test Report - $stamp
@@ -341,6 +348,7 @@ $sampleTransferReportLine
 
 - Setup status: $setupStatusLine
 - Setup failure: $setupFailureLine
+- Setup mode: $setupModeLine
 
 ## Git Status
 
@@ -426,7 +434,8 @@ $adbBlock
 ## AI Verification
 
 - [ ] Without Gemini key, Settings reports OCR fallback and Test AI Connection reports key not configured.
-- [ ] .\scripts\phone-debug-preflight.ps1 -RequireGemini passed after adding the key and rebuilding the APK.
+- [ ] .\scripts\start-phone-test-run.ps1 -RequireGemini completed after adding the key and rebuilding the APK.
+- [ ] Setup Run Summary shows RequireGemini=True for the AI-specific phone pass.
 - [ ] Source Snapshot shows APK Gemini configured is True and APK Gemini model is the expected model.
 - [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.

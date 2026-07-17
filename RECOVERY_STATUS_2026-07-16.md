@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness freshness wording work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: Deal Planner naming readiness audit work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after strict AI phone setup reporting work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: feature readiness freshness wording work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2548,3 +2548,48 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-174315\FEATURE_READINESS_REPORT.md` now marks `Unit test freshness` and `Lint freshness` current via the successful `-RunGate`, while still showing raw report-file freshness. It correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after strict AI phone setup reporting work:
+
+Phone/AI evidence checkpoint:
+
+- `scripts\start-phone-test-run.ps1` now passes a non-secret setup mode into generated phone-test reports.
+- `scripts\new-phone-test-report.ps1` now records `Setup mode` in Setup Run Summary.
+- The report AI checklist now expects the final AI pass to use `.\scripts\start-phone-test-run.ps1 -RequireGemini` and to show `RequireGemini=True`.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and this recovery log were updated so the final AI phone pass uses the same one-command path that generates the evidence report.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\start-phone-test-run.ps1")); "start-phone-test-run.ps1 parsed"'
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-phone-test-report.ps1")); "new-phone-test-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -Help
+git diff --check
+```
+
+Result: parse and help checks passed. `git diff --check` passed.
+
+Report rendering check:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1 -SetupStatus "Preflight only" -SetupMode "RequireGemini=True; SkipNetwork=True; SkipBuild=False; NoLaunch=False; SkipSamples=False"
+```
+
+Result: generated ignored report `phone-test-results\20260716-174816\PHONE_TEST_REPORT.md`; Setup Run Summary showed the supplied setup mode and AI Verification included the strict starter checklist rows.
+
+Strict starter failure-state check:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -RequireGemini -SkipNetwork
+```
+
+Result: intentionally failed before phone setup because no Android phone is connected and no real Gemini key is configured. The helper still generated ignored failure-state report `phone-test-results\20260716-174832\PHONE_TEST_REPORT.md` with `Setup status: Failed`, `Setup failure: Phone preflight failed with exit code 1.`, and `Setup mode: RequireGemini=True; SkipNetwork=True; SkipBuild=False; NoLaunch=False; SkipSamples=False`.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-174940\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

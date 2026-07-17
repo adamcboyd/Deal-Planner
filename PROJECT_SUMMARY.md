@@ -494,9 +494,9 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, and stale source/Gemini APK warnings
 - ✅ Phone preflight/install helpers give specific ADB recovery guidance for no-device and unauthorized/offline states
 - ✅ PowerShell feature readiness report helper can run the local gate, separate local source/test evidence from remaining Android phone and real-Gemini checks, audit the Deal Planner naming transition, account for cached unit/lint report timestamps after a successful gate, and flag stale APK evidence
-- ✅ One-command phone test starter writes setup status on success and a failure-state report with stopping reason if setup stops early
+- ✅ One-command phone test starter writes setup status/setup mode on success and a failure-state report with stopping reason if setup stops early
 - ✅ PowerShell phone log/crash capture helper with ignored local log output
-- ✅ Phone test report includes current lint snapshot and latest sample folder/manifest evidence when available
+- ✅ Phone test report includes setup mode, current lint snapshot, and latest sample folder/manifest evidence when available
 - ✅ Phone sample generator includes pantry-label OCR rows for `16-ounce`, `12-count`, punctuated label cues, slash dates, and two-digit dash dates plus local manifest/hash verification
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report

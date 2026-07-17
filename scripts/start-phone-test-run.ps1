@@ -63,12 +63,16 @@ function Invoke-PhoneTestReport {
     param(
         [string]$Label,
         [string]$SetupStatus = "Not recorded",
-        [string]$SetupFailure = ""
+        [string]$SetupFailure = "",
+        [string]$SetupMode = ""
     )
 
     $reportArgs = @("-SetupStatus", $SetupStatus)
     if (-not [string]::IsNullOrWhiteSpace($SetupFailure)) {
         $reportArgs += @("-SetupFailure", $SetupFailure)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($SetupMode)) {
+        $reportArgs += @("-SetupMode", $SetupMode)
     }
 
     Invoke-Helper $Label (Join-Path $PSScriptRoot "new-phone-test-report.ps1") $reportArgs
@@ -89,6 +93,7 @@ if (-not (Test-Path $JavaHome)) {
 $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
 $script:reportCreated = $false
+$setupMode = "RequireGemini=$($RequireGemini.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
 
 $preflightArgs = @("-RequirePhone", "-JavaHome", $JavaHome)
 if ($RequireGemini) {
@@ -117,7 +122,7 @@ try {
     Invoke-Helper "Install Deal Planner debug APK" (Join-Path $PSScriptRoot "phone-debug-install.ps1") $installArgs
 
     if (-not $SkipReport) {
-        Invoke-PhoneTestReport -Label "Create phone-test report" -SetupStatus "Completed"
+        Invoke-PhoneTestReport -Label "Create phone-test report" -SetupStatus "Completed" -SetupMode $setupMode
     }
 
     Write-Host ""
@@ -129,7 +134,7 @@ try {
         Write-Warning "Phone test setup stopped before completion: $failureMessage"
         Write-Warning "Creating a phone-test report with the current failure state."
         try {
-            Invoke-PhoneTestReport -Label "Create phone-test report after setup failure" -SetupStatus "Failed" -SetupFailure $failureMessage
+            Invoke-PhoneTestReport -Label "Create phone-test report after setup failure" -SetupStatus "Failed" -SetupFailure $failureMessage -SetupMode $setupMode
         } catch {
             Write-Warning "Could not create failure-state phone-test report: $($_.Exception.Message)"
         }
