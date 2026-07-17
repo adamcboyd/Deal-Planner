@@ -162,7 +162,7 @@ Command-line phone install helper:
 Gallery image and PDF imports use Android picker URI grants, so the APK should not request broad storage/media-library permissions.
 Use `.\scripts\phone-debug-preflight.ps1 -Help` or `.\scripts\phone-debug-install.ps1 -Help` to list available phone-test options.
 
-For the final AI phone pass after adding a real Gemini key, run the stricter starter so the generated phone-test report records `RequireGemini=True`, `TestGeminiLive=True`, and `TestGeminiImage=True` in its setup mode:
+For the final AI phone pass after adding a real Gemini key, run the stricter starter so the generated phone-test report records `RequireGemini=True`, `TestGeminiLive=True`, `TestGeminiImage=True`, and `WaitForPhone=True` in its setup mode:
 
 ```powershell
 .\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage

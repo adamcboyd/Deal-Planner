@@ -82,7 +82,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-prefli
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -TestGeminiImage
 ```
 
-Expected local no-key result: help documents the image check; the no-key image script fails before network access without printing a key; `-SkipNetwork` marks `Gemini live image API` skipped; and without `-SkipNetwork` preflight fails until a real Gemini key is configured. With a real key, final AI setup should use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage`.
+Expected local no-key result: help documents the image check; the no-key image script fails before network access without printing a key; `-SkipNetwork` marks `Gemini live image API` skipped; and without `-SkipNetwork` preflight fails until a real Gemini key is configured. With a real key, final AI setup should use `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage`.
 
 Latest AI pantry alias-hardening checkpoint:
 
@@ -199,6 +199,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result: parse checks passed, generated phone reports point the install/launch and final AI checklist at `.\scripts\start-phone-test-run.ps1 -WaitForPhone`, and generated feature readiness reports list `.\scripts\start-phone-test-run.ps1 -WaitForPhone` as the required phone setup evidence plus `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage` as the final AI setup evidence.
+
+Latest wait-enabled starter help alignment checkpoint:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\start-phone-test-run.ps1")); "start-phone-test-run.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: parse/help checks passed and `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` returned `BUILD SUCCESSFUL`. Starter help now shows the final AI phone pass as `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage`, matching README, checklist, and generated report templates.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 

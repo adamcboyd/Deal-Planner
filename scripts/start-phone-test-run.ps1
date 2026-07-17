@@ -21,7 +21,7 @@ function Show-Usage {
     Write-Host "Usage:"
     Write-Host "  .\scripts\start-phone-test-run.ps1"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -WaitForPhone"
-    Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage"
+    Write-Host "  .\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
     Write-Host "What it does:"
