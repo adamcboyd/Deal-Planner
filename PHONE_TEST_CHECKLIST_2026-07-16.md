@@ -259,7 +259,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Flyer PDF:
    - Tap `Choose Flyer PDF`.
    - Pick a flyer PDF, such as `deal-planner-demo-flyer.pdf` from a generated `phone-test-samples\<timestamp>\` folder.
-   - Expected: app reads up to 12 pages and adds parsed deals, or shows a clear recovery message.
+   - Expected: app reads up to 12 pages and adds parsed deals, or shows a clear recovery message. If the PDF has more than 12 pages, status names the first capped page range that was processed.
 
 ### Receipt Inputs
 
@@ -275,7 +275,7 @@ Use these before camera/photo tests because they remove OCR uncertainty.
 3. Receipt PDF:
    - Tap `PDF`.
    - Pick a receipt PDF, such as `deal-planner-demo-receipt.pdf` from a generated `phone-test-samples\<timestamp>\` folder.
-   - Expected: app reads up to 12 pages and adds receipt line items, or shows a clear recovery message. Budget updates when line items import.
+   - Expected: app reads up to 12 pages and adds receipt line items, or shows a clear recovery message. If the PDF has more than 12 pages, status names the first capped page range that was processed. Budget updates when line items import.
 
 ## AI Verification
 

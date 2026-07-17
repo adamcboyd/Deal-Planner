@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after strict AI phone setup reporting work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: feature readiness freshness wording work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after capped PDF status work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: strict AI phone setup reporting work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2593,3 +2593,21 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-174940\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after capped PDF status work:
+
+Input-method checkpoint:
+
+- Flyer and receipt PDF imports still render a bounded first page set for phone reliability.
+- If a PDF has more than the supported page cap, the final flyer/receipt status now names the processed range, such as `first 12 of 20 PDF pages`, instead of silently implying the whole PDF was scanned.
+- Receipt PDF blank/no-line-item statuses also include the capped page range when applicable.
+- The phone checklist and generated phone-test report now include explicit capped-PDF status evidence.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and this recovery log were updated with the capped-page behavior.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `239` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-175552\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

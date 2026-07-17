@@ -424,6 +424,7 @@ $adbBlock
 - [ ] Flyer photo works or shows a clear recovery message.
 - [ ] Flyer gallery works or shows a clear recovery message.
 - [ ] Flyer PDF works or shows a clear recovery message.
+- [ ] Flyer/receipt PDF status names the first capped page range when a PDF has more than 12 pages.
 - [ ] Receipt photo works or shows a clear recovery message.
 - [ ] Receipt gallery works or shows a clear recovery message.
 - [ ] Receipt PDF works or shows a clear recovery message.

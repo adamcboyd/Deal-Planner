@@ -410,18 +410,28 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _dealsScanStatus.value = "Reading flyer PDF..."
 
         try {
-            val pageTexts = renderPdfPages(uri).mapIndexed { index, bitmap ->
+            val pdfRender = renderPdfPages(uri)
+            val pageScope = pdfRender.truncatedPageScope()
+            val pageTexts = pdfRender.pages.mapIndexed { index, bitmap ->
                 _dealsScanStatus.value = "Reading flyer PDF page ${index + 1}..."
                 textRecognitionHelper.processImage(bitmap)
             }
             val result = dealsParser.parse(pageTexts.joinToString("\n\n"), store.ifBlank { "Unknown" })
 
             if (result.deals.isEmpty()) {
-                _dealsScanStatus.value = "No deals found in that PDF. Try flyer photos instead."
+                _dealsScanStatus.value = if (pageScope == null) {
+                    "No deals found in that PDF. Try flyer photos instead."
+                } else {
+                    "No deals found in $pageScope. Try flyer photos instead."
+                }
             } else {
                 repository.insertDeals(result.deals)
                 refreshShoppingListFromCurrentInputs()
-                _dealsScanStatus.value = "Added ${result.deals.size} PDF deal${if (result.deals.size == 1) "" else "s"}"
+                _dealsScanStatus.value = buildString {
+                    append("Added ${result.deals.size} PDF deal")
+                    if (result.deals.size != 1) append("s")
+                    if (pageScope != null) append(" from $pageScope")
+                }
             }
         } catch (e: Exception) {
             _dealsScanStatus.value = "Could not read that PDF. Try screenshots or flyer photos."
@@ -597,20 +607,30 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _receiptScanStatus.value = "Reading receipt PDF..."
 
         try {
-            val pageTexts = renderPdfPages(uri).mapIndexed { index, bitmap ->
+            val pdfRender = renderPdfPages(uri)
+            val pageScope = pdfRender.truncatedPageScope()
+            val pageTexts = pdfRender.pages.mapIndexed { index, bitmap ->
                 _receiptScanStatus.value = "Reading receipt PDF page ${index + 1}..."
                 textRecognitionHelper.processImage(bitmap)
             }
-            importReceiptOcrText(pageTexts.joinToString("\n\n"), store)
+            importReceiptOcrText(pageTexts.joinToString("\n\n"), store, pageScope)
         } catch (e: Exception) {
             _receiptScanStatus.value = "Could not read that receipt PDF. Try screenshots or receipt photos."
         }
     }
 
-    private suspend fun importReceiptOcrText(ocrText: String, store: String) {
+    private suspend fun importReceiptOcrText(
+        ocrText: String,
+        store: String,
+        pdfPageScope: String? = null
+    ) {
         val cleanedText = ocrText.trim()
         if (cleanedText.isBlank()) {
-            _receiptScanStatus.value = "No receipt text found."
+            _receiptScanStatus.value = if (pdfPageScope == null) {
+                "No receipt text found."
+            } else {
+                "No receipt text found in $pdfPageScope."
+            }
             return
         }
 
@@ -621,7 +641,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val result = receiptReconciler.reconcileReceipt(cleanedText, currentDeals, pantry, store.ifBlank { "Unknown" })
 
             if (result.receiptItems.isEmpty()) {
-                _receiptScanStatus.value = "No receipt line items found. Try a clearer photo or paste OCR text."
+                _receiptScanStatus.value = if (pdfPageScope == null) {
+                    "No receipt line items found. Try a clearer photo or paste OCR text."
+                } else {
+                    "No receipt line items found in $pdfPageScope. Try clearer screenshots or paste OCR text."
+                }
                 return
             }
 
@@ -641,6 +665,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             _receiptScanStatus.value = buildString {
                 append("Added ${result.receiptItems.size} receipt item")
                 if (result.receiptItems.size != 1) append("s")
+                if (pdfPageScope != null) append(" from $pdfPageScope")
                 append(" (${ "$%.2f".format(result.total) })")
                 if (result.receiptItems.any { it.needsReview }) append(" with REVIEW checks")
             }
@@ -826,15 +851,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private suspend fun renderPdfPages(uri: Uri): List<Bitmap> = withContext(Dispatchers.IO) {
+    private suspend fun renderPdfPages(uri: Uri): PdfRenderResult = withContext(Dispatchers.IO) {
         val context = getApplication<Application>()
         val descriptor = context.contentResolver.openFileDescriptor(uri, "r")
             ?: throw IllegalArgumentException("Could not open PDF")
 
         descriptor.use { parcelFileDescriptor ->
             PdfRenderer(parcelFileDescriptor).use { renderer ->
-                val maxPages = minOf(renderer.pageCount, 12)
-                (0 until maxPages).map { pageIndex ->
+                val maxPages = minOf(renderer.pageCount, MAX_PDF_PAGES)
+                val pages = (0 until maxPages).map { pageIndex ->
                     renderer.openPage(pageIndex).use { page ->
                         val scale = minOf(
                             PDF_RENDER_SCALE.toDouble(),
@@ -850,6 +875,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                         bitmap
                     }
                 }
+                PdfRenderResult(pages = pages, totalPageCount = renderer.pageCount)
             }
         }
     }
@@ -893,8 +919,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val updated: Int
     )
 
+    private data class PdfRenderResult(
+        val pages: List<Bitmap>,
+        val totalPageCount: Int
+    ) {
+        fun truncatedPageScope(): String? {
+            return if (totalPageCount > pages.size) {
+                "first ${pages.size} of $totalPageCount PDF pages"
+            } else {
+                null
+            }
+        }
+    }
+
     private companion object {
         private const val MAX_INPUT_IMAGE_DIMENSION_PX = 3072
+        private const val MAX_PDF_PAGES = 12
         private const val PDF_RENDER_SCALE = 2
     }
 }

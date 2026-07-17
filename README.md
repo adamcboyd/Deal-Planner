@@ -298,7 +298,7 @@ On the Deals tab, enter the store name or leave it as `Unknown`, then use one of
 
 1. **Take Flyer Photo** captures a full-resolution app-cache flyer image without saving it to the camera roll.
 2. **Choose Flyer Image** imports an existing screenshot or photo.
-3. **Choose Flyer PDF** renders PDF pages locally and OCRs them with ML Kit.
+3. **Choose Flyer PDF** renders PDF pages locally and OCRs them with ML Kit. Long PDFs process the first 12 pages and the status message says when only that capped page range was used.
 4. Paste flyer OCR text and tap **Process Text**.
 
 ML Kit OCR extracts visible text, then the Deals parser looks for:
@@ -324,7 +324,7 @@ Tap the edit icon on any deal card to correct OCR guesses for item name, price, 
 On the Receipts tab:
 
 1. Enter the store name, or leave it as `Unknown`.
-2. Paste receipt OCR text and tap **Process Text**, or use **Photo**, **Gallery**, or **PDF**. Photo capture uses a full-resolution app-cache image for better OCR; PDF import renders pages locally before OCR.
+2. Paste receipt OCR text and tap **Process Text**, or use **Photo**, **Gallery**, or **PDF**. Photo capture uses a full-resolution app-cache image for better OCR; PDF import renders pages locally before OCR. Long PDFs process the first 12 pages and the status message says when only that capped page range was used.
 3. The app reconciles receipt lines against current deals and pantry items.
 4. Matched receipt items update the receipt list, pantry quantities, and budget spending; repeated pantry-matched rows on the same receipt accumulate into one pantry quantity update.
 5. Receipt header dates such as `Date: 10/27/2025` are applied to imported receipt rows when available; imports without a readable date use today.
@@ -488,9 +488,9 @@ As of the latest local pass:
 - Blank pantry, barcode, flyer text, and receipt text actions show on-screen status messages instead of silently doing nothing.
 - Imported camera/gallery images are decoded as software bitmaps and capped to a 3072px longest side for OCR/Gemini reliability.
 - Camera/gallery image open failures show on-screen recovery messages instead of failing silently.
-- Flyer PDF pages render locally with a 3072px longest-side cap before OCR.
+- Flyer PDF pages render locally with a 3072px longest-side cap before OCR, process up to 12 pages, and surface when only the first capped page range was used.
 - Deals screen imports flyer photos, gallery images, PDFs, and pasted flyer OCR text with trimmed, store-aware deal creation.
-- Receipts screen imports receipt photos, gallery images, PDFs, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names.
+- Receipts screen imports receipt photos, gallery images, PDFs, and pasted OCR text through ML Kit OCR/reconciliation with trimmed store names, and receipt PDF status surfaces when only the first capped page range was used.
 - The bundled demo receipt used by the phone checklist is covered by unit tests.
 - Receipt reconciliation handles fuzzy matching and split or inline receipt quantity lines, including quantity-first rows, item-first rows, price-per-pound produce rows, and OCR separators such as `@` or `x`.
 - Receipt reconciliation applies receipt header dates to imported receipt rows when available, including common `Date: 10/27/2025`, `Transaction Date: 2025/10/27`, and `Purchase Date: 2025-10-28` formats.

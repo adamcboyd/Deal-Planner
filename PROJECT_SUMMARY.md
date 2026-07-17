@@ -152,7 +152,7 @@ Deal_Planner/
 - ✅ Full-resolution app-cache camera capture
 - ✅ Software bitmap decode and max-size cap for camera/gallery OCR inputs
 - ✅ Camera/gallery image-open failure status feedback
-- ✅ Bounded flyer PDF page rendering for OCR reliability
+- ✅ Bounded flyer/receipt PDF page rendering with capped-page status for OCR reliability
 - ✅ Camera/gallery/PDF permission and cancel status feedback for phone testing
 - ✅ Blank manual input status feedback for pantry, barcode, flyer text, and receipt text actions
 - ✅ Pantry camera/gallery/barcode/manual code import
@@ -425,7 +425,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Captures full-resolution app-cache photos for pantry, flyer, and receipt OCR
 - ✅ Decodes phone images as software bitmaps and caps oversized inputs before OCR/Gemini processing
 - ✅ Shows recovery status if a selected camera/gallery image cannot be opened
-- ✅ Caps rendered flyer PDF page size before OCR processing
+- ✅ Caps rendered flyer/receipt PDF page size before OCR processing and surfaces when only the first 12 pages were processed
 - ✅ Shows clear status when camera permission is denied or capture/scan/gallery/PDF selection is canceled
 - ✅ Shows clear status when manual pantry, barcode, flyer text, or receipt text actions are blank
 - ✅ Keeps manual barcode, pasted flyer, and pasted receipt text available after failed imports while clearing only after successful imports
