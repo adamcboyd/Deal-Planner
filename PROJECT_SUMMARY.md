@@ -23,7 +23,7 @@ Deal_Planner/
 ├── gradle.properties                  ✅ Gradle properties
 ├── gradle/wrapper/
 │   ├── gradle-wrapper.jar             ✅ Gradle wrapper runtime
-│   ├── gradle-wrapper.properties      ✅ Gradle 8.2
+│   ├── gradle-wrapper.properties      ✅ Gradle 8.14.5
 │   ├── gradlew                        ✅ Unix wrapper script
 │   └── gradlew.bat                    ✅ Windows wrapper script
 └── app/

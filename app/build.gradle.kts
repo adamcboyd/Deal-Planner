@@ -1,5 +1,4 @@
 import java.util.Properties
-import java.io.ByteArrayOutputStream
 
 plugins {
     id("com.android.application")
@@ -16,17 +15,14 @@ fun gitOutput(vararg args: String): String {
 }
 
 fun gitOutputOrNull(vararg args: String): String? {
-    val output = ByteArrayOutputStream()
-    val errors = ByteArrayOutputStream()
     return try {
-        val result = exec {
+        val output = providers.exec {
             commandLine("git", *args)
-            standardOutput = output
-            errorOutput = errors
             isIgnoreExitValue = true
         }
+        val result = output.result.get()
         if (result.exitValue == 0) {
-            output.toString().trim()
+            output.standardOutput.asText.get().trim()
         } else {
             null
         }

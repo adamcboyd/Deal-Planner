@@ -87,6 +87,7 @@ app/
 - Android Studio Hedgehog (2023.1.1) or later
 - Android SDK 26+ (minimum)
 - Android SDK 36 installed for compileSdk/targetSdk
+- Gradle wrapper 8.14.5 with Android Gradle Plugin 8.13.2
 - JDK 17 or newer
 
 ### Optional Gemini Vision Setup
