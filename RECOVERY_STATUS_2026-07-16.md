@@ -178,6 +178,17 @@ Latest coroutine dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. Kotlinx Coroutines was updated from `1.7.3` to `1.8.1` across Android, core, Play Services task awaiting, and unit-test artifacts. This keeps the async paths used by Gemini calls, Open Food Facts lookup, ML Kit OCR `tasks.await()`, view-model imports, and `runTest` coverage on one verified version while staying inside the current Kotlin `1.9.20` toolchain. Lint still reports `1.11.0` availability, so a later Kotlin/Compose modernization pass is needed before jumping to that line. The current lint snapshot remains `0` errors and `23` warnings.
 
+Latest phone starter wait-for-device checkpoint:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\start-phone-test-run.ps1")); "start-phone-test-run.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-phone-test-run.ps1 -WaitForPhone -WaitSeconds 1 -SkipBuild -SkipNetwork -SkipSamples -NoLaunch -SkipReport
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: parse/help checks passed, help documents `-WaitForPhone` and `-WaitSeconds`, the wait-enabled starter timed out as expected in the current no-phone state with concrete ADB authorization guidance instead of running required-phone preflight immediately, and the Gradle gate stayed green. With a connected authorized phone, the normal setup path can use `.\scripts\start-phone-test-run.ps1 -WaitForPhone`; the final AI pass can use `.\scripts\start-phone-test-run.ps1 -WaitForPhone -RequireGemini -TestGeminiLive -TestGeminiImage`.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

@@ -8,6 +8,8 @@ param(
     [switch]$NoLaunch,
     [switch]$SkipSamples,
     [switch]$SkipReport,
+    [switch]$WaitForPhone,
+    [int]$WaitSeconds = 120,
     [string]$JavaHome = "C:\Program Files\Java\jdk-20"
 )
 
@@ -18,6 +20,7 @@ function Show-Usage {
     Write-Host ""
     Write-Host "Usage:"
     Write-Host "  .\scripts\start-phone-test-run.ps1"
+    Write-Host "  .\scripts\start-phone-test-run.ps1 -WaitForPhone"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage"
     Write-Host "  .\scripts\start-phone-test-run.ps1 -SkipBuild -NoLaunch"
     Write-Host ""
@@ -39,6 +42,8 @@ function Show-Usage {
     Write-Host "  -NoLaunch       Install but do not launch the app."
     Write-Host "  -SkipSamples    Do not generate or copy deterministic phone sample files."
     Write-Host "  -SkipReport     Do not create a timestamped phone-test report."
+    Write-Host "  -WaitForPhone   Wait for one authorized adb device before required-phone preflight."
+    Write-Host "  -WaitSeconds N  Max seconds to wait with -WaitForPhone. Default: 120"
     Write-Host "  -JavaHome PATH  Java home used for readiness/build checks. Default: C:\Program Files\Java\jdk-20"
     Write-Host ""
     Write-Host "Set ANDROID_SERIAL when more than one authorized Android device is connected."
@@ -98,6 +103,51 @@ function Invoke-PhoneTestReport {
     $script:reportCreated = $true
 }
 
+function Wait-ForAuthorizedPhone {
+    param([int]$TimeoutSeconds)
+
+    if ($TimeoutSeconds -lt 1) {
+        throw "WaitSeconds must be at least 1."
+    }
+
+    if (-not (Get-Command adb -ErrorAction SilentlyContinue)) {
+        throw "adb was not found on PATH. Install Android platform-tools or open from Android Studio's configured SDK."
+    }
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    do {
+        $adbOutput = @(& adb devices)
+        $authorizedDevices = @(
+            $adbOutput |
+                Where-Object { $_ -match "^(\S+)\s+device$" } |
+                ForEach-Object { ($_.Trim() -split "\s+")[0] }
+        )
+        $problemDevices = @($adbOutput | Where-Object { $_ -match "^(\S+)\s+(unauthorized|offline)$" })
+
+        if ($env:ANDROID_SERIAL) {
+            if ($authorizedDevices -contains $env:ANDROID_SERIAL) {
+                Write-Host "Authorized Android phone found: $env:ANDROID_SERIAL"
+                return
+            }
+
+            Write-Host "Waiting for ANDROID_SERIAL=$env:ANDROID_SERIAL to be authorized..."
+        } elseif ($authorizedDevices.Count -eq 1) {
+            Write-Host "Authorized Android phone found: $($authorizedDevices[0])"
+            return
+        } elseif ($authorizedDevices.Count -gt 1) {
+            throw "More than one authorized Android device found: $($authorizedDevices -join ', '). Set ANDROID_SERIAL and rerun."
+        } elseif ($problemDevices.Count -gt 0) {
+            Write-Host "Phone is visible but not ready. Unlock it and accept the USB debugging prompt."
+        } else {
+            Write-Host "Waiting for an authorized Android phone. Connect USB, choose a data-capable mode/cable, and accept USB debugging."
+        }
+
+        Start-Sleep -Seconds 3
+    } while ((Get-Date) -lt $deadline)
+
+    throw "Timed out after $TimeoutSeconds second(s) waiting for one authorized Android phone. Confirm adb devices shows a device, then rerun."
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
@@ -113,7 +163,7 @@ $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
 $script:reportCreated = $false
 $script:samplesCreatedBeforePreflight = $false
-$setupMode = "RequireGemini=$($RequireGemini.IsPresent); TestGeminiLive=$($TestGeminiLive.IsPresent); TestGeminiImage=$($TestGeminiImage.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent)"
+$setupMode = "RequireGemini=$($RequireGemini.IsPresent); TestGeminiLive=$($TestGeminiLive.IsPresent); TestGeminiImage=$($TestGeminiImage.IsPresent); SkipNetwork=$($SkipNetwork.IsPresent); SkipBuild=$($SkipBuild.IsPresent); NoLaunch=$($NoLaunch.IsPresent); SkipSamples=$($SkipSamples.IsPresent); WaitForPhone=$($WaitForPhone.IsPresent); WaitSeconds=$WaitSeconds"
 
 $preflightArgs = @("-RequirePhone", "-JavaHome", $JavaHome)
 if ($RequireGemini) {
@@ -139,6 +189,12 @@ try {
     if ($TestGeminiImage -and -not $SkipSamples) {
         Invoke-Helper "Create deterministic phone samples for Gemini image check" (Join-Path $PSScriptRoot "new-phone-test-samples.ps1")
         $script:samplesCreatedBeforePreflight = $true
+    }
+
+    if ($WaitForPhone) {
+        Invoke-Step "Wait for authorized Android phone" {
+            Wait-ForAuthorizedPhone -TimeoutSeconds $WaitSeconds
+        }
     }
 
     Invoke-Helper "Phone preflight" (Join-Path $PSScriptRoot "phone-debug-preflight.ps1") $preflightArgs
