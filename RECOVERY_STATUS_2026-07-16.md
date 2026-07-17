@@ -151,6 +151,15 @@ Latest camera input dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. CameraX was updated from `1.3.0` to `1.4.2` for the phone photo-capture paths used by pantry, flyer, and receipt imports. CameraX `1.6.1` was tested first and rejected for this checkpoint because its artifacts use Kotlin metadata `2.1.0` while the app is still on Kotlin `1.9.20` / Compose compiler `1.5.4`. The current lint snapshot remains `0` errors and `25` warnings.
 
+Latest unused image-loading dependency cleanup checkpoint:
+
+```powershell
+rg "coil|AsyncImage|rememberAsyncImagePainter|SubcomposeAsyncImage" app\src\main\java app\src\test\java -n
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. The unused Coil Compose dependency was removed after the source scan found no active Coil/AsyncImage references in app or test code. This reduces the debug APK dependency surface without changing the current camera/gallery/OCR import flow. The current lint snapshot is `0` errors and `24` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell
