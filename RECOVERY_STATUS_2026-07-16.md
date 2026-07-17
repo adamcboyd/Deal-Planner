@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after ADB setup guidance work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: phone report lint snapshot work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness report work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: ADB setup guidance work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2424,6 +2424,35 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-instal
 ```
 
 Result: parse and help checks passed. In the current no-phone state, required-phone preflight failed as expected and now reports: `No connected/authorized phone found. Connect the phone, enable Developer options > USB debugging, choose a data-capable USB mode/cable, confirm adb devices shows device, then rerun. adb devices listed no devices.` Direct install also verified APK identity/source metadata before stopping with the same concrete ADB recovery guidance.
+
+Full local gate:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
+
+Latest recovery checkpoint after feature readiness report work:
+
+Helper checkpoint:
+
+- Added `scripts\new-feature-readiness-report.ps1`.
+- The helper creates ignored timestamped `FEATURE_READINESS_REPORT.md` files under `phone-test-results\`.
+- The report separates local source/test evidence from remaining external checks for pantry manual/barcode/photo/gallery, flyer text/photo/gallery/PDF, receipt text/photo/gallery/PDF, budget/menu/shopping, Settings, Gemini, phone setup helpers, and deterministic samples.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so the feature readiness report becomes a recovery anchor before real-phone testing.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\new-feature-readiness-report.ps1")); "new-feature-readiness-report.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1
+```
+
+Result: parse and help checks passed. The helper generated ignored report `phone-test-results\20260716-170930\FEATURE_READINESS_REPORT.md`, showing `237` unit tests, `0` failures/errors/skipped, lint `0` errors with `19` warnings, APK source identity `codex/deal-planner-baseline @ 60a8c23`, APK Gemini configured `False`, and all remaining feature signoff items correctly marked as Android phone or real-Gemini-key checks.
 
 Full local gate:
 

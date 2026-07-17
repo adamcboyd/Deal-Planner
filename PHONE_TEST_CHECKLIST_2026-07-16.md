@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after ADB setup guidance work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after feature readiness report work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -54,6 +54,14 @@ To create a timestamped report before or during the phone run:
 ```
 
 Use the generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` to mark pass/fail notes, log folders, and follow-ups. The report Source Snapshot includes the repo commit, compiled APK source branch/commit/dirty state, current lint snapshot when available, latest sample folder/manifest, and sample transfer report when available. The Setup Run Summary records whether the starter completed, failed, or was not recorded.
+
+For a local recovery snapshot before the phone run:
+
+```powershell
+.\scripts\new-feature-readiness-report.ps1
+```
+
+Use the generated `phone-test-results\<timestamp>\FEATURE_READINESS_REPORT.md` to see which pantry, barcode, flyer, receipt, budget, shopping, Settings, and AI paths have local source/test evidence and which still require Android phone or real Gemini-key evidence.
 
 To create deterministic sample files for pasted text, gallery image, and PDF picker checks:
 
