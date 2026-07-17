@@ -262,7 +262,7 @@ Deal_Planner/
 | JSON | Gson 2.14.0 |
 | Coroutines | Kotlinx Coroutines 1.7.3 |
 | Architecture | MVVM + Repository |
-| Testing | JUnit 4.13.2 + Truth 1.1.5 |
+| Testing | JUnit 4.13.2 + Truth 1.4.5 |
 | Min SDK | 26 (Android 8.0) |
 | Compile SDK | 36 (Android 16) |
 | Target SDK | 36 |

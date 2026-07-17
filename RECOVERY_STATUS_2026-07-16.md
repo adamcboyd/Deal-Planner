@@ -160,6 +160,15 @@ rg "coil|AsyncImage|rememberAsyncImagePainter|SubcomposeAsyncImage" app\src\main
 
 Result: `BUILD SUCCESSFUL`. The unused Coil Compose dependency was removed after the source scan found no active Coil/AsyncImage references in app or test code. This reduces the debug APK dependency surface without changing the current camera/gallery/OCR import flow. The current lint snapshot is `0` errors and `24` warnings.
 
+Latest unit-test assertion dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest --tests com.dealplanner.ai.PantryVisionItemMapperTest --tests com.dealplanner.parser.PantryPhraseParserTest --tests com.dealplanner.parser.DealsParserTest --tests com.dealplanner.domain.ReceiptReconcilerTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. Truth was updated from `1.1.5` to `1.4.5` for the JVM unit-test assertion suite that covers Gemini parsing, pantry AI mapping, pantry/deal parsing, and receipt reconciliation. This keeps the local verification harness current without changing app runtime behavior. The current lint snapshot is `0` errors and `23` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell
