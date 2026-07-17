@@ -116,6 +116,14 @@ Latest ML Kit OCR fallback dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. ML Kit Text Recognition was updated from `16.0.0` to `16.0.1`, keeping the no-key on-device OCR fallback current enough to remove the three `Aligned16KB` native-library lint warnings. The current lint snapshot is `0` errors and `29` warnings: dependency update advisories, one obsolete launcher resource-folder warning, and two KTX suggestions.
 
+Latest image helper KTX cleanup checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. `AppViewModel` now uses AndroidX KTX `Bitmap.scale` and `createBitmap` helpers in the image/PDF preprocessing paths, clearing the two `UseKtx` lint suggestions without changing the rendered bitmap dimensions or OCR input flow. The current lint snapshot is `0` errors and `27` warnings: dependency update advisories plus the launcher resource-folder warning.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

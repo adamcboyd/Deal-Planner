@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.graphics.pdf.PdfRenderer
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.dealplanner.ai.GeminiPantryVisionClient
@@ -923,8 +925,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         if (largestDimension <= maxDimension) return this
 
         val scale = maxDimension.toDouble() / largestDimension.toDouble()
-        return Bitmap.createScaledBitmap(
-            this,
+        return scale(
             (width * scale).roundToInt().coerceAtLeast(1),
             (height * scale).roundToInt().coerceAtLeast(1),
             true
@@ -945,10 +946,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                             PDF_RENDER_SCALE.toDouble(),
                             MAX_INPUT_IMAGE_DIMENSION_PX.toDouble() / maxOf(page.width, page.height).toDouble()
                         )
-                        val bitmap = Bitmap.createBitmap(
+                        val bitmap = createBitmap(
                             (page.width * scale).roundToInt().coerceAtLeast(1),
                             (page.height * scale).roundToInt().coerceAtLeast(1),
-                            Bitmap.Config.ARGB_8888
                         )
                         Canvas(bitmap).drawColor(Color.WHITE)
                         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
