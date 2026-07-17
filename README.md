@@ -109,7 +109,7 @@ The phone preflight and generated phone-test report verify whether the debug APK
 A non-secret template is included at `local.properties.example`.
 The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model/network checks across both text and image input with concise API error summaries.
 The default `gemini-3.5-flash` model code is the stable Gemini 3.5 Flash ID listed in the official Google AI Gemini model docs and supports image inputs plus structured output. The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
-Gemini requests use the model's default sampling settings and only specify output shape/size, reducing the chance that hardcoded sampling parameters drift from current Gemini 3.x guidance.
+Gemini requests use the model's default sampling settings and only specify output shape/size, including the current Generate Content REST `responseFormat` JSON MIME shape for pantry photo extraction, reducing the chance that hardcoded sampling parameters drift from current Gemini 3.x guidance.
 Before the final phone AI pass, you can run a local live API check without printing the key:
 
 ```powershell

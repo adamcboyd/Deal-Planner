@@ -232,6 +232,15 @@ Latest pantry-label brand cleanup checkpoint:
 
 Result: targeted parser/OCR tests and `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` returned `BUILD SUCCESSFUL`. The parser now recognizes `Private Selection` as a brand so the demo pantry-label salsa row becomes item `salsa` with brand `Private Selection` instead of item `private selection salsa`.
 
+Latest Gemini API request-shape checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: focused Gemini client tests and `.\gradlew.bat testDebugUnitTest assembleDebug lintDebug` returned `BUILD SUCCESSFUL`. Official Google AI docs rechecked on 2026-07-17 still list `gemini-3.5-flash` as stable with text/image/PDF input and structured-output support. The pantry photo request now uses the current Generate Content REST `generationConfig.responseFormat.text.mimeType = application/json` shape instead of the older `responseMimeType` field, while preserving default model sampling.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

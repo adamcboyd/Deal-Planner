@@ -106,7 +106,7 @@ Then verify the rebuilt APK, live Gemini call, and connected phone are all ready
 ```
 
 Expected with a real key after the starter rebuilds: preflight reports `Gemini key`, `Gemini live API`, `Gemini live image API`, `APK Gemini key`, and `APK Gemini model` as OK without printing the key value. A generated `phone-test-results\<timestamp>\PHONE_TEST_REPORT.md` should also show `Setup mode` with `RequireGemini=True; TestGeminiLive=True; TestGeminiImage=True; WaitForPhone=True`, `APK Gemini configured: True`, and `APK Gemini model: gemini-3.5-flash`.
-Current official Google AI docs list `gemini-3.5-flash` as the stable Gemini 3.5 Flash model code with image input and structured output support. Deal Planner uses that model code by default and keeps Gemini 3.x sampling defaults instead of hardcoding temperature/top-p/top-k values.
+Current official Google AI docs list `gemini-3.5-flash` as the stable Gemini 3.5 Flash model code with image input and structured output support. Deal Planner uses that model code by default, sends pantry photo extraction with the current Generate Content REST `responseFormat` JSON MIME shape, and keeps Gemini 3.x sampling defaults instead of hardcoding temperature/top-p/top-k values.
 
 Do not commit `local.properties`.
 

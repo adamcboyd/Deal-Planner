@@ -189,7 +189,17 @@ class GeminiPantryVisionClient(
             add(
                 "generationConfig",
                 JsonObject().apply {
-                    addProperty("responseMimeType", "application/json")
+                    add(
+                        "responseFormat",
+                        JsonObject().apply {
+                            add(
+                                "text",
+                                JsonObject().apply {
+                                    addProperty("mimeType", "application/json")
+                                }
+                            )
+                        }
+                    )
                 }
             )
         }
