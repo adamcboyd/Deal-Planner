@@ -7,11 +7,14 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after custom dietary restrictions work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: pantry photo review queue work.
-- The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
-- After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
+- Latest pushed checkpoint: `dab9add fix: refresh generated menu with shopping`
+- Previous pushed checkpoint: `9664a3c chore: add live gemini setup check`
+- Current GitHub branch head for `codex/deal-planner-baseline`: `dab9addc15eea8e0ac67c27bc84c53753216dd8a`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
+- The branch includes helper/docs recovery commits plus app-code checkpoints; the latest full local gate used `testDebugUnitTest assembleDebug lintDebug`.
+- Latest full readiness report: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184702\FEATURE_READINESS_REPORT.md`
+- Latest phone test report template: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184711\PHONE_TEST_REPORT.md`
+- After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 
 ## Other Local Copies Found
 
@@ -32,7 +35,24 @@ Refreshed source audit on 2026-07-16 confirms the only folder to open in Android
 C:\Users\adamc\AndroidStudioProjects\Deal_Planner
 ```
 
+Do not continue current app work in:
+
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer` - stale same-remote checkout at `b1366ad`, while GitHub `codex/deal-planner-baseline` is `dab9add`.
+- `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer_BROKEN` or `C:\Users\adamc\AndroidStudioProjects\SNAP_Optimizer.new` - 2025 SNAP Optimizer folders on the old `com.snapoptimizer` package.
+- `F:\PROJECTS\...` Deal Planner/SNAP folders - legacy/reference material unless an explicit archival comparison task is opened.
+
 ## Verification Run This Session
+
+Latest pushed recovery snapshot after generated Menu and Shopping refresh alignment:
+
+```powershell
+git status --short --branch
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-report.ps1
+```
+
+Result: branch `codex/deal-planner-baseline` is clean and synced with `origin/codex/deal-planner-baseline`; preflight reports `0 failure(s), 2 warning(s)` for the expected local conditions of no connected/authorized Android phone and no Gemini key; readiness report `20260716-184702` shows `259` unit tests, `0` failures/errors/skipped, lint at `0 errors, 19 warnings`, current debug APK freshness, APK source commit `dab9add`, and `APK source dirty: false`; phone report template `20260716-184711` records commit `dab9add`, APK source commit `dab9add`, synced Git status, and the Menu/Shopping plus strict Gemini phone-check rows.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
