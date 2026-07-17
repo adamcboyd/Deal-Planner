@@ -2,7 +2,7 @@
 
 ## ✅ Project Status: BUILDABLE PHONE-TEST BASELINE
 
-This is a working Android MVP baseline that compiles, passes unit tests, builds a debug APK, and is ready for physical-phone testing.
+This is a working Android MVP baseline that compiles, passes unit tests, builds a debug APK, targets Android 16/API 36, and is ready for physical-phone testing.
 
 ## 📊 Project Statistics
 
@@ -519,7 +519,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility
-- ✅ 259 unit tests
+- ✅ 263 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

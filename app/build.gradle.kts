@@ -48,12 +48,12 @@ val localProperties = Properties().apply {
 
 android {
     namespace = "com.dealplanner"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.dealplanner"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

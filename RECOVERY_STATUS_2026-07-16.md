@@ -100,6 +100,14 @@ Latest Settings text/image Gemini connection checkpoint:
 
 Result: `BUILD SUCCESSFUL`. Settings -> Test AI Connection now makes both a text request and an embedded one-pixel PNG inline image request, so a successful phone status verifies the configured model/key/network path used by pantry photo recognition as well as text generation.
 
+Latest Android 16/API 36 target checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. The app now compiles and targets SDK 36, matching the locally installed Android 16 platform and current Google Play API-level direction for new apps/updates. Lint no longer reports `OldTargetApi`; the current lint snapshot is `0` errors and `18` warnings (`17` Gradle dependency update warnings plus `1` obsolete launcher resource-folder warning). The build still prints an Android Gradle Plugin warning because AGP `8.2.0` was tested through compile SDK 34, so upgrading AGP/Gradle remains a separate toolchain task before store-readiness polish.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell
