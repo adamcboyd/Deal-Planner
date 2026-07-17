@@ -5,7 +5,7 @@
 - Project folder: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub repo: `https://github.com/adamcboyd/Deal-Planner`
 - Branch: `codex/deal-planner-baseline`
-- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after Gemini image-check and AI pantry alias-hardening work; confirm the exact commit with `git log -1 --oneline`.
+- Current validated app-code checkpoint: current `codex/deal-planner-baseline` branch head after Gemini image-check, AI pantry alias-hardening, and Settings text/image connection-test work; confirm the exact commit with `git log -1 --oneline`.
 - Debug APK: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Install on Android Phone
@@ -294,8 +294,8 @@ In `Settings`:
 2. Tap `Test AI Connection`.
 3. Expected without key: status reports that Gemini API key is not configured.
 4. With a real key configured locally, run `.\scripts\test-gemini-connection.ps1` and `.\scripts\test-gemini-connection.ps1 -TestPantryImage`; confirm they report Gemini text and image connection OK without printing the key.
-5. With a real key and rebuilt APK, tap `Test AI Connection`.
-6. Expected with key/network: status reports `Gemini connection OK using gemini-3.5-flash.`
+5. With a real key and rebuilt APK, tap `Test AI Connection`; this runs a text request and a tiny embedded PNG image request from the phone.
+6. Expected with key/network/image input: status reports `Gemini text and image connection OK using gemini-3.5-flash.`
 7. In the preflight/report output, confirm `Gemini live API` is OK, `APK Gemini configured` is true, and `APK Gemini model` is `gemini-3.5-flash` before testing photos.
 8. If the key/model/network is wrong, expected: script/preflight/UI status shows a concise `Gemini connection failed` message with the HTTP code/status instead of raw JSON.
 9. With key configured, test pantry photo recognition against a real pantry item label.
@@ -368,6 +368,6 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Shopping list PDF export opens Android's share sheet from app cache without requesting broad storage/media-library permissions.
 - Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.
 - Gemini no-key fallback is clear.
-- Gemini live test passes only after a real key is configured and APK is rebuilt.
+- Gemini live text/image tests pass only after a real key is configured and APK is rebuilt.
 - AI pantry VERIFY rows explain what needs review in the item notes, including model-provided clarifying questions or review-note warnings when present.
 - AI pantry rows save trimmed/canonical unit and storage values so review/edit fields do not contain raw model wording.

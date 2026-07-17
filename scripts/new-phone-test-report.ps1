@@ -441,7 +441,7 @@ $adbBlock
 - [ ] .\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage completed after adding the key.
 - [ ] Setup Run Summary shows RequireGemini=True, TestGeminiLive=True, and TestGeminiImage=True for the AI-specific phone pass.
 - [ ] Source Snapshot shows APK Gemini configured is True and APK Gemini model is the expected model.
-- [ ] With Gemini key rebuilt into APK, Test AI Connection succeeds.
+- [ ] With Gemini key rebuilt into APK, Test AI Connection reports Gemini text and image connection OK.
 - [ ] Gemini pantry photo recognition creates reviewable items from a real label.
 - [ ] Unclear Gemini fields show VERIFY notes explaining what to review.
 - [ ] Zero or negative Gemini amount details fall back to quantity 1.0, show VERIFY, and include Review amount/unit.

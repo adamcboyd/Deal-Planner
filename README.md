@@ -105,7 +105,7 @@ The generated debug `BuildConfig` also tracks Git branch, commit, and dirty-stat
 The phone preflight and generated phone-test report verify whether the debug APK's generated `BuildConfig` contains a non-placeholder Gemini key and which model it will use, without printing the key.
 
 A non-secret template is included at `local.properties.example`.
-The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model checks with concise API error summaries.
+The Settings tab shows whether Gemini Vision is configured, which model the build is using, and includes a **Test AI Connection** button for real-device key/model/network checks across both text and image input with concise API error summaries.
 The default `gemini-3.5-flash` model code is the stable Gemini 3.5 Flash ID listed in the official Google AI Gemini model docs and supports image inputs plus structured output. The app trims accidental whitespace and accepts either `gemini-3.5-flash` or `models/gemini-3.5-flash`, though the bare model code is preferred.
 Gemini requests use the model's default sampling settings and only specify output shape/size, reducing the chance that hardcoded sampling parameters drift from current Gemini 3.x guidance.
 Before the final phone AI pass, you can run a local live API check without printing the key:
@@ -377,7 +377,7 @@ The Settings tab includes **AI Pantry Photo Status**:
 - If Gemini is not configured, it states that pantry photos will use on-device OCR fallback.
 - Placeholder keys such as `YOUR_GEMINI_API_KEY` are treated as not configured.
 - The preflight helper and generated phone-test report also show whether the installed debug APK has Gemini compiled in, so Settings can be compared against the APK source snapshot before testing photos.
-- **Test AI Connection** performs a small Gemini request from the phone so you can confirm the key, network, and model before testing pantry photos.
+- **Test AI Connection** performs small Gemini text and embedded PNG image requests from the phone so you can confirm the key, network, model, and image-input path before testing pantry photos.
 
 ## Testing
 
@@ -412,7 +412,7 @@ Tests cover:
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total/negative-return line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, stable `gemini-3.5-flash` default model, model fallback, whitespace/prefix normalization, default sampling settings, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, nested date values, opened/purchase date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, liquid unit aliases, storage aliases, malformed string/list fields, and non-finite numeric fallback)
-- Gemini connection-test success, empty-response, missing-key, and concise failure status handling without requiring live network calls
+- Gemini text/image connection-test success, empty-response, missing-key, and concise failure status handling without requiring live network calls
 - AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - AI pantry review-note reasons for missing, non-positive, or uncertain brand, amount/unit, storage location, and best-by date details
 
@@ -520,7 +520,7 @@ As of the latest local pass:
 - Budget balance and monthly overview displays use receipt-aware analysis values when available, so recovered or stale stored budget totals do not contradict current receipt history.
 - Budget Settings lets the user edit monthly budget, spent-to-date baseline, and breakfast anchor cost with comma-decimal and leading-decimal support, non-negative validation, and visible saved feedback.
 - Pantry-matched receipt imports, edits, and deletes adjust pantry quantities, including repeated matched items on one receipt.
-- Settings can test the Gemini API key/model connection from the running app.
+- Settings can test the Gemini API key/model connection for both text and image input from the running app.
 - Phone helpers verify the generated debug `BuildConfig` Gemini key/model state without printing secrets, so stale APKs can be caught before live AI testing.
 - Settings accepts comma-decimal and leading-decimal protein-per-meal values such as `0,5` or `.5`.
 - Settings accepts custom avoid terms such as `pork, shellfish, peanuts`; saved restrictions filter matching deal names/details out of Menu meals and Shopping.

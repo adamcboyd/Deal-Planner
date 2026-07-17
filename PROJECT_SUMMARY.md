@@ -170,10 +170,10 @@ Deal_Planner/
 - ✅ Optional Gemini Vision client using local.properties or GEMINI_API_KEY
 - ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Stable `gemini-3.5-flash` default model with Gemini 3.x default sampling behavior
-- ✅ Concise Gemini API success, empty-response, missing-key, and failure summaries for Settings connection testing
+- ✅ Concise Gemini API text/image success, empty-response, missing-key, and failure summaries for Settings connection testing
 - ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, nested date values, opened/purchase date aliases, numeric/comma-decimal/word/object quantity aliases, liquid unit aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
-- ✅ Settings screen AI configuration status and Gemini connection test
+- ✅ Settings screen AI configuration status and text/image Gemini connection test
 - ✅ Local non-secret Gemini text and pantry-label image live connection script for pre-phone AI setup verification
 - ✅ ML Kit OCR fallback when Gemini is not configured, including pantry `NET WT` package-label handling, hyphenated package-size multi-item splitting, wrapped date continuation handling, and edit-before-save staging
 - ✅ ZXing barcode scanner intake for reviewable pantry seeding
@@ -441,7 +441,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Shows clear status when manual pantry, barcode, flyer text, or receipt text actions are blank
 - ✅ Keeps manual barcode, pasted flyer, and pasted receipt text available after failed imports while clearing only after successful imports
 - ✅ Shows Gemini/OCR fallback status in Settings
-- ✅ Tests Gemini key/model/network connectivity from Settings
+- ✅ Tests Gemini key/model/network and image-input connectivity from Settings
 - ✅ Tests Gemini key/model/network and image-input connectivity locally before phone testing without printing the key
 - ✅ Validates Settings protein-per-meal values with dot, comma, and leading-decimal input while blocking negative, invalid, and non-finite text
 - ✅ Lets users correct flyer OCR/PDF/text deal output before using it in meal plans

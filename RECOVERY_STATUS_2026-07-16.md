@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini image-check and AI pantry alias-hardening work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini image-check, AI pantry alias-hardening, and Settings text/image connection-test work; confirm the exact commit with `git log -1 --oneline`.
 - Previous pushed app-code checkpoint: `dab9add fix: refresh generated menu with shopping`
 - Previous pushed helper checkpoint: `9664a3c chore: add live gemini setup check`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -91,6 +91,14 @@ Latest AI pantry alias-hardening checkpoint:
 ```
 
 Result: `BUILD SUCCESSFUL`. Gemini pantry parsing now accepts nested date string objects, additional label-date aliases such as `use_by_text` and `expires_on`, opened/purchase-style date aliases such as `opened_at` and `purchased_on`, and explicit liquid units such as gallons or pints when the model also emits a generic count quantity.
+
+Latest Settings text/image Gemini connection checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest
+```
+
+Result: `BUILD SUCCESSFUL`. Settings -> Test AI Connection now makes both a text request and an embedded one-pixel PNG inline image request, so a successful phone status verifies the configured model/key/network path used by pantry photo recognition as well as text generation.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
@@ -1688,7 +1696,7 @@ Verified by build/unit tests/code inspection:
 - ML Kit OCR fallback exists.
 - Optional Gemini pantry photo client exists.
 - Settings screen shows whether Gemini Vision is configured or OCR fallback is active.
-- Settings screen includes a Test AI Connection button for key/model/network verification on the phone.
+- Settings screen includes a Test AI Connection button for key/model/network verification across both text and image input on the phone.
 - Settings Test AI Connection summarizes Gemini API errors with concise HTTP/status messages instead of showing raw server JSON.
 - Settings protein-per-meal numeric input accepts comma-decimal and leading-decimal values such as `0,5` or `.5`.
 - Settings Save shows visible saved feedback and blocks invalid, negative, or non-finite protein-per-meal text instead of silently defaulting.

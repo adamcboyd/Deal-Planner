@@ -84,18 +84,27 @@ class GeminiPantryVisionClient(
         }
 
         try {
-            val responseText = postGenerateContent(buildConnectionTestRequest().toString())
-            val answer = extractResponseText(responseText).trim()
-            if (answer.isBlank()) {
+            val textResponse = postGenerateContent(buildConnectionTestRequest().toString())
+            val textAnswer = extractResponseText(textResponse).trim()
+            if (textAnswer.isBlank()) {
                 ConnectionTestResult(
                     success = false,
                     message = "Gemini responded, but returned an empty test response."
                 )
             } else {
-                ConnectionTestResult(
-                    success = true,
-                    message = "Gemini connection OK using $modelName."
-                )
+                val imageResponse = postGenerateContent(buildImageConnectionTestRequest().toString())
+                val imageAnswer = extractResponseText(imageResponse).trim()
+                if (imageAnswer.isBlank()) {
+                    ConnectionTestResult(
+                        success = false,
+                        message = "Gemini text test passed, but image test returned an empty response."
+                    )
+                } else {
+                    ConnectionTestResult(
+                        success = true,
+                        message = "Gemini text and image connection OK using $modelName."
+                    )
+                }
             }
         } catch (e: Exception) {
             ConnectionTestResult(
@@ -193,6 +202,39 @@ class GeminiPantryVisionClient(
 
         val content = JsonObject().apply {
             add("parts", JsonArray().apply { add(promptPart) })
+        }
+
+        return JsonObject().apply {
+            add("contents", JsonArray().apply { add(content) })
+            add(
+                "generationConfig",
+                JsonObject().apply {
+                    addProperty("maxOutputTokens", 16)
+                }
+            )
+        }
+    }
+
+    internal fun buildImageConnectionTestRequest(base64Image: String = ONE_PIXEL_PNG_BASE64): JsonObject {
+        val imagePart = JsonObject().apply {
+            add(
+                "inline_data",
+                JsonObject().apply {
+                    addProperty("mime_type", "image/png")
+                    addProperty("data", base64Image)
+                }
+            )
+        }
+
+        val promptPart = JsonObject().apply {
+            addProperty("text", "Reply with OK if you can process this Deal Planner pantry image test.")
+        }
+
+        val content = JsonObject().apply {
+            add("parts", JsonArray().apply {
+                add(imagePart)
+                add(promptPart)
+            })
         }
 
         return JsonObject().apply {
@@ -824,6 +866,8 @@ class GeminiPantryVisionClient(
         private const val DEFAULT_MODEL_NAME = "gemini-3.5-flash"
         private const val DOZEN_COUNT = 12.0
         private const val MAX_STATUS_DETAIL_LENGTH = 180
+        private const val ONE_PIXEL_PNG_BASE64 =
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
         private val quantityPattern = Regex("""(\d+\s*/\s*\d+|(?:\d+)?[.,]\d+|\d+)\s*([A-Za-z]+)?""")
         private val wordQuantityPattern = Regex(
             """\b(one|two|three|four|five|six|seven|eight|nine|ten|half|dozen)\b\s*([A-Za-z]+)?""",

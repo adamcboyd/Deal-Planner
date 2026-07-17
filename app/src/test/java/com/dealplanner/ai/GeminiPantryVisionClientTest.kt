@@ -63,14 +63,14 @@ class GeminiPantryVisionClientTest {
     fun `connection test reports success from api response without network`() = runTest {
         var capturedModel: String? = null
         var capturedKey: String? = null
-        var capturedRequestBody: String? = null
+        val capturedRequestBodies = mutableListOf<String>()
         val client = GeminiPantryVisionClient(
             apiKey = " test-real-key-for-unit-tests ",
             model = " models/gemini-3.5-flash ",
             contentTransport = GeminiContentTransport { modelName, apiKey, requestBody ->
                 capturedModel = modelName
                 capturedKey = apiKey
-                capturedRequestBody = requestBody
+                capturedRequestBodies += requestBody
                 """
                     {
                       "candidates": [
@@ -90,11 +90,15 @@ class GeminiPantryVisionClientTest {
         val result = client.testConnection()
 
         assertThat(result.success).isTrue()
-        assertThat(result.message).isEqualTo("Gemini connection OK using gemini-3.5-flash.")
+        assertThat(result.message).isEqualTo("Gemini text and image connection OK using gemini-3.5-flash.")
         assertThat(capturedModel).isEqualTo("gemini-3.5-flash")
         assertThat(capturedKey).isEqualTo("test-real-key-for-unit-tests")
-        assertThat(capturedRequestBody).contains("Reply with OK")
-        assertThat(capturedRequestBody).doesNotContain("temperature")
+        assertThat(capturedRequestBodies).hasSize(2)
+        assertThat(capturedRequestBodies.first()).contains("Reply with OK")
+        assertThat(capturedRequestBodies.first()).doesNotContain("temperature")
+        assertThat(capturedRequestBodies.last()).contains("inline_data")
+        assertThat(capturedRequestBodies.last()).contains("image/png")
+        assertThat(capturedRequestBodies.last()).doesNotContain("temperature")
     }
 
     @Test
@@ -123,6 +127,21 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `image connection test request uses inline png without overriding model sampling defaults`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+
+        val request = client.buildImageConnectionTestRequest("base64-png").toString()
+
+        assertThat(request).contains("inline_data")
+        assertThat(request).contains("image/png")
+        assertThat(request).contains("base64-png")
+        assertThat(request).contains("maxOutputTokens")
+        assertThat(request).doesNotContain("temperature")
+        assertThat(request).doesNotContain("topP")
+        assertThat(request).doesNotContain("topK")
+    }
+
+    @Test
     fun `connection test reports empty api response without network`() = runTest {
         val client = GeminiPantryVisionClient(
             apiKey = "test-real-key-for-unit-tests",
@@ -136,6 +155,40 @@ class GeminiPantryVisionClientTest {
 
         assertThat(result.success).isFalse()
         assertThat(result.message).isEqualTo("Gemini responded, but returned an empty test response.")
+    }
+
+    @Test
+    fun `connection test reports empty image response after text passes`() = runTest {
+        var callCount = 0
+        val client = GeminiPantryVisionClient(
+            apiKey = "test-real-key-for-unit-tests",
+            model = "gemini-3.5-flash",
+            contentTransport = GeminiContentTransport { _, _, _ ->
+                callCount++
+                if (callCount == 1) {
+                    """
+                        {
+                          "candidates": [
+                            {
+                              "content": {
+                                "parts": [
+                                  {"text": "OK"}
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                    """.trimIndent()
+                } else {
+                    """{"candidates":[{"content":{"parts":[]}}]}"""
+                }
+            }
+        )
+
+        val result = client.testConnection()
+
+        assertThat(result.success).isFalse()
+        assertThat(result.message).isEqualTo("Gemini text test passed, but image test returned an empty response.")
     }
 
     @Test
