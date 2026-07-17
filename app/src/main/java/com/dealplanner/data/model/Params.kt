@@ -12,5 +12,5 @@ data class Params(
     val breakfastAnchor: Boolean = true,
     val proteinPerMealLb: Double = 0.5,
     val prefersOrganic: Boolean = false,
-    val dietaryRestrictions: String? = null // JSON list if needed
+    val dietaryRestrictions: String? = null // Normalized comma-separated avoid terms.
 )

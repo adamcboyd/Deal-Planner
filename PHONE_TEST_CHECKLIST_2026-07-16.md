@@ -307,6 +307,8 @@ In `Settings`:
 2. Enter protein per meal as `.5` or `,5`, tap `Save Settings`, and confirm it is accepted as 0.5.
 3. Enter negative protein text such as `-1`, and confirm Save is disabled with a visible non-negative number message.
 4. Enter invalid protein text such as `abc`, `NaN`, or `Infinity`, and confirm Save is disabled with a visible non-negative number message.
+5. Enter custom avoid terms such as `pork, broccoli`, tap `Save Settings`, then generate a menu and confirm pork and broccoli deals do not appear in `Menu` meals or `Shopping`.
+6. Clear the custom avoid list and save again before continuing other meal-plan checks.
 
 ## Build Identity Check
 
@@ -353,6 +355,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry OCR fallback does not import `NET WT` package-size lines as separate products and still splits clear multi-item pantry rows, including `16-ounce` and `12-count` label rows, into separate VERIFY rows with wrapped date/opened lines attached to the matching item.
 - Pantry photo/Gallery imports stage editable `Review Pantry Imports` rows before saving, and `Save All` is required before they merge into the saved Pantry list.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
+- Custom dietary restrictions saved in Settings filter matching proteins and side deals out of generated Menu meals and Shopping.
 - Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
 - Shopping list PDF export opens Android's share sheet from app cache without requesting broad storage/media-library permissions.
 - Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.

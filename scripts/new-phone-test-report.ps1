@@ -449,6 +449,7 @@ $adbBlock
 
 - [ ] Receipt import/edit/delete updates Budget totals and projections.
 - [ ] Menu generation is deterministic and replaces the active generated week.
+- [ ] Custom dietary restrictions filter matching proteins and sides out of Menu and Shopping.
 - [ ] Shopping list refreshes after pantry/deal/receipt/settings changes.
 - [ ] Shopping Export PDF opens the Android share sheet with a generated PDF.
 - Notes:

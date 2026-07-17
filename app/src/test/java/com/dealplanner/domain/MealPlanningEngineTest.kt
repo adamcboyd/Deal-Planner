@@ -241,6 +241,89 @@ class MealPlanningEngineTest {
     }
 
     @Test
+    fun `custom dietary restrictions filter matching proteins from meals and shopping`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(dietaryRestrictions = "No pork"),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Pork Shoulder",
+                    price = 1.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.95,
+                    pricePerUnit = 1.99
+                ),
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.7,
+                    pricePerUnit = 2.99
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 1
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        val usedProteins = result.mealPlans.flatMap { it.slots }.mapNotNull { it.protein }
+        assertThat(usedProteins).contains("Chicken Breast")
+        assertThat(usedProteins).doesNotContain("Pork Shoulder")
+        assertThat(result.shoppingList.map { it.dealItem.name }).doesNotContain("Pork Shoulder")
+    }
+
+    @Test
+    fun `custom dietary restrictions filter matching side deals from meals and shopping`() {
+        val request = MealPlanningEngine.MealPlanRequest(
+            params = Params(dietaryRestrictions = "broccoli"),
+            pantryItems = listOf(PantryItem(item = "rice", qty = 5.0, unit = "lb")),
+            deals = listOf(
+                DealItem(
+                    name = "Chicken Breast",
+                    price = 2.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.8,
+                    pricePerUnit = 2.99
+                ),
+                DealItem(
+                    name = "Broccoli Crowns",
+                    price = 1.49,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.9,
+                    pricePerUnit = 1.49
+                ),
+                DealItem(
+                    name = "Green Beans",
+                    price = 1.99,
+                    unit = "lb",
+                    dealType = "per_pound",
+                    store = "Kroger",
+                    dealScore = 0.7,
+                    pricePerUnit = 1.99
+                )
+            ),
+            startDate = LocalDate.of(2026, 7, 16),
+            daysToGenerate = 1
+        )
+
+        val result = engine.generateMealPlan(request)
+
+        val usedVegetables = result.mealPlans.flatMap { it.slots }.mapNotNull { it.veg }
+        assertThat(usedVegetables).contains("Green Beans")
+        assertThat(usedVegetables).doesNotContain("Broccoli Crowns")
+        assertThat(result.shoppingList.map { it.dealItem.name }).doesNotContain("Broccoli Crowns")
+    }
+
+    @Test
     fun `check fridge days warning`() {
         val oldItem = PantryItem(
             item = "chicken",

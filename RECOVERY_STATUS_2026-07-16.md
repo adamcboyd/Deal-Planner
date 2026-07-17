@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after pantry photo review queue work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: shopping list PDF export work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after custom dietary restrictions work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: pantry photo review queue work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2666,3 +2666,30 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `246` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-181609\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after custom dietary restrictions work:
+
+Settings and meal-planning checkpoint:
+
+- Settings now has a `Custom Avoid List` field for comma/semicolon/newline-separated terms such as `pork, shellfish, peanuts`.
+- Restriction text is normalized before saving, including natural prefixes such as `no pork`, `avoid shellfish`, and `exclude pork`.
+- Meal planning filters matching protein and side deals out of generated Menu meals and Shopping.
+- Settings save now preserves the existing `Params` row instead of recreating unrelated params fields.
+- The phone checklist and generated phone-test report now include a custom avoid-list Menu/Shopping check.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, and this recovery log were updated with the custom restriction behavior.
+
+Focused custom restriction checks:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.util.DietaryRestrictionsTest --tests com.dealplanner.ui.state.SettingsInputValidatorTest --tests com.dealplanner.domain.MealPlanningEngineTest
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `256` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-182456\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

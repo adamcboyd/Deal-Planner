@@ -1,6 +1,7 @@
 package com.dealplanner.domain
 
 import com.dealplanner.data.model.*
+import com.dealplanner.util.DietaryRestrictions
 import java.time.LocalDate
 import kotlin.math.ceil
 
@@ -216,6 +217,7 @@ class MealPlanningEngine {
     }
 
     private fun filterDealsByParams(deals: List<DealItem>, params: Params): List<DealItem> {
+        val customRestrictions = DietaryRestrictions.parse(params.dietaryRestrictions)
         return deals.filter { deal ->
             val name = deal.name.lowercase()
 
@@ -233,8 +235,19 @@ class MealPlanningEngine {
                 }
             }
 
+            if (customRestrictions.isNotEmpty() &&
+                DietaryRestrictions.matchesAny(deal.restrictionSearchText(), customRestrictions)
+            ) {
+                return@filter false
+            }
+
             true
         }
+    }
+
+    private fun DealItem.restrictionSearchText(): String {
+        return listOfNotNull(name, brand, sizeText, rawText)
+            .joinToString(" ")
     }
 
     private fun isMealSideDeal(deal: DealItem): Boolean {

@@ -524,15 +524,15 @@ $features = @(
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Meal plan, shopping list, and budget core" `
-        -Evidence @("app\src\main\java\com\dealplanner\domain\MealPlanningEngine.kt", "app\src\main\java\com\dealplanner\domain\BudgetEngine.kt", "app\src\main\java\com\dealplanner\domain\ShoppingListExportFormatter.kt", "app\src\main\java\com\dealplanner\ui\export\ShoppingListPdfExporter.kt", "app\src\main\java\com\dealplanner\ui\screens\MenuScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\ShoppingListScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\BudgetScreen.kt", "app\src\test\java\com\dealplanner\domain\MealPlanningEngineTest.kt", "app\src\test\java\com\dealplanner\domain\BudgetEngineTest.kt", "app\src\test\java\com\dealplanner\domain\ShoppingListExportFormatterTest.kt") `
-        -LocalChecks @("Meal planning engine tests", "budget engine tests", "receipt budget delta tests", "shopping list export formatter tests") `
-        -PhoneCheck "Load Demo, generate menu, verify shopping list, export PDF/share sheet, edit budget, and relaunch to confirm persistence." `
+        -Evidence @("app\src\main\java\com\dealplanner\domain\MealPlanningEngine.kt", "app\src\main\java\com\dealplanner\domain\BudgetEngine.kt", "app\src\main\java\com\dealplanner\domain\ShoppingListExportFormatter.kt", "app\src\main\java\com\dealplanner\ui\export\ShoppingListPdfExporter.kt", "app\src\main\java\com\dealplanner\ui\screens\MenuScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\ShoppingListScreen.kt", "app\src\main\java\com\dealplanner\ui\screens\BudgetScreen.kt", "app\src\main\java\com\dealplanner\util\DietaryRestrictions.kt", "app\src\test\java\com\dealplanner\domain\MealPlanningEngineTest.kt", "app\src\test\java\com\dealplanner\domain\BudgetEngineTest.kt", "app\src\test\java\com\dealplanner\domain\ShoppingListExportFormatterTest.kt", "app\src\test\java\com\dealplanner\util\DietaryRestrictionsTest.kt") `
+        -LocalChecks @("Meal planning engine tests", "custom dietary restriction tests", "budget engine tests", "receipt budget delta tests", "shopping list export formatter tests") `
+        -PhoneCheck "Load Demo, generate menu, verify shopping list, test custom avoid terms, export PDF/share sheet, edit budget, and relaunch to confirm persistence." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Settings and Gemini connection test" `
-        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\ParamsScreen.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ui\state\SettingsInputValidatorTest.kt", "local.properties.example") `
-        -LocalChecks @("Gemini missing-key/error summary tests", "settings numeric validation tests", "BuildConfig Gemini snapshot") `
-        -PhoneCheck "Verify no-key fallback, then rebuild with real key and run Test AI Connection plus pantry AI photo." `
+        -Evidence @("app\src\main\java\com\dealplanner\ui\screens\ParamsScreen.kt", "app\src\main\java\com\dealplanner\ui\state\SettingsInputValidator.kt", "app\src\main\java\com\dealplanner\ai\GeminiPantryVisionClient.kt", "app\src\test\java\com\dealplanner\ai\GeminiPantryVisionClientTest.kt", "app\src\test\java\com\dealplanner\ui\state\SettingsInputValidatorTest.kt", "local.properties.example") `
+        -LocalChecks @("Gemini missing-key/error summary tests", "settings numeric validation tests", "custom restriction normalization tests", "BuildConfig Gemini snapshot") `
+        -PhoneCheck "Verify no-key fallback and custom avoid-list save, then rebuild with real key and run Test AI Connection plus pantry AI photo." `
         -GateGreen $gateGreen
     New-FeatureRow `
         -Area "Phone test helpers and deterministic samples" `

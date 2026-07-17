@@ -33,6 +33,27 @@ class SettingsInputValidatorTest {
         assertInvalidProtein("-Infinity")
     }
 
+    @Test
+    fun `dietary restrictions normalize for storage`() {
+        val result = SettingsInputValidator.normalizeDietaryRestrictions("No pork\navoid shellfish, peanuts")
+
+        assertThat(result).isEqualTo("pork, shellfish, peanuts")
+    }
+
+    @Test
+    fun `dietary restrictions blank and none normalize to null`() {
+        assertThat(SettingsInputValidator.normalizeDietaryRestrictions("")).isNull()
+        assertThat(SettingsInputValidator.normalizeDietaryRestrictions("none, n/a")).isNull()
+    }
+
+    @Test
+    fun `dietary restrictions help previews parsed terms`() {
+        assertThat(SettingsInputValidator.dietaryRestrictionsHelpText(""))
+            .isEqualTo(SettingsInputValidator.DIETARY_RESTRICTIONS_HELP)
+        assertThat(SettingsInputValidator.dietaryRestrictionsHelpText("No pork, shellfish"))
+            .isEqualTo("Avoiding: pork, shellfish")
+    }
+
     private fun assertValidProtein(value: String, expected: Double) {
         val result = SettingsInputValidator.validateProteinPerMeal(value)
 

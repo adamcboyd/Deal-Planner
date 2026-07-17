@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 75
+- **Total Kotlin Files**: 77
 - **Configuration Files**: 15
-- **Test Files**: 21 (comprehensive unit tests)
+- **Test Files**: 22 (comprehensive unit tests)
 - **Lines of Code**: ~5,000+
 
 ## 📁 Complete File Structure
@@ -55,7 +55,8 @@ Deal_Planner/
         │   │   │   ├── ReceiptReconciler.kt      ✅ Fuzzy matching
         │   │   │   └── ShoppingListExportFormatter.kt ✅ Shopping PDF contents
         │   │   ├── util/
-        │   │   │   └── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
+        │   │   │   ├── FlexibleNumberParsing.kt  ✅ Flexible numeric edit parsing
+        │   │   │   └── DietaryRestrictions.kt    ✅ Custom avoid-list parsing
         │   │   └── ui/
         │   │       ├── camera/CapturePhotoUriFactory.kt ✅ Full-resolution capture URIs
         │   │       ├── state/                   ✅ UI validation and clear/retain helpers
@@ -114,6 +115,7 @@ Deal_Planner/
             │   ├── ReceiptItemInputValidatorTest.kt ✅ Receipt edit validation tests
             │   └── SettingsInputValidatorTest.kt ✅ Settings numeric validation tests
             └── util/
+                ├── DietaryRestrictionsTest.kt ✅ Custom avoid-list parsing tests
                 ├── FlexibleDateParsingTest.kt ✅ Flexible date parsing tests
                 └── FlexibleNumberParsingTest.kt ✅ Flexible number parsing tests
 ```
@@ -177,6 +179,7 @@ Deal_Planner/
 - ✅ **MealPlanningEngine**:
   - 7-day plan generation
   - GERD-friendly filtering
+  - Custom dietary restriction filtering
   - Recognized meal-side filtering so household/non-food flyer deals are ignored
   - Pantry anchor utilization
   - Freezer directive calculation
@@ -209,7 +212,7 @@ Deal_Planner/
 - ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, shareable PDF export, and startup restore from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
-- ✅ **ParamsScreen**: Dietary preferences, meal settings, AI status, Gemini connection test
+- ✅ **ParamsScreen**: Dietary preferences, custom avoid list, meal settings, AI status, Gemini connection test
 - ✅ Material 3 theming with dark/light support
 
 ### 6. Demo Data
@@ -458,6 +461,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Scores deals
 - ✅ Generates meal plans
 - ✅ Generates deterministic meal plans from the same pantry/deals/settings inputs
+- ✅ Filters custom dietary restrictions out of generated Menu meals and Shopping
 - ✅ Ignores household/non-food flyer deals when selecting generated meal sides
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
 - ✅ Shows meal-generation status and planner warnings
@@ -487,6 +491,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Store-name normalization for flyer and receipt imports
 - ✅ Optional Gemini Vision integration with flexible and review-safe label-date handling
 - ✅ Settings save feedback and non-negative protein input validation
+- ✅ Custom dietary restrictions in Settings with Menu/Shopping filtering
 - ✅ Meal planning engine (rules-based)
 - ✅ Budget tracking engine
 - ✅ Budget settings edit flow
@@ -507,7 +512,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility
-- ✅ 239 unit tests
+- ✅ 256 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

@@ -21,8 +21,10 @@ fun ParamsScreen(viewModel: AppViewModel) {
     var avoidPeppers by remember { mutableStateOf(params?.avoidPeppers ?: false) }
     var breakfastAnchor by remember { mutableStateOf(params?.breakfastAnchor ?: true) }
     var proteinPerMeal by remember { mutableStateOf(params?.proteinPerMealLb?.toString() ?: "0.5") }
+    var dietaryRestrictions by remember { mutableStateOf(params?.dietaryRestrictions.orEmpty()) }
     var settingsEdited by remember { mutableStateOf(false) }
     val proteinValidation = SettingsInputValidator.validateProteinPerMeal(proteinPerMeal)
+    val dietaryRestrictionsHelp = SettingsInputValidator.dietaryRestrictionsHelpText(dietaryRestrictions)
 
     LaunchedEffect(params) {
         params?.let {
@@ -30,6 +32,7 @@ fun ParamsScreen(viewModel: AppViewModel) {
             avoidPeppers = it.avoidPeppers
             breakfastAnchor = it.breakfastAnchor
             proteinPerMeal = it.proteinPerMealLb.toString()
+            dietaryRestrictions = it.dietaryRestrictions.orEmpty()
             settingsEdited = false
         }
     }
@@ -94,6 +97,29 @@ fun ParamsScreen(viewModel: AppViewModel) {
 
                     Text(
                         "Excludes all types of peppers from meal plans",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        "Custom Avoid List",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = dietaryRestrictions,
+                        onValueChange = {
+                            dietaryRestrictions = it
+                            settingsEdited = true
+                        },
+                        label = { Text("e.g., pork, shellfish, peanuts") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2
+                    )
+                    Text(
+                        dietaryRestrictionsHelp,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -166,11 +192,13 @@ fun ParamsScreen(viewModel: AppViewModel) {
             Button(
                 onClick = {
                     val proteinValue = proteinValidation.parsedValue ?: return@Button
-                    val updatedParams = Params(
+                    val currentParams = params ?: Params()
+                    val updatedParams = currentParams.copy(
                         gerdFriendly = gerdFriendly,
                         avoidPeppers = avoidPeppers,
                         breakfastAnchor = breakfastAnchor,
-                        proteinPerMealLb = proteinValue
+                        proteinPerMealLb = proteinValue,
+                        dietaryRestrictions = SettingsInputValidator.normalizeDietaryRestrictions(dietaryRestrictions)
                     )
                     viewModel.updateParams(updatedParams)
                     settingsEdited = false

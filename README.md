@@ -229,7 +229,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU, then export it as a shareable PDF; after a plan exists, app relaunch repopulates it from current pantry/deals/settings
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
-   - **Settings**: Configure dietary preferences and verify AI setup status
+   - **Settings**: Configure dietary preferences, custom avoid terms, and AI setup status
 
 ## Usage Guide
 
@@ -346,6 +346,7 @@ Click "Generate" in the Menu tab to create a deterministic 7-day plan. The same 
 - Lunch/Dinner pairs: Protein + Veg + Starch
 - Proteins from top-scored deals
 - Vegetables filtered by dietary preferences and recognized meal-side grocery terms so household/non-food flyer deals do not enter meals or Shopping
+- Custom avoid terms from Settings filter matching proteins and sides out of Menu meals and Shopping
 - Freezer directives for bulk purchases
 
 The Shopping tab can export the generated list as a shareable PDF after a meal plan exists. The PDF is written to app cache through the app FileProvider, so it uses Android's share sheet without requesting broad storage/media permissions.
@@ -388,6 +389,7 @@ Tests cover:
 - Manual input clear/retain policy for barcode, pasted flyer text, and pasted receipt text status changes
 - Budget Settings validation for monthly budget, spent-to-date baseline, and breakfast anchor cost dot, comma, leading-decimal, invalid, negative, and non-finite text
 - Settings protein-per-meal validation for dot, comma, leading-decimal, invalid, negative, and non-finite text
+- Settings custom dietary restriction normalization and preview text
 - Pantry edit validation for quantity and flexible best-by date text, including dot, comma, leading-decimal, invalid, negative, and non-finite quantity text
 - Deal edit validation for price, PPU, discount, score, confidence, limit, and flexible valid-until date text including 0-to-1 and 0-to-100 bounds
 - Receipt edit validation for optional quantity, total, match ID, confidence, flexible date text, and comma-decimal/leading-decimal corrections
@@ -396,6 +398,7 @@ Tests cover:
 - Flexible numeric edit parsing for comma-decimal and leading-decimal manual corrections in pantry, deal, receipt, budget, and settings fields, while rejecting non-finite values such as NaN or Infinity
 - Meal planning (GERD-filtering, anchors)
 - Meal plan date coverage and deterministic repeatable 7-day generation
+- Custom dietary restriction filtering for matching proteins and side deals
 - Meal-side filtering so household/non-food flyer deals are ignored by generated meals and Shopping
 - Shopping list consolidation with persisted and pre-database deal identities, planned-quantity estimated costs, and shareable PDF export formatting
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
@@ -511,6 +514,7 @@ As of the latest local pass:
 - Settings can test the Gemini API key/model connection from the running app.
 - Phone helpers verify the generated debug `BuildConfig` Gemini key/model state without printing secrets, so stale APKs can be caught before live AI testing.
 - Settings accepts comma-decimal and leading-decimal protein-per-meal values such as `0,5` or `.5`.
+- Settings accepts custom avoid terms such as `pork, shellfish, peanuts`; saved restrictions filter matching deal names/details out of Menu meals and Shopping.
 - Settings Save shows visible saved feedback and blocks invalid or negative protein-per-meal text instead of silently defaulting.
 - Manual numeric edit fields reject non-finite text such as `NaN` or `Infinity` instead of saving invalid calculations.
 - Meal planning guards against negative saved protein settings so Shopping quantities and estimated costs cannot go below zero.
@@ -551,7 +555,7 @@ As of the latest local pass:
 - [ ] Nutrition lookup by verified brand/product/size
 - [x] Export shopping list as PDF
 - [ ] Weekly budget reports
-- [ ] Custom dietary restrictions
+- [x] Custom dietary restrictions
 - [ ] Multi-store comparison
 
 ## Troubleshooting
