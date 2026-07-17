@@ -336,8 +336,16 @@ $apkSourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
 $apkSourceDirty = Get-BuildConfigValue $buildConfigPath "GIT_DIRTY"
 if ($apkSourceBranch -and $apkSourceSha) {
     $dirtyLabel = if ($apkSourceDirty -eq "true") { "dirty" } else { "clean" }
-    $status = if ($apkSourceDirty -eq "true") { "WARN" } else { "OK" }
-    Add-Check $results "APK source identity" $status "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig)."
+    $currentShortHead = if ($headSha) { $headSha.Substring(0, [Math]::Min(7, $headSha.Length)) } else { $null }
+    if ($apkSourceDirty -eq "true") {
+        Add-Check $results "APK source identity" "WARN" "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig). Commit or stash changes, then rebuild before phone signoff."
+    } elseif ($headSha -and -not $headSha.StartsWith($apkSourceSha, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Add-Check $results "APK source identity" "WARN" "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig), but current HEAD is $currentShortHead. Rebuild before phone testing so Settings -> About matches the branch head."
+    } elseif ($branch -and $apkSourceBranch -ne $branch) {
+        Add-Check $results "APK source identity" "WARN" "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig), but current branch is $branch. Rebuild before phone testing."
+    } else {
+        Add-Check $results "APK source identity" "OK" "$apkSourceBranch @ $apkSourceSha ($dirtyLabel BuildConfig)."
+    }
 } else {
     Add-Check $results "APK source identity" "WARN" "Generated BuildConfig source identity not found. Rebuild the debug APK before phone identity checks."
 }

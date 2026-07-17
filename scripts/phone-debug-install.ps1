@@ -306,6 +306,33 @@ function Assert-ApkFreshForGeminiConfig {
     }
 }
 
+function Assert-BuildConfigMatchesGitHead {
+    param([string]$Root)
+
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Warning "git was not found on PATH; BuildConfig source identity could not be compared with current HEAD."
+        return
+    }
+
+    $buildConfigPath = Join-Path $Root "app\build\generated\source\buildConfig\debug\com\dealplanner\BuildConfig.java"
+    $sourceBranch = Get-BuildConfigValue $buildConfigPath "GIT_BRANCH"
+    $sourceSha = Get-BuildConfigValue $buildConfigPath "GIT_SHA"
+    if ([string]::IsNullOrWhiteSpace($sourceBranch) -or [string]::IsNullOrWhiteSpace($sourceSha)) {
+        throw "Generated BuildConfig source identity was not found. Run .\scripts\phone-debug-install.ps1 without -SkipBuild so Settings -> About can identify the installed APK."
+    }
+
+    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>$null)
+    $currentSha = (& git rev-parse --short HEAD 2>$null)
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($currentSha)) {
+        Write-Warning "Could not read current Git HEAD; BuildConfig source identity could not be compared."
+        return
+    }
+
+    if ($sourceBranch -ne $currentBranch -or $sourceSha -ne $currentSha) {
+        throw "Generated APK source identity is $sourceBranch @ $sourceSha, but current Git identity is $currentBranch @ $currentSha. Run .\scripts\phone-debug-install.ps1 without -SkipBuild, or run .\gradlew.bat assembleDebug before installing."
+    }
+}
+
 function Assert-InstalledPackage {
     param(
         [string]$DeviceSerial,
@@ -348,6 +375,7 @@ if (-not (Test-Path $apkPath)) {
 Assert-ApkIdentity -ApkPath $apkPath -ExpectedPackageName $PackageName -ExpectedAppLabel $AppLabel
 Assert-ApkFreshForBuildInputs -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
 Assert-ApkFreshForGeminiConfig -ApkPath $apkPath -SkipBuildRequested $SkipBuild.IsPresent
+Assert-BuildConfigMatchesGitHead -Root $repoRoot
 Write-BuildConfigSummary -Root $repoRoot
 
 $adbCommand = Get-Command adb -ErrorAction SilentlyContinue

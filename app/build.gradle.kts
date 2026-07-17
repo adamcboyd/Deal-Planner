@@ -112,6 +112,14 @@ android {
     }
 }
 
+tasks.matching { task ->
+    task.name.startsWith("generate") && task.name.endsWith("BuildConfig")
+}.configureEach {
+    inputs.property("dealPlannerGitBranch", gitOutput("rev-parse", "--abbrev-ref", "HEAD"))
+    inputs.property("dealPlannerGitSha", gitOutput("rev-parse", "--short", "HEAD"))
+    inputs.property("dealPlannerGitDirty", gitDirty())
+}
+
 dependencies {
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")

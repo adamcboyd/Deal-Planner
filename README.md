@@ -101,6 +101,7 @@ gemini.model=gemini-3.5-flash
 Do not commit `local.properties`; it is ignored by Git.
 Rebuild the debug APK after changing `local.properties` so the key/model values are compiled into `BuildConfig`.
 The phone install helper blocks `-SkipBuild` when `local.properties` is newer than the existing APK, so a newly added Gemini key is not accidentally left out of the installed build.
+The generated debug `BuildConfig` also tracks Git branch, commit, and dirty-state changes as build inputs. Rebuild after each checkpoint so Settings -> About and the phone-test reports identify the exact APK source; the install helper refuses a stale BuildConfig identity before installing.
 The phone preflight and generated phone-test report verify whether the debug APK's generated `BuildConfig` contains a non-placeholder Gemini key and which model it will use, without printing the key.
 
 A non-secret template is included at `local.properties.example`.

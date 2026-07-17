@@ -508,6 +508,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Repeatable demo data + seed function
 - ✅ PowerShell phone install/launch helper with on-device package verification
 - ✅ PowerShell phone/Gemini/barcode preflight helper with GitHub sync, APK identity/permission checks, optional live Gemini API check, and stale source/Gemini APK warnings
+- ✅ Debug BuildConfig tracks Git branch/SHA/dirty state as Gradle inputs, and install checks block stale APK source identity before phone testing
 - ✅ PowerShell Gemini live connection helper for pre-phone AI setup verification without printing secrets
 - ✅ Phone preflight/install helpers give specific ADB recovery guidance for no-device and unauthorized/offline states
 - ✅ PowerShell feature readiness report helper can run the local gate, separate local source/test evidence from remaining Android phone and real-Gemini checks, audit the Deal Planner naming transition, account for cached unit/lint report timestamps after a successful gate, and flag stale APK evidence

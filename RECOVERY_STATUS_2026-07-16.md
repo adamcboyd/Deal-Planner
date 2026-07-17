@@ -7,14 +7,15 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest pushed checkpoint: `dab9add fix: refresh generated menu with shopping`
-- Previous pushed checkpoint: `9664a3c chore: add live gemini setup check`
-- Current GitHub branch head for `codex/deal-planner-baseline`: `dab9addc15eea8e0ac67c27bc84c53753216dd8a`
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after APK source identity freshness work; confirm the exact commit with `git log -1 --oneline`.
+- Previous pushed app-code checkpoint: `dab9add fix: refresh generated menu with shopping`
+- Previous pushed helper checkpoint: `9664a3c chore: add live gemini setup check`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest full local gate used `testDebugUnitTest assembleDebug lintDebug`.
-- Latest full readiness report: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184702\FEATURE_READINESS_REPORT.md`
-- Latest phone test report template: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184711\PHONE_TEST_REPORT.md`
+- Recent full readiness report before the APK identity guard update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184702\FEATURE_READINESS_REPORT.md`
+- Recent phone test report template before the APK identity guard update: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner\phone-test-results\20260716-184711\PHONE_TEST_REPORT.md`
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
+- `BuildConfig` generation tracks Git branch/SHA/dirty state as Gradle task inputs. If the branch head changes, rebuild before phone testing so Settings -> About and generated reports point at the current source.
 
 ## Other Local Copies Found
 
@@ -53,6 +54,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-phone-test-rep
 ```
 
 Result: branch `codex/deal-planner-baseline` is clean and synced with `origin/codex/deal-planner-baseline`; preflight reports `0 failure(s), 2 warning(s)` for the expected local conditions of no connected/authorized Android phone and no Gemini key; readiness report `20260716-184702` shows `259` unit tests, `0` failures/errors/skipped, lint at `0 errors, 19 warnings`, current debug APK freshness, APK source commit `dab9add`, and `APK source dirty: false`; phone report template `20260716-184711` records commit `dab9add`, APK source commit `dab9add`, synced Git status, and the Menu/Shopping plus strict Gemini phone-check rows.
+
+Latest APK source identity guard checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+.\scripts\phone-debug-preflight.ps1
+```
+
+Expected result after committing and rebuilding: `BUILD SUCCESSFUL`; preflight reports `0 failure(s)` with only the expected no-phone/no-Gemini warnings, and `APK source identity` matches the current `git log -1 --oneline` commit.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
