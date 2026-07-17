@@ -45,6 +45,29 @@ function Add-Check {
     Write-Host ("[{0}] {1} - {2}" -f $Status, $Name, $Detail)
 }
 
+function Format-AdbDeviceHint {
+    param(
+        [string[]]$AdbOutput,
+        [string[]]$ProblemDevices
+    )
+
+    $deviceLines = @(
+        $AdbOutput |
+            Where-Object { $_ -match "^\S+\s+(device|unauthorized|offline|recovery|sideload|rescue|no permissions)\b" }
+    )
+    $adbSummary = if ($deviceLines.Count -gt 0) {
+        " adb devices: $($deviceLines -join '; ')"
+    } else {
+        " adb devices listed no devices."
+    }
+
+    if ($ProblemDevices.Count -gt 0) {
+        return 'Phone is visible but not ready. Unlock the phone, accept the USB debugging prompt, confirm adb devices shows device, then rerun.' + $adbSummary
+    }
+
+    return 'No connected/authorized phone found. Connect the phone, enable Developer options > USB debugging, choose a data-capable USB mode/cable, confirm adb devices shows device, then rerun.' + $adbSummary
+}
+
 if ($Help) {
     Show-Usage
     exit 0
@@ -403,10 +426,10 @@ if ($null -eq $adbCommand) {
         Add-Check $results "Android phone" $status "Multiple authorized devices found. Set ANDROID_SERIAL before install."
     } elseif ($problemDevices.Count -gt 0) {
         $status = if ($RequirePhone) { "FAIL" } else { "WARN" }
-        Add-Check $results "Android phone" $status "Phone is visible but unauthorized/offline. Unlock it and accept USB debugging."
+        Add-Check $results "Android phone" $status (Format-AdbDeviceHint -AdbOutput $adbOutput -ProblemDevices $problemDevices)
     } else {
         $status = if ($RequirePhone) { "FAIL" } else { "WARN" }
-        Add-Check $results "Android phone" $status "No connected/authorized phone found yet."
+        Add-Check $results "Android phone" $status (Format-AdbDeviceHint -AdbOutput $adbOutput -ProblemDevices $problemDevices)
     }
 }
 

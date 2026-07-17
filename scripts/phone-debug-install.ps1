@@ -370,9 +370,9 @@ if ($env:ANDROID_SERIAL) {
 } elseif ($authorizedDevices.Count -eq 0) {
     Write-Host ($adbOutput -join [Environment]::NewLine)
     if ($problemDevices.Count -gt 0) {
-        throw "A phone is visible but not ready. Unlock it and accept the USB debugging prompt, then retry."
+        throw "A phone is visible but not ready. Unlock the phone, accept the USB debugging prompt, confirm adb devices shows device, then retry."
     }
-    throw "No connected/authorized Android phone found. Connect the phone with USB debugging enabled, then retry."
+    throw "No connected/authorized Android phone found. Connect the phone, enable Developer options > USB debugging, choose a data-capable USB mode/cable, confirm adb devices shows device, then retry."
 } else {
     Write-Host ($adbOutput -join [Environment]::NewLine)
     throw "Multiple authorized devices found. Set ANDROID_SERIAL to one device serial, then retry."

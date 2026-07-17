@@ -7,8 +7,8 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after phone report lint snapshot work; confirm the exact commit with `git log -1 --oneline`.
-- Previous checkpoint before that work: monochrome launcher icon work.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after ADB setup guidance work; confirm the exact commit with `git log -1 --oneline`.
+- Previous checkpoint before that work: phone report lint snapshot work.
 - The branch includes helper/docs recovery commits plus app-code checkpoints; the latest local gate used `testDebugUnitTest assembleDebug lintDebug`.
 - After any clean rebuild, read the installable APK source identity from `.\scripts\phone-debug-preflight.ps1`, `.\scripts\new-phone-test-report.ps1`, or Settings -> About in the app. Those values come from generated debug `BuildConfig`.
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -2400,6 +2400,36 @@ Result: parse check passed, help printed with lint snapshot coverage, and genera
 Full local gate:
 
 ```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`; `237` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings.
+
+Latest helper checkpoint after ADB setup guidance work:
+
+Helper checkpoint:
+
+- `scripts\phone-debug-preflight.ps1` now includes the visible `adb devices` state in the Android phone check and gives different recovery guidance for no-device versus unauthorized/offline phone states.
+- `scripts\phone-debug-install.ps1` now uses the same concrete recovery wording when install is run directly.
+- README, PROJECT_SUMMARY, and PHONE_TEST_CHECKLIST were updated so the next phone run knows what the expected no-phone/unauthorized guidance looks like.
+
+Helper checks:
+
+```powershell
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\phone-debug-preflight.ps1")); "phone-debug-preflight.ps1 parsed"'
+powershell -NoProfile -Command '$null = [scriptblock]::Create((Get-Content -Raw -LiteralPath "scripts\phone-debug-install.ps1")); "phone-debug-install.ps1 parsed"'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -Help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-preflight.ps1 -RequirePhone -SkipNetwork
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-install.ps1 -SkipBuild -NoLaunch
+```
+
+Result: parse and help checks passed. In the current no-phone state, required-phone preflight failed as expected and now reports: `No connected/authorized phone found. Connect the phone, enable Developer options > USB debugging, choose a data-capable USB mode/cable, confirm adb devices shows device, then rerun. adb devices listed no devices.` Direct install also verified APK identity/source metadata before stopping with the same concrete ADB recovery guidance.
+
+Full local gate:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
 .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
 ```
 
