@@ -171,7 +171,7 @@ Deal_Planner/
 - ✅ Gemini key/model trimming and model-prefix normalization
 - ✅ Stable `gemini-3.5-flash` default model with Gemini 3.x default sampling behavior
 - ✅ Concise Gemini API success, empty-response, missing-key, and failure summaries for Settings connection testing
-- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, numeric/comma-decimal/word/object quantity aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
+- ✅ Gemini pantry response parsing for fenced JSON, minor model-output variations, alternate review-question/warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/name aliases, nested date values, opened/purchase date aliases, numeric/comma-decimal/word/object quantity aliases, liquid unit aliases, storage aliases, malformed string/list fields, and non-JSON model text fallback
 - ✅ AI pantry saved-row normalization for raw model unit, brand, size, and storage wording
 - ✅ Settings screen AI configuration status and Gemini connection test
 - ✅ Local non-secret Gemini text and pantry-label image live connection script for pre-phone AI setup verification
@@ -494,7 +494,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Deal review/edit flow with numeric validation
 - ✅ OCR integration (ML Kit)
 - ✅ Store-name normalization for flyer and receipt imports
-- ✅ Optional Gemini Vision integration with flexible and review-safe label-date handling
+- ✅ Optional Gemini Vision integration with flexible and review-safe label-date handling, including nested date values and opened/purchase date aliases
 - ✅ Settings save feedback and non-negative protein input validation
 - ✅ Custom dietary restrictions in Settings with Menu/Shopping filtering
 - ✅ Meal planning engine (rules-based)

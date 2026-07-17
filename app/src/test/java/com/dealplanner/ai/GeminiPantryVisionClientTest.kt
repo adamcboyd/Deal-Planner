@@ -581,6 +581,49 @@ class GeminiPantryVisionClientTest {
     }
 
     @Test
+    fun `parse pantry vision response with nested date values and additional date aliases`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "yogurt",
+                  "use_by_text": {"date": "12/31/2026"},
+                  "opened_at": {"dateValue": "2026-07-16"}
+                },
+                {
+                  "product": "eggs",
+                  "bestBeforeDateText": {"displayText": "01-15-27"},
+                  "purchased_on": {"rawText": "2026/7/1"}
+                },
+                {
+                  "product": "broth",
+                  "expires_on": {"raw": "2027-02-03"},
+                  "purchaseDateText": "2026-07-15"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(3)
+
+        val yogurt = result.items.first { it.product == "yogurt" }
+        assertThat(yogurt.expirationDate).isEqualTo("12/31/2026")
+        assertThat(yogurt.openedDate).isEqualTo("2026-07-16")
+
+        val eggs = result.items.first { it.product == "eggs" }
+        assertThat(eggs.expirationDate).isEqualTo("01-15-27")
+        assertThat(eggs.openedDate).isEqualTo("2026/7/1")
+
+        val broth = result.items.first { it.product == "broth" }
+        assertThat(broth.expirationDate).isEqualTo("2027-02-03")
+        assertThat(broth.openedDate).isEqualTo("2026-07-15")
+    }
+
+    @Test
     fun `parse pantry vision response with liquid unit aliases`() {
         val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
         val response = """
@@ -611,6 +654,40 @@ class GeminiPantryVisionClientTest {
         assertThat(result.items).hasSize(3)
         assertThat(result.items.first { it.product == "milk" }.unit).isEqualTo("gal")
         assertThat(result.items.first { it.product == "broth" }.unit).isEqualTo("qt")
+        assertThat(result.items.first { it.product == "cream" }.unit).isEqualTo("pt")
+    }
+
+    @Test
+    fun `parse pantry vision response prefers explicit liquid unit over generic count`() {
+        val client = GeminiPantryVisionClient(apiKey = "test-real-key-for-unit-tests", model = "gemini-3.5-flash")
+        val response = """
+            {
+              "items": [
+                {
+                  "product": "milk",
+                  "quantity": {
+                    "value": 2,
+                    "unit": "count"
+                  },
+                  "quantityUnit": "gallons"
+                },
+                {
+                  "product": "cream",
+                  "quantity": {
+                    "value": 1,
+                    "unit": "count"
+                  },
+                  "amountUnit": "pint"
+                }
+              ],
+              "warnings": []
+            }
+        """.trimIndent()
+
+        val result = client.parseVisionResult(response)
+
+        assertThat(result.items).hasSize(2)
+        assertThat(result.items.first { it.product == "milk" }.unit).isEqualTo("gal")
         assertThat(result.items.first { it.product == "cream" }.unit).isEqualTo("pt")
     }
 

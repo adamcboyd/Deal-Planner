@@ -7,7 +7,7 @@
 - Clean renamed folder to use going forward: `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`
 - GitHub remote: `https://github.com/adamcboyd/Deal-Planner.git`
 - Current branch: `codex/deal-planner-baseline`
-- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini live image-check preflight work; confirm the exact commit with `git log -1 --oneline`.
+- Latest validated checkpoint: current `codex/deal-planner-baseline` branch head after Gemini image-check and AI pantry alias-hardening work; confirm the exact commit with `git log -1 --oneline`.
 - Previous pushed app-code checkpoint: `dab9add fix: refresh generated menu with shopping`
 - Previous pushed helper checkpoint: `9664a3c chore: add live gemini setup check`
 - GitHub `main` was also present at `6fa9a95`, but the validated recovery work is on `codex/deal-planner-baseline`.
@@ -83,6 +83,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\phone-debug-prefli
 ```
 
 Expected local no-key result: help documents the image check; the no-key image script fails before network access without printing a key; `-SkipNetwork` marks `Gemini live image API` skipped; and without `-SkipNetwork` preflight fails until a real Gemini key is configured. With a real key, final AI setup should use `.\scripts\start-phone-test-run.ps1 -RequireGemini -TestGeminiLive -TestGeminiImage`.
+
+Latest AI pantry alias-hardening checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ai.GeminiPantryVisionClientTest
+```
+
+Result: `BUILD SUCCESSFUL`. Gemini pantry parsing now accepts nested date string objects, additional label-date aliases such as `use_by_text` and `expires_on`, opened/purchase-style date aliases such as `opened_at` and `purchased_on`, and explicit liquid units such as gallons or pints when the model also emits a generic count quantity.
 
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
