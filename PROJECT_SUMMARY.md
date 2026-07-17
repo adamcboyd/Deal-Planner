@@ -6,9 +6,9 @@ This is a working Android MVP baseline that compiles, passes unit tests, builds 
 
 ## 📊 Project Statistics
 
-- **Total Kotlin Files**: 77
+- **Total Kotlin Files**: 79
 - **Configuration Files**: 15
-- **Test Files**: 22 (comprehensive unit tests)
+- **Test Files**: 23 (comprehensive unit tests)
 - **Lines of Code**: ~5,000+
 
 ## 📁 Complete File Structure
@@ -50,6 +50,7 @@ Deal_Planner/
         │   │   │   └── DealsParser.kt            ✅ Regex-based parser
         │   │   ├── domain/
         │   │   │   ├── MealPlanningEngine.kt     ✅ Rules-based engine
+        │   │   │   ├── MealPlanRefreshPolicy.kt  ✅ Generated Menu/Shopping refresh scope
         │   │   │   ├── BudgetEngine.kt           ✅ Budget tracking
         │   │   │   ├── ReceiptAdjustmentCalculator.kt ✅ Receipt edit/delete deltas
         │   │   │   ├── ReceiptReconciler.kt      ✅ Fuzzy matching
@@ -100,6 +101,7 @@ Deal_Planner/
             │   └── DealsParserTest.kt         ✅ Flyer parser tests
             ├── domain/
             │   ├── MealPlanningEngineTest.kt  ✅ Meal planning tests
+            │   ├── MealPlanRefreshPolicyTest.kt ✅ Generated plan refresh scope tests
             │   ├── BudgetEngineTest.kt        ✅ Budget tests
             │   ├── ReceiptAdjustmentCalculatorTest.kt ✅ Receipt edit/delete delta tests
             │   ├── ReceiptReconcilerTest.kt   ✅ Receipt parser/reconciliation tests
@@ -184,6 +186,7 @@ Deal_Planner/
   - Recognized meal-side filtering so household/non-food flyer deals are ignored
   - Pantry anchor utilization
   - Freezer directive calculation
+  - Generated Menu and Shopping refresh from current inputs after a plan exists
   - Shopping list consolidation, planned-quantity estimated costs, PDF export formatting, and startup restore from current inputs after a plan exists
   - Freshness reordering
 
@@ -210,7 +213,7 @@ Deal_Planner/
 - ✅ **Deal Review Dialog**: Edit imported deals, coupon flags, scores, confidence, and flexible valid-until date text
 - ✅ **ReceiptsScreen**: Receipt photo/gallery/PDF/manual text import, processing status, failed-parse text retention, review flags, budget updates
 - ✅ **Receipt Review Dialog**: Edit imported receipt lines, totals, match metadata, confidence, flexible date text, and review status
-- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, shareable PDF export, and startup restore from current pantry/deals/settings after a plan exists
+- ✅ **ShoppingListScreen**: Consolidated list with planned-quantity estimated costs, PPU, shareable PDF export, and startup restore/refresh from current pantry/deals/settings after a plan exists
 - ✅ **MenuScreen**: 7-day plan with freezer directives and generation status/warnings
 - ✅ **BudgetScreen**: Receipt-aware balance, envelope, analysis, suggestions
 - ✅ **ParamsScreen**: Dietary preferences, custom avoid list, meal settings, AI status, Gemini connection test
@@ -468,7 +471,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Replaces the active generated week so repeated Generate taps do not duplicate meal-plan rows
 - ✅ Shows meal-generation status and planner warnings
 - ✅ Prevents negative protein-per-meal settings from creating negative Shopping quantities or costs
-- ✅ Refreshes the visible shopping list after pantry/deals/receipts/settings changes once meal plans exist
+- ✅ Refreshes the generated Menu week and visible Shopping list after pantry/deals/receipts/settings changes once meal plans exist
 - ✅ Exports the generated Shopping list as a shareable PDF from app cache through the FileProvider
 - ✅ Tracks budget
 - ✅ Editable budget settings with validation and saved feedback
@@ -515,7 +518,7 @@ This is a **buildable, runnable MVP baseline** that:
 - ✅ Phone sample transfer verifies the generated sample manifest byte counts and SHA-256 hashes before copying files to a phone
 - ✅ Phone sample transfer writes local destination/byte-size evidence for the generated phone test report
 - ✅ Adaptive launcher icons include a monochrome themed-icon asset for Android launcher compatibility
-- ✅ 256 unit tests
+- ✅ 259 unit tests
 - ✅ Comprehensive README
 - ✅ No placeholder blocking the core phone-test flow
 

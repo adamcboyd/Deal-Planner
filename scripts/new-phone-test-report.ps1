@@ -397,7 +397,7 @@ $adbBlock
 - [ ] Budget tab opens.
 - [ ] Settings tab opens.
 - [ ] Settings -> About shows version, package, debug build, source branch/commit, and no dirty marker for the expected APK.
-- [ ] Close/relaunch preserves generated Shopping list after a plan exists.
+- [ ] Close/relaunch preserves generated Menu and repopulates Shopping after a plan exists.
 - Notes:
 
 ## Deterministic Text Paths
@@ -451,7 +451,7 @@ $adbBlock
 - [ ] Receipt import/edit/delete updates Budget totals and projections.
 - [ ] Menu generation is deterministic and replaces the active generated week.
 - [ ] Custom dietary restrictions filter matching proteins and sides out of Menu and Shopping.
-- [ ] Shopping list refreshes after pantry/deal/receipt/settings changes.
+- [ ] Menu and Shopping refresh after pantry/deal/receipt/settings changes.
 - [ ] Shopping Export PDF opens the Android share sheet with a generated PDF.
 - Notes:
 

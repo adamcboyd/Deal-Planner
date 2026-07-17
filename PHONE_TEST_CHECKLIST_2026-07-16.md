@@ -128,8 +128,8 @@ Do not commit `local.properties`.
    - Budget shows the demo budget baseline.
    - Menu has a generated 7-day plan and visible generation status.
 5. Close and relaunch Deal Planner.
-6. Confirm the `Shopping` tab still has the generated list without tapping `Generate` again.
-7. After a generated plan exists, edit or add a pantry/deal/receipt/settings input and confirm `Shopping` rederives from the current inputs without needing an app relaunch.
+6. Confirm `Menu` still has the generated week and `Shopping` still has the generated list without tapping `Generate` again.
+7. After a generated plan exists, edit or add a pantry/deal/receipt/settings input and confirm `Menu` and `Shopping` rederive from the current inputs without needing an app relaunch.
 8. In `Shopping`, tap `Export PDF` and confirm Android opens a share sheet for a generated PDF.
 
 ## Deterministic Text Tests
@@ -363,7 +363,7 @@ Verify these show visible status messages instead of silent failures or crashes:
 - Pantry photo/Gallery imports stage editable `Review Pantry Imports` rows before saving, and `Save All` is required before they merge into the saved Pantry list.
 - Menu generation is deterministic for the same pantry/deals/settings inputs, shows generation status/warnings, ignores household/non-food flyer deals as meal sides, and replaces the active generated week instead of stacking duplicate meal-plan rows.
 - Custom dietary restrictions saved in Settings filter matching proteins and side deals out of generated Menu meals and Shopping.
-- Shopping list generation works from current pantry/deals/settings, keeps different deals separate, estimates totals from planned quantities and normalized price-per-unit values, and repopulates after app relaunch.
+- Menu and Shopping generation work from current pantry/deals/settings, keep different deals separate in Shopping, estimate totals from planned quantities and normalized price-per-unit values, and repopulate after app relaunch.
 - Shopping list PDF export opens Android's share sheet from app cache without requesting broad storage/media-library permissions.
 - Settings blocks invalid or negative protein-per-meal values so generated Shopping quantities and costs stay non-negative.
 - Gemini no-key fallback is clear.

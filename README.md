@@ -19,7 +19,7 @@ Parameters → Deals + Pantry → Meals
 - **Meal Planning**: 7-day rule-based meal generator (no LLM required)
 - **Budget Tracking**: Daily envelope system with surplus/deficit analysis
 - **Receipt Reconciliation**: Fuzzy matching with Levenshtein distance
-- **Shopping Lists**: Consolidated lists with planned-quantity estimated costs, PPU, deal scores, coupon tracking, shareable PDF export, and startup restore from current pantry/deals/settings after a plan exists
+- **Menu + Shopping Refresh**: Generated meals and consolidated shopping lists stay aligned with current pantry, deals, receipts, and settings after a plan exists
 - **Offline-First**: All data stored locally in Room/SQLite
 
 ### 🎯 Core Algorithms
@@ -232,7 +232,7 @@ C:\Users\adamc\AndroidStudioProjects\Deal_Planner\app\build\outputs\apk\debug\ap
    - **Pantry Photo**: Tap Photo or Gallery to import a food label/photo
    - **Deals**: Scan flyer photos, choose flyer images, import flyer PDFs, or paste flyer text and view deal scores/details
    - **Receipts**: Scan receipt photos, choose receipt images/PDFs, or paste OCR text to update spending
-   - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU, then export it as a shareable PDF; after a plan exists, app relaunch repopulates it from current pantry/deals/settings
+   - **Shopping**: See consolidated shopping list with planned-quantity estimated costs and PPU, then export it as a shareable PDF; after a plan exists, app relaunch and input changes repopulate Menu and Shopping from current pantry/deals/settings
    - **Menu**: Browse 7-day meal plan with freezer directives
    - **Budget**: Track spending and see surplus/deficit analysis
    - **Settings**: Configure dietary preferences, custom avoid terms, and AI setup status
@@ -406,7 +406,7 @@ Tests cover:
 - Meal plan date coverage and deterministic repeatable 7-day generation
 - Custom dietary restriction filtering for matching proteins and side deals
 - Meal-side filtering so household/non-food flyer deals are ignored by generated meals and Shopping
-- Shopping list consolidation with persisted and pre-database deal identities, planned-quantity estimated costs, and shareable PDF export formatting
+- Menu refresh policy and shopping list consolidation with persisted and pre-database deal identities, planned-quantity estimated costs, and shareable PDF export formatting
 - Budget calculations (surplus, deficit, receipt-aware projection, daily envelope recalculation)
 - Receipt reconciliation (bundled demo receipt, fuzzy/token matching, weak-match rejection, VPP, receipt header dates including year-first slash/dash formats, split and inline item-first/quantity-first decimal/weighted quantities, dollar/no-dollar/comma-decimal/leading-decimal/whole-dollar OCR prices, discount/coupon/saved-total/negative-return line filtering)
 - Gemini configuration guardrails and pantry response parsing (placeholder keys, stable `gemini-3.5-flash` default model, model fallback, whitespace/prefix normalization, default sampling settings, fenced JSON, scalar/object-wrapped warnings/questions, alternate review-question and warning aliases, top-level arrays, single-item objects, item-wrapper aliases, snake_case/camelCase/name aliases, common label-date aliases, object/array-wrapped string fields, numeric/comma-decimal/leading-decimal/word/dozen/object quantity aliases, object-wrapped confidence, storage aliases, malformed string/list fields, and non-finite numeric fallback)
@@ -476,7 +476,7 @@ As of the latest local pass:
 - Menu Generate shows a visible status summary and any meal-planning warnings returned by the rules engine.
 - Shopping list consolidation keeps different deals separate even before Room assigns database ids, and Shopping totals use planned quantities with normalized price-per-unit estimates.
 - Shopping can export the generated list as a shareable PDF from app cache through the FileProvider without broad storage/media permissions.
-- After a meal plan exists, Pantry, Deals, Receipts, and Settings changes rederive the visible Shopping list from current inputs instead of leaving stale totals/items.
+- After a meal plan exists, Pantry, Deals, Receipts, and Settings changes replace the generated Menu week and Shopping list from current inputs instead of leaving stale meals/totals/items.
 - Meal planning only uses recognized meal-side grocery deals for vegetable slots; household/non-food flyer deals such as detergent stay out of meals and Shopping totals.
 - Pantry parser handles quantity, comma-decimal and leading-decimal OCR quantity/size text, brand, size, location, opened-date wording such as `opened on`, package `net wt` labels, common expiration label cues such as `expiration date`, `best by date`, `best if used by`, `best-by`, `use-by`, and `use by 12-31-26`, low-confidence review flags, and duplicate merging.
 - Pantry parser trims label punctuation on cue words, so OCR/manual text such as `net wt:`, `best by:`, `opened:`, or `exp:` does not leak cue words into item names.

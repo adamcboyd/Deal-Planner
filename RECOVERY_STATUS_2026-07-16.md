@@ -2730,3 +2730,31 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readin
 ```
 
 Result before commit: `BUILD SUCCESSFUL`; `256` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-183536\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.
+
+Latest recovery checkpoint after generated Menu and Shopping refresh alignment:
+
+Menu/Shopping checkpoint:
+
+- Added `MealPlanRefreshPolicy` so generated plan refreshes preserve the active generated week start date and length instead of always using a new default range.
+- When a generated plan already exists, pantry, deal, receipt, and settings changes now replace the persisted generated Menu rows and the visible Shopping list from the same current meal-planning inputs.
+- If all meal-planning inputs disappear after a plan exists, stale generated Menu rows are cleared and Shopping is emptied instead of showing old meals/items.
+- Added `MealPlanRefreshPolicyTest` coverage for empty, normal 7-day, and gapped existing plan ranges.
+- README, PROJECT_SUMMARY, PHONE_TEST_CHECKLIST, phone report template, and feature readiness report template now describe Menu and Shopping refresh together.
+
+Focused check:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Java\jdk-20'
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.domain.MealPlanRefreshPolicyTest --tests com.dealplanner.domain.MealPlanningEngineTest
+```
+
+Result: `BUILD SUCCESSFUL`.
+
+Full readiness gate before commit:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\new-feature-readiness-report.ps1 -RunGate
+```
+
+Result before commit: `BUILD SUCCESSFUL`; `259` unit tests, `0` failures/errors/skipped, and lint reported `0` errors with `19` warnings. The dirty-state readiness report `phone-test-results\20260716-184332\FEATURE_READINESS_REPORT.md` correctly refused phone signoff because generated debug `BuildConfig` showed `APK source dirty: true` while tracked changes were still uncommitted.

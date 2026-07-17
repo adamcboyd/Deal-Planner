@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
@@ -50,6 +51,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val budgetEngine = BudgetEngine()
     private val receiptReconciler = ReceiptReconciler()
     private val receiptAdjustmentCalculator = ReceiptAdjustmentCalculator()
+    private val mealPlanRefreshPolicy = MealPlanRefreshPolicy
     private val textRecognitionHelper = TextRecognitionHelper()
     private val pantryVisionClient = GeminiPantryVisionClient()
     private val barcodeLookupClient = OpenFoodFactsBarcodeClient()
@@ -495,21 +497,34 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun refreshShoppingListFromCurrentInputs() {
-        if (repository.getAllMealPlans().isEmpty()) {
+        // Keep the persisted Menu rows and in-memory Shopping list aligned with edits.
+        val existingPlans = repository.getAllMealPlans()
+        val refreshScope = mealPlanRefreshPolicy.scopeFor(existingPlans)
+        if (refreshScope == null) {
             _shoppingList.value = emptyList()
             return
         }
 
-        val request = buildMealPlanRequest()
+        val request = buildMealPlanRequest(
+            startDate = refreshScope.startDate,
+            daysToGenerate = refreshScope.daysToGenerate
+        )
         if (request.pantryItems.isEmpty() && request.deals.isEmpty()) {
+            repository.deleteAllMealPlans()
             _shoppingList.value = emptyList()
             return
         }
 
-        _shoppingList.value = mealPlanningEngine.generateMealPlan(request).shoppingList
+        val result = mealPlanningEngine.generateMealPlan(request)
+        repository.deleteAllMealPlans()
+        repository.insertMealPlans(result.mealPlans)
+        _shoppingList.value = result.shoppingList
     }
 
-    private suspend fun buildMealPlanRequest(): MealPlanningEngine.MealPlanRequest {
+    private suspend fun buildMealPlanRequest(
+        startDate: LocalDate = LocalDate.now(),
+        daysToGenerate: Int = 7
+    ): MealPlanningEngine.MealPlanRequest {
         val currentParams = repository.getParams() ?: Params()
         val pantry = repository.getAllPantryItems()
         val currentDeals = repository.getAllDeals()
@@ -517,7 +532,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return MealPlanningEngine.MealPlanRequest(
             params = currentParams,
             pantryItems = pantry,
-            deals = currentDeals
+            deals = currentDeals,
+            startDate = startDate,
+            daysToGenerate = daysToGenerate
         )
     }
 
