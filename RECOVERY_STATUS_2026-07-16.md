@@ -142,6 +142,15 @@ Latest JSON parser dependency checkpoint:
 
 Result: `BUILD SUCCESSFUL`. Gson was updated from `2.10.1` to `2.14.0` for Gemini pantry parsing, Gemini error summaries, Open Food Facts product parsing, and Room list converters. Focused parser tests passed before the full gate, covering Gemini pantry response parsing, Gemini API status parsing, and Open Food Facts product parsing. The Gson 2.14.0 annotation cleanup also removed a new `CheckResult` lint warning in the Gemini pantry parser, leaving the current lint snapshot at `0` errors and `25` warnings.
 
+Latest camera input dependency checkpoint:
+
+```powershell
+.\gradlew.bat testDebugUnitTest --tests com.dealplanner.ui.state.PantryImportReviewQueueTest --tests com.dealplanner.ocr.PantryOcrCandidateExtractorTest --tests com.dealplanner.parser.DealsParserTest --tests com.dealplanner.domain.ReceiptReconcilerTest
+.\gradlew.bat testDebugUnitTest assembleDebug lintDebug
+```
+
+Result: `BUILD SUCCESSFUL`. CameraX was updated from `1.3.0` to `1.4.2` for the phone photo-capture paths used by pantry, flyer, and receipt imports. CameraX `1.6.1` was tested first and rejected for this checkpoint because its artifacts use Kotlin metadata `2.1.0` while the app is still on Kotlin `1.9.20` / Compose compiler `1.5.4`. The current lint snapshot remains `0` errors and `25` warnings.
+
 Run from `C:\Users\adamc\AndroidStudioProjects\Deal_Planner`:
 
 ```powershell

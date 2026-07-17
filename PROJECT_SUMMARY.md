@@ -258,6 +258,7 @@ Deal_Planner/
 | OCR | ML Kit Text Recognition 16.0.1 |
 | AI Vision | Optional Gemini API |
 | Barcode | ZXing 3.5.4 + JourneyApps scanner |
+| Camera input | CameraX 1.4.2 |
 | JSON | Gson 2.14.0 |
 | Coroutines | Kotlinx Coroutines 1.7.3 |
 | Architecture | MVVM + Repository |

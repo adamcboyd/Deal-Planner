@@ -155,7 +155,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
 
     // CameraX for image capture
-    val cameraxVersion = "1.3.0"
+    val cameraxVersion = "1.4.2"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
